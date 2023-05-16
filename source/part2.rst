@@ -4,7 +4,7 @@
 Part 2: Unit testing
 *****************************************************************
 
-Blabla
+Focus on JUnit 5
 
 
 Subtitle

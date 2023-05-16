@@ -4,10 +4,14 @@
 Part 5: Functional Programming
 *****************************************************************
 
-Blabla
+Functional Interfaces 
+======================
 
+Higher Order Functions 
+=======================
 
-Subtitle
-=========
+Streams 
+========
 
-Blabla
+Immutable Collections
+======================

@@ -4,10 +4,24 @@
 Part 4: Object Oriented Programming and Design Patterns
 *****************************************************************
 
-Blabla
 
+Interfaces and Abstract Classes
+===============================
 
-Subtitle
+Abstract Data Type
+===================
+
+Iterators
 =========
 
-Blabla
+
+Delegation 
+===========
+
+
+Observer 
+==========
+
+
+
+
