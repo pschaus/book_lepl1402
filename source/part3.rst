@@ -104,17 +104,127 @@ The next code add comments on the number of steps required to execute the sum al
 	}
 
 
+
 In practice, it is difficult to translate one step into a concrete time since it depends on many factors (machine, language, compiler, etc).
 Also, remember that it is a an approximation. In practice it not true that every operation takes exactly the same amount of time.
+For this reason we will simplyfy our counting of the number of steps further by using classes of function.
 
+
+The Best-Case, worst case execution of an algorithm
+----------------------------------------------------------
+
+
+For given input size, the performance of the number of steps required by an algorithm may strongly depend on input content.
+To illustrate a simple extreme case of an algorithm exhibiting such behavior consider the `find` method looking if an array contains a specific target value and returning the first index having this value, or -1 if this value is not present in the array.
+
+
+The performance of an algorithm, in terms of the number of steps it requires, can significantly vary based on the content of the input. 
+In other words, different inputs of the same size may cause the algorithm to take more or fewer steps to arrive at a result.
+
+A simple example that highlights this behavior is the 'find' method. This method aims to determine whether a specific target value is present within an array. It achieves this by iterating through the array and returning the index of the first occurrence of the target value. If the target value isn't present, it returns -1.
+
+
+..  code-block:: java
+    :caption: The find method 
+    :name: find
+
+
+    public static int find(int[] array, int target) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == target) {
+                return i;
+            }
+        }
+        return -1; // Return -1 if target is not found
+    }
+
+
+
+In this case, the number of steps the 'find' method takes to complete is heavily dependent on the position of the target value within the array. If the target value is near the beginning of the array, the 'find' method completes quickly.
+We call this the best-case scenario.
+
+Conversely, if the target value is at the end of the array or not present at all, the 'find' method must iterate through the entire array, which naturally takes more steps.
+We call this, the worst-case scenario.
+
+
+
+For certain algorithms, the number of operations required is primarily determined by the input size rather than the input content. 
+This characteristic is exemplified by the 'sum' method we previously analyzed.
+
+
+The Big-O, Big-Omega and Big-Theta Clases of Functions
+----------------------------------------------------------
+
+
+Let's assume that the number of steps an algorithm requires can be represented by the function :math:`T(n)` where :math:`n` refers to the size of the input, such as the number of elements in an array. While this function might encapsulate intricate details about the algorithm's execution, calculating it with high precision can be a substantial undertaking, and often, not worth the effort.
+
+For sufficiently large inputs, the influence of multiplicative constants and lower-order terms within the exact runtime is overshadowed by the impact of the input size itself. This leads us to the concept of asymptotic efficiency, which is particularly concerned with how an algorithm's running time escalates with an increase in input size, especially as the size of the input grows unboundedly.
+
+Typically, an algorithm that is asymptotically more efficient will be the superior choice for all but the smallest of inputs. 
+This section introduces standard methods and notations used to simplify the asymptotic analysis of algorithms, thereby making this complex task more manageable.
+We shall see asymptotic notations that are well suited to characterizing running times no matter what the input.
+
+Those notations are sets or classes of functions.
+We have classes of function asymtotically bounded by above, below or both:
+
+* :math:`f(n)\in \mathcal{O}(g(n)) \Longleftrightarrow` :math:`\exists c \in \mathbb{R}^+,n_0 \in \mathbb{N}: f(n) \leq c\cdot g(n)\ \forall n \geq n_0` (pper bound)
+* :math:`f(n)\in \Omega(g(n)) \Longleftrightarrow` :math:`\exists c \in \mathbb{R}^+,n_0 \in \mathbb{N}: f(n) \geq c\cdot g(n)\ \forall n \geq n_0` (lower bound)
+*  :math:`f(n)\in \Theta(g(n)) \Longleftrightarrow`:math:`\exists c_1, c_2 \in \mathbb{R}^+,n_0 \in \mathbb{N}: c_1\cdot g(n) \leq f(n) \leq c_2\cdot g(n)\ \forall n \geq n_0` (exact bound)
+
+
+What is common in the definitions of these classes of function is taht we are not concerned about small constant , we care about the big-picture that is when :math:`n` becomes really large (say 10,000 or 1,000,000). The intuition for those classes of function notations are illustrated next.
 
 .. figure:: _static/images/bigo.png
    :scale: 25 %
    :alt: bigo
 
 
+One big advantage of Big-Oh notations is the capacity to simplify  notations by only keeping the fastest growing term and taking out the numerical coefficients.
+Let us consider an example of simplification: :math:`f(n)=c \cdot n^a + d\cdot n^b\quad` with :math:`a \geq b \geq 0` and :math:`c, d \geq 0`.
+Then we have :math:`f(n) \in \Theta(n^a)`. 
+This is even true if :math:`c` is very small and :math:`d` very big!
 
-Example of an equation :math:`a^2 + b^2 = c^2`.
+The simplication principle that we have applied are the following:
+:math:`\mathcal{O}(c \cdot f(n)) = \mathcal{O}(f(n))` (for :math:`c>0`) and :math:`\mathcal{O}(f(n) + g(n)) \subseteq \mathcal{O}(\max(f(n), g(n))))`.
+You can also use these inclusion relations to simplify:
+:math:`\mathcal{O}(1) \subseteq \mathcal{O}(\log n) \subseteq \mathcal{O}(n) \subseteq \mathcal{O}(n^2) \subseteq \mathcal{O}(n^3) \subseteq \mathcal{O}(c^n) \subseteq \mathcal{O}(n!)`
+
+As a general rule of thumb, you must simplify if possible to get rid of numerical coefficients.
+
+
+
+Practical examples of different algorithms 
+-------------------------------------------
+
+
+
++-------------------------------------------------+---------------------------------------------------------------+
+| Complexity (name)                               | Algorithm                                                     |
++=================================================+===============================================================+
+| :math:`\mathcal{O}(1)` (constant)               | Sum of two integers                                           |
++-------------------------------------------------+---------------------------------------------------------------+
+| :math:`\mathcal{O}(log(n))` (logarithmic )      | Find an entry in a sorted array (dichotomic search)           |
++-------------------------------------------------+---------------------------------------------------------------+
+| :math:`\mathcal{O}(n)` (linear)                 | Sum elements of an array                                      |
++-------------------------------------------------+---------------------------------------------------------------+
+| :math:`\mathcal{O}(n \log n)` (linearithmic)    | Sorting efficiently an array (merge sort)                     |
++-------------------------------------------------+---------------------------------------------------------------+
+| :math:`\mathcal{O}(n^2)` (quadratic)            | Sorting inefficiently an array (insertion sort)               |
++-------------------------------------------------+---------------------------------------------------------------+
+| :math:`\mathcal{O}(n^3)` (cubic)                | Enumerating tripples in an array                              |
++-------------------------------------------------+---------------------------------------------------------------+
+| :math:`\mathcal{O}(2^n)` (exponential)          | Finding elements in an array summing to zero (Subset-sum)     |
++-------------------------------------------------+---------------------------------------------------------------+
+| :math:`\mathcal{O}(n!)` (factorial)             | Visiting all cities in a country minimizing the distance      |
++-------------------------------------------------+---------------------------------------------------------------+
+
+
+
+
+
+
+
+
 
 
 Space Complexity
