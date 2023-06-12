@@ -412,7 +412,8 @@ Here is a simple implementation of Merge Sort in Java:
         assert(result.length == left.length + right.length);
         int index = 0, leftIndex = 0 , rightIndex = 0;
         while (leftIndex != left.length || rightIndex != right.length) {
-            if(rightIndex == right.length || (leftIndex != left.length && left[leftIndex] < right[rightIndex])) {
+            if (rightIndex == right.length || 
+                (leftIndex != left.length && left[leftIndex] < right[rightIndex])) {
                 result[index] = left[leftIndex];
                 leftIndex++;
             }
@@ -492,7 +493,8 @@ The Java code is given next.
         for (int i = 1; i < arr.length; i++) {
             int key = arr[i];
             int j = i - 1;
-            // Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position
+            // Move elements of arr[0..i-1], that are greater than key, 
+            // to one position ahead of their current position
             while (j >= 0 && arr[j] > key) {
                 arr[j + 1] = arr[j];
                 j = j - 1;
@@ -503,11 +505,108 @@ The Java code is given next.
 
 
 For each element (except the first), it finds the appropriate position among the already sorted elements (all elements before the current one), and inserts it there by moving larger elements up.
-Moving the larger elements up is the goal of the inner `while loop.
+Moving the larger elements up is the goal of the inner `while` loop.
 
 The time complexity of insertion sort is :math:`\mathcal{O}(n^2)` in the worst-case scenario, because each of the `n` elements could potentially need to be compared with each of the `n` already sorted elements. 
 However, in the best-case scenario (when the input array is already sorted), the time complexity is :math:`\mathcal{O}(n)`, because each element only needs to be compared once with the already sorted elements.
 Or we can simply say that the insertion sort algorithm runs in :math:`\Omega(n)` and :math:`\mathcal{O}(n^2)`.
+
+
+
+
+
+Triple Sum
+"""""""""""""""""
+
+Let's consider a simple example: an algorithm that checks for all combinations of three elements in the array that sum up to zero. 
+Here's a naive implementation in Java:
+
+.. _triple_sum:
+
+..  code-block:: java
+    :caption: Triple Sum algorithm
+    :name: Trimple Sum Algortithm
+
+    /**
+     * This method checks if there are any three numbers in the array that sum up to zero.
+     *
+     * @param arr The input array.
+     * @return True if such a triple exists, false otherwise.
+     */
+    public static boolean checkTripleSum(int[] arr) {
+        int n = arr.length;
+
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    if (arr[i] + arr[j] + arr[k] == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+In this program, `checkTripleSum` goes through each possible combination of three elements in the input array. 
+If it finds a triple that sums up to zero, it immediately returns true. If no such triple is found after checking all combinations, it returns false. Since there are :math:`n*(n-1)*(n-2)` / 6 possible combinations of three elements in an array of length :math:`n`, and we're checking each combination once, the time complexity of this method is :math:`\mathcal{O}(n^3)` and :math:`\Omega(1)`.
+The best case scenerio occurs if the first three elements in the array sum to zero so that each of the loop executes only once before reaching the return instruction.
+
+
+
+Subset-Sum
+"""""""""""""""
+
+The subset sum problem is a classic problem in computer science: given a set of integers, is there a subset of the integers that sums to zero?
+This is a generalization of the `checkTripleSum` problem we have seen before.
+
+The algorithm we will use for solving the problem is a brute-force approach that will enumerate all subsets to solve this problem.
+A common approach to enumerate all the subsets is to use recursion. 
+We can consider each number in the set and make a recursive call for two cases: one where we exclude the number in the subset, and one where we include it.
+
+The Java code is given next. It calls an auxiliary method with an additional argument `sum` that is the sum of the elements
+up to index `i` already included.
+
+
+.. _subset_sum:
+
+..  code-block:: java
+    :caption: An algorithm for solving the Subset Sum problem
+    :name: Subset Sum
+
+    /**
+     * This method checks if there is a subset of the array that sums up to zero.
+     *
+     * @param arr   The input array.
+     * @return True if there is such a subset, false otherwise.
+     */
+    public static boolean isSubsetSumZero(int[] arr) {
+    	return isSubsetSum(arr, 0, 0) || ;
+    }
+
+    private static boolean isSubsetSum(int[] arr, int i, int sum) {
+        // Base cases
+        if (i == arr.length) { // did not find it
+            return false;
+        }
+        if (sum + arr[i] == 0) { // found it
+        	return true;
+        } else {
+        	// Check if sum can be obtained by excluding / including the next
+        	return isSubsetSumZero(arr, i + 1, sum) || 
+        	       isSubsetSumZero(arr, i + 1, sum + arr[i]);
+        }
+    }
+
+
+The time complexity of this algorithm is :math:`\mathcal{O}(2^n)`, because in the worst case it generates all possible subsets of the array, and there are :math:`2^n` possible subsets for an array of n elements. The worst-case is obtained when there is no solution and that false is returned.
+The best time complexity is :math:`\Omega(1)` obtained when the first element in the array is zero so that the algorithm immediatly returns true.
+
+Note that this algorithm has an exponential time complexity (so far the algorithm we have studies were polynomial (e.g., :math:`\mathcal{O}(n^3)`). Therefore, although this approach will work fine for small arrays, it will be quite slow for larger ones.
+
+There are more efficient algorithms for the subset sum problem that use dynamic programming to avoid redundant work but these are out of the scope of this introduction.
 
 
 Space Complexity
