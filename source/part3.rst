@@ -193,9 +193,16 @@ As a general rule of thumb, you must simplify if possible to get rid of numerica
 
 
 
+
+Recursive Algorithms
+----------------------
+
+Say something about recurence equation + Graphical Method.
+
+
+
 Practical examples of different algorithms 
 -------------------------------------------
-
 
 
 +-------------------------------------------------+---------------------------------------------------------------+
@@ -203,9 +210,9 @@ Practical examples of different algorithms
 +=================================================+===============================================================+
 | :math:`\mathcal{O}(1)` (constant)               | Sum of two integers                                           |
 +-------------------------------------------------+---------------------------------------------------------------+
-| :math:`\mathcal{O}(log(n))` (logarithmic )      | Find an entry in a sorted array (dichotomic search)           |
+| :math:`\mathcal{O}(log(n))` (logarithmic )      | Find an entry in a sorted array (binary search)               |
 +-------------------------------------------------+---------------------------------------------------------------+
-| :math:`\mathcal{O}(n)` (linear)                 | Sum elements of an array                                      |
+| :math:`\mathcal{O}(n)` (linear)                 | Sum elements or find an entry in a not sorted array           |
 +-------------------------------------------------+---------------------------------------------------------------+
 | :math:`\mathcal{O}(n \log n)` (linearithmic)    | Sorting efficiently an array (merge sort)                     |
 +-------------------------------------------------+---------------------------------------------------------------+
@@ -220,43 +227,422 @@ Practical examples of different algorithms
 
 
 
+Binary Search
+""""""""""""""""""""
+
+The Binary search, also known as dichotomic search, is a search algorithm that finds the position of a target value within a sorted array. 
+It works by halving the number of elements to be searched each time, which makes it incredibly efficient for large arrays.
+
+Here's how the binary search algorithm works:
+
+1. You start with the middle element of the sorted array.
+2. If the target value is equal to this middle element, then you've found the target and the algorithm ends.
+3. If the target value is less than the middle element, then you repeat the search with the left half of the array.
+4. If the target value is greater than the middle element, then you repeat the search with the right half of the array.
+5. You keep repeating this process until you either find the target value or exhaust all elements.
+
+
+The execution of this search is illustrated on next schema searching for value 7 repeating 4 times the process until finding it.
+On this array of 16 entries, the search will never require more than four trials so this is a worst-case scenario.
+
+
+.. figure:: _static/images/binary_search.png
+   :scale: 25 %
+   :alt: binarysearch
+
+
+
+This algorithm has a time complexity of :math:`\mathcal{O}(\log n)` because each time through the loop, the number of elements to be searched is halved and in the worst case, this process is repeated :math:`\log n` times.
+On the other hand, if one is lucky, the search immediatly find the element at the first iteration. 
+Therefore the best-case time complexity is :math:`Omega(1)`.
+
+Let's take a look at how to implement binary search in Java:
+
+.. _merge_sort:
+
+..  code-block:: java
+    :caption: Merge Sort Algorithm
+    :name: Merge Sort Algortithm
+
+
+	/**
+	 * This method performs a binary search on a sorted array.
+	 * The array remains unchanged during the execution of the function.
+	 *
+	 * @param arr The input array, which must be sorted in ascending order.
+	 * @param x   The target value to search for in the array.
+	 * @return The index of the target value in the array if found, or -1 if the target value is not in the array.
+	 */
+    public static int binarySearch(int arr[], int x) {
+        int left = 0, right = arr.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+  
+            // Check if x is present at mid
+            if (arr[mid] == x)
+                return mid;
+  
+            // If x greater, ignore left half
+            if (arr[mid] < x)
+                left = mid + 1;
+  
+            // If x is smaller, ignore right half
+            else
+                right = mid - 1;
+        }
+  
+        // If we reach here, then element was not present
+        return -1;
+    }
+
+
+The code is a direct translation of the explanation of the algorithm.
+Notice that the expression `left + (right - left) / 2` is preferred over the somewhat simpler `(left + right) / 2` to calculate the middle index in a binary search. At first glance, they seem to do the same thing, and indeed, they usually do give the same result. However, they can behave differently in certain scenarios.
+
+The main advantage of using `left + (right - left) / 2` over `(left + right) / 2` comes into play when you are dealing with large numbers. 
+The problem with `(left + right) / 2` is that the sum of `left` and `right` could exceed the maximum limit of the integer in the Java language that is is :math:`2^31-1`, causing an integer overflow, which can lead to unexpected results or errors.
+
+On the other hand, `left + (right - left) / 2` does not have this problem. It's just as efficient, and it's safer because it avoids the risk of overflow.
+
+Keep in mind that when dealing with objects (as opposed to primitive types), we would want to use the `equals` method instead of `==`. This is because equals tests for logical equality, meaning it checks whether two objects are logically equivalent (even if they are different instances). On the other hand, `==` tests for reference equality, which checks whether two references point to the exact same object instance. For objects where logical equality is more meaningful than reference equality, like Strings or custom objects, using `equals is the appropriate choice."
+
+
+
+.. admonition:: Exercise
+   :class: note
+
+   What is the time complexity of next algorithm? 
+   Characterize the best and worst case.
+
+
+
+	..  code-block:: java
+	    :caption: BitCount 
+	    :name: Bitcount
+
+
+
+	    /**
+	     * This method counts the number of bits in the binary representation of a positive input number.
+	     * It halves it until it becomes zero counting the number of iterations.
+	     *
+	     * @param n The input number, which must be a positive integer.
+	     * @return The number of bits in the binary representation of the input number.
+	     */
+	    public static int bitCount(int n) {
+	        int bitCount = 0;
+
+	        while (n > 0) {
+	            bitCount++;
+	            n = n >> 1;  // bitwise shift to the right, which is equivalent to dividing by 2
+	        }
+
+	        return bitCount;
+	    }
+
+
+
+Linear Search
+"""""""""""""""""
+
+We already have seen the `sum` algorithm and its `\Theta(n)` time complexity.
+
+When the array is not sorted and we are looking for the index of target value, one has not other choice
+than iterating over the array using a for loop. 
+At each iteration, we check if the current array element is equal to the target value. 
+If it is, the method immediately returns the current index. 
+If the method finishes iterating through the array without finding the target value, it returns `-1.
+
+The time complexity of the linear search algorithm is :math:`\mathcal{O}(n)`, where `n` is the size of the array, because in the worst-case scenario (the target value is not in the array or is the last element in the array), the algorithm has to examine every element in the array once.
+
+In the best-case scenario for the linear search algorithm, the target value is the very first element of the array.
+Therefore, in the best-case scenario, the time complexity of the linear search algorithm is O(1) or we can simply say that the algorithm is also in :math:`\Omega(1)`. The Java implementation is given next.
+
+
+.. _linear_search:
+
+..  code-block:: java
+    :caption: Linear Search algorithm
+    :name: Linear Search Algortithm
+
+    /**
+     * This method performs a linear search on an array.
+     *
+     * @param arr The input array.
+     * @param x   The target value to search for in the array.
+     * @return The index of the target value in the array if found, or -1 if the target value is not in the array.
+     */
+    public static int linearSearch(int[] arr, int x) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == x) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 
 
 
 
+Merge Sort
+""""""""""""""
+
+
+Merge sort is a divide-and-conquer algorithm for sorting lists or arrays of items using pair-wise comparisons. 
+It works by dividing the unsorted list into n sublists, each containing one element (a list of one element is considered sorted), and then repeatedly merging sublists to produce newly sorted sublists until there is only one sublist remaining.
+
+Here's the basic idea behind merge sort:
+
+* Divide: If the list is of length 0 or 1, then it is already sorted. Otherwise, divide the unsorted list into two sublists of about half the size.
+* Conquer: Sort each sublist recursively by re-applying the merge sort.
+* Combine: Merge the two sublists back into one sorted list.
+
+Here is a simple implementation of Merge Sort in Java:
+
+
+.. _merge_sort:
+
+..  code-block:: java
+    :caption: Merge Sort Algorithm
+    :name: Merge Sort Algortithm
+
+
+    private static void merge(int[] left, int [] right, int result[]) {
+        assert(result.length == left.length + right.length);
+        int index = 0, leftIndex = 0 , rightIndex = 0;
+        while (leftIndex != left.length || rightIndex != right.length) {
+            if(rightIndex == right.length || (leftIndex != left.length && left[leftIndex] < right[rightIndex])) {
+                result[index] = left[leftIndex];
+                leftIndex++;
+            }
+            else {
+                result[index] = right[rightIndex];
+                rightIndex++;
+            }
+            index++;
+        }
+    }
+
+    /**
+     * Sort the values increasingly
+     */
+    public static void mergeSort(int[] values) {
+        if(values.length == 1) // list of size 1, already sorted
+            return;
+
+        int mid = values.length/2;
+
+        int[] left = new int[mid];
+        int[] right = new int[values.length-mid];
+
+        // copy values[0..mid-1] to left
+        System.arraycopy(values, 0, left, 0, mid);
+        // copy values[mid..values.length-1] to right
+        System.arraycopy(values, mid, right, 0, values.length-mid);
+
+        // sort left and right
+        mergeSort(left);
+        mergeSort(right);
+
+        // merge left and right back into values
+        merge(left, right, values);
+    }
+
+
+The Merge sort is a divide and conquer algorithm.
+It breaks the array into two subarrays, sort them, and then merges these sorted subarrays to produce a final sorted array.
+All the operations and the data-flow of execution is best undersood with a small visual example.
+
+
+.. figure:: _static/images/merge_sort_complexity.png
+   :scale: 25 %
+   :alt: Sum time
+
+
+
+
+There are :math:`\Theta(\log n)` layers of split and merge operations. 
+Each requires :math:`\Theta(n)` operations by summing all the split/merge operations at one level.
+In the end, the time complexity of the merge sort algorithm is the product of the time complexities of these two operations that is :math:`\Theta(n \log n)`.
+
+
+Insertion Sort
+"""""""""""""""""
+
+The insertion sort algorithm is probably the one you use when sorting a hand of playing cards. 
+You start with one card in your hand (the sorted portion). 
+For each new card, you "insert" it in the correct position in your hand by moving over any cards that should come after it.
+
+The Java code is given next.
+
+.. _insertion_sort:
+
+..  code-block:: java
+    :caption: Insertion Sort Algorithm
+    :name: Insertion Sort Algortithm
+
+
+    /**
+     * This method sort the array using Insertion Sort algorithm.
+     *
+     * @param arr The input array.
+     */
+    public static void insertionSort(int[] arr) {
+        for (int i = 1; i < arr.length; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            // Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j = j - 1;
+            }
+            arr[j + 1] = key;
+        }
+    }
+
+
+For each element (except the first), it finds the appropriate position among the already sorted elements (all elements before the current one), and inserts it there by moving larger elements up.
+Moving the larger elements up is the goal of the inner `while loop.
+
+The time complexity of insertion sort is :math:`\mathcal{O}(n^2)` in the worst-case scenario, because each of the `n` elements could potentially need to be compared with each of the `n` already sorted elements. 
+However, in the best-case scenario (when the input array is already sorted), the time complexity is :math:`\mathcal{O}(n)`, because each element only needs to be compared once with the already sorted elements.
+Or we can simply say that the insertion sort algorithm runs in :math:`\Omega(n)` and :math:`\mathcal{O}(n^2)`.
 
 
 Space Complexity
 ===================
 
+The space complexity of an algorithm quantifies the amount of space or memory taken by an algorithm to run as a function of the length of the input. 
+It represents the amount of memory space that the algorithm needs to execute and 
+includes the space taken by the input data and the additional space (usually called auxiliary space) taken by the algorithm to execute:
+:math:`Space Complexity = Auxiliary Space + Input space`
 
-Sorting Algorithms
-===================
-
-
-Insertion Sort
----------------
-
-
-Bubble Sort
-------------
-
-
-Merge Sort
-----------
+The Auxiliary Space is the extra space or the temporary space used by the algorithm during it's execution.
+The Input space is the space taken by the argument of the algorithm or the instance variables if any.
+Notice that the extra space may also take into account the stack space in the case of a recursive algorithm.
+In such a situation, when the recursive call happens, the current local variables are pushed onto the system stack, where they wait for the call the return
+and unstack the local variables.
+More exactly, If a function A() calls function B() (which can be A in case of recursion) inside it, then all the variables still in the scope of the function A() will get stored on the system stack temporarily, while the function B() is called and executed inside the function A().
 
 
-Recursive Algorithms
-=====================
+In the :ref:`Merge Sort <merge_sort>` implementation, new arrays are created at each level of recursion.
+The overall space complexity is thus of :math:`\mathcal{O}(n log n)`, where :math:`n` is the number of elements in the input array. 
+This is because, at each level of the recursion, new arrays are created, adding up to :math:`n` elements per level, and the recursion goes :math:`log n` levels deep.
 
 
-Abstract Data Type
-===================
+.. figure:: _static/images/stack_merge_sort.png
+   :scale: 25 %
+   :alt: Sum time
 
 
-Generics
-=========
+
+
+The time complexity required by our merge sort algorithm can be lowered to :math:`\mathcal{O}(n)` for the Auxiliary space.
+We can indeed create a single temporary array of size :math:`n` once and reusing it in every merge operation. 
+This temporary array requires :math:`n` units of space, which is independent of the depth of the recursion. 
+As such, the space complexity of this version of the merge sort algorithm is :math:`\mathcal{O}(n)`, which is an improvement over the original version.
+
+
+..  code-block:: java
+    :caption: Merge Sort Algorithm
+    :name: Merge Sort Algortithm
+
+
+	public class MergeSort {
+
+	    private void merge(int[] arr, int[] temp, int leftStart, int mid, int rightEnd) {
+	        int leftEnd = mid;
+	        int rightStart = mid + 1;
+	        int size = rightEnd - leftStart + 1;
+
+	        int left = leftStart;
+	        int right = rightStart;
+	        int index = leftStart;
+
+	        while (left <= leftEnd && right <= rightEnd) {
+	            if (arr[left] <= arr[right]) {
+	                temp[index] = arr[left];
+	                left++;
+	            } else {
+	                temp[index] = arr[right];
+	                right++;
+	            }
+	            index++;
+	        }
+
+	        System.arraycopy(arr, left, temp, index, leftEnd - left + 1);
+	        System.arraycopy(arr, right, temp, index, rightEnd - right + 1);
+	        System.arraycopy(temp, leftStart, arr, leftStart, size);
+	    }
+
+	    public void sort(int[] arr) {
+	        int[] temp = new int[arr.length];
+	        sort(arr, temp, 0, arr.length - 1);
+	    }
+
+	    private void sort(int[] arr, int[] temp, int leftStart, int rightEnd) {
+	        if (leftStart >= rightEnd) {
+	            return;
+	        }
+	        int mid = leftStart + (rightEnd - leftStart) / 2;
+	        sort(arr, temp, leftStart, mid);
+	        sort(arr, temp, mid + 1, rightEnd);
+	        merge(arr, temp, leftStart, mid, rightEnd);
+	    }
+
+	    public static void main(String[] args) {
+	        MergeSort mergeSort = new MergeSort();
+	        int[] arr = {38, 27, 43, 3, 9, 82, 10};
+	        mergeSort.sort(arr);
+	        for (int i : arr) {
+	            System.out.print(i + " ");
+	        }
+	    }
+	}
+
+
+It's worth noting that in both versions of the algorithm, the time complexity remains the same: :math:`\mathcal{O}(n log n)`. 
+This is because the time complexity of merge sort is determined by the number of elements being sorted (n) and the number of levels in the recursion tree (log n), not by the amount of space used.
+
+It is quite frequent to have time complexity larger than the space complexity for an algorithm but the opposite is not true, at least for the auxiliary space complexity.
+The time complexity is necessarily at least the one of the auxiliary space complexity since you always need the same order as elementary steps as the one of the consumed memory.
+
+
+
+
+.. admonition:: Exercise
+   :class: note
+
+   Compare the space and time complexity of the iterative and recursive computation of the factorial of a number expressed in function of :math:`n`, the value of the number for which we want to compute the factorial.
+
+
+
+	..  code-block:: java
+	    :caption: Factorial 
+	    :name: Recursive
+
+
+
+		public class Factorial {
+		    public static long factorialRecur(int n) {
+		        if (n == 0) {
+		            return 1;
+		        } else {
+		            return n * factorialRecur(n - 1);
+		        }
+		    }
+		    public static long factorialIter(int n) {
+		        long result = 1;
+		        for (int i = 1; i <= n; i++) {
+		            result *= i;
+		        }
+		        return result;
+		    }
+		}
+
+
+
 
 Algorithm Correctness
 ======================
@@ -308,3 +694,13 @@ The loop invariant here is that after the i-th iteration of the outer loop, the 
 In this example, the loop invariant helps us understand why the Bubble Sort algorithm correctly sorts the array. 
 After each iteration of the outer loop, the largest element is "bubbled" up to its correct position, so by the time we've gone through all the elements, the array is sorted. 
 The loop invariant holds at the initialization (before the loop, no elements need to be in their final position), maintains at each iteration (after i-th iteration, the largest i elements are in their correct positions), and at termination (when the loop is finished, all elements are in their correct positions, so the array is sorted).
+
+
+Abstract Data Types
+===================
+
+
+Generics
+---------
+
+
