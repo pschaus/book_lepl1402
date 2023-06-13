@@ -22,9 +22,11 @@ It's like having a magic crystal ball that tells us how our algorithm will behav
 Let's delve into the intricacies of time complexity and uncover the beauty and elegance of efficient code by studying first a very simple `sum` mehtod implemented next. It calculates the total sum of all the elements in an integer array provixed in argument.
 
 
+.. _sum:
+
 ..  code-block:: java
     :caption: The sum method
-    :name: sum
+    :name: Sum Algorithm
 
 
 	public class Main {
@@ -46,7 +48,7 @@ Here is an example of how to use it to measure the time of one call to the `sum`
 
 ..  code-block:: java
     :caption: Measuring the time of sum with currentTimeMillis
-    :name: sum_time
+    :name: Sum Algorithm with Time Measurement
 
 
 	public class Main {
@@ -88,20 +90,20 @@ One need to count the number of times its body will be executed.
 The next code add comments on the number of steps required to execute the sum algorithm.
 
 
+
+
 ..  code-block:: java
     :caption: The sum method with step annotations
-    :name: sum_steps
+    :name: Sum Algorithm with Step Annotations
 
 
-	public class Main {
-	    public static int sum(int [] values) {         // n = values.length
-	        int total = 0;                             // 1 step
-	        for (int i = 0; i < values.length; i++) {  
-	            total += values[i];                    // 2* n steps (one memory access and one addition executed n times)
-	        }
-	        return total;                              // 1 step
-	    }                                              // TOTAL: 2n + 2 steps
-	}
+    public static int sum(int [] values) {         // n = values.length
+        int total = 0;                             // 1 step
+        for (int i = 0; i < values.length; i++) {  
+            total += values[i];                    // 2* n steps (one memory access and one addition executed n times)
+        }
+        return total;                              // 1 step
+    }                                              // TOTAL: 2n + 2 steps
 
 
 
@@ -121,31 +123,37 @@ To illustrate a simple extreme case of an algorithm exhibiting such behavior con
 The performance of an algorithm, in terms of the number of steps it requires, can significantly vary based on the content of the input. 
 In other words, different inputs of the same size may cause the algorithm to take more or fewer steps to arrive at a result.
 
-A simple example that highlights this behavior is the 'find' method. This method aims to determine whether a specific target value is present within an array. It achieves this by iterating through the array and returning the index of the first occurrence of the target value. If the target value isn't present, it returns -1.
+A simple example that highlights this behavior is the 'linearSearch' method. This method aims to determine whether a specific target value is present within an array. It achieves this by iterating through the array and returning the index of the first occurrence of the target value. If the target value isn't present, it returns -1.
 
+
+.. _linear_search:
 
 ..  code-block:: java
-    :caption: The find method 
-    :name: find
+    :caption: Linear Search algorithm
+    :name: Linear Search Algortithm
 
-
-    public static int find(int[] array, int target) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == target) {
+    /**
+     * This method performs a linear search on an array.
+     *
+     * @param arr The input array.
+     * @param x   The target value to search for in the array.
+     * @return The index of the target value in the array if found, or -1 if the target value is not in the array.
+     */
+    public static int linearSearch(int[] arr, int x) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == x) {
                 return i;
             }
         }
-        return -1; // Return -1 if target is not found
+        return -1;
     }
 
 
-
-In this case, the number of steps the 'find' method takes to complete is heavily dependent on the position of the target value within the array. If the target value is near the beginning of the array, the 'find' method completes quickly.
+In this case, the number of steps the 'linearSearch' method takes to complete is heavily dependent on the position of the target value within the array. If the target value is near the beginning of the array, the 'linearSearch' method completes quickly.
 We call this the best-case scenario.
 
-Conversely, if the target value is at the end of the array or not present at all, the 'find' method must iterate through the entire array, which naturally takes more steps.
+Conversely, if the target value is at the end of the array or not present at all, the method must iterate through the entire array, which naturally takes more steps.
 We call this, the worst-case scenario.
-
 
 
 For certain algorithms, the number of operations required is primarily determined by the input size rather than the input content. 
@@ -210,7 +218,7 @@ Practical examples of different algorithms
 +=================================================+===============================================================+
 | :math:`\mathcal{O}(1)` (constant)               | Sum of two integers                                           |
 +-------------------------------------------------+---------------------------------------------------------------+
-| :math:`\mathcal{O}(log(n))` (logarithmic )      | Find an entry in a sorted array (binary search)               |
+| :math:`\mathcal{O}(\log n)` (logarithmic )      | Find an entry in a sorted array (binary search)               |
 +-------------------------------------------------+---------------------------------------------------------------+
 | :math:`\mathcal{O}(n)` (linear)                 | Sum elements or find an entry in a not sorted array           |
 +-------------------------------------------------+---------------------------------------------------------------+
@@ -258,11 +266,11 @@ Therefore the best-case time complexity is :math:`Omega(1)`.
 
 Let's take a look at how to implement binary search in Java:
 
-.. _merge_sort:
+.. _binary_search:
 
 ..  code-block:: java
-    :caption: Merge Sort Algorithm
-    :name: Merge Sort Algortithm
+    :caption: Binary Search Algorithm
+    :name: Binary Search Algortithm
 
 
 	/**
@@ -345,44 +353,14 @@ Keep in mind that when dealing with objects (as opposed to primitive types), we 
 Linear Search
 """""""""""""""""
 
-We already have seen the `sum` algorithm and its `\Theta(n)` time complexity.
+We already have seen the :ref:`sum` algorithm and its :math:`\Theta(n)` time complexity.
 
-When the array is not sorted and we are looking for the index of target value, one has not other choice
-than iterating over the array using a for loop. 
-At each iteration, we check if the current array element is equal to the target value. 
-If it is, the method immediately returns the current index. 
-If the method finishes iterating through the array without finding the target value, it returns `-1.
+Another example of a linear time complexity algorithm is the :ref:`linear_search`.
 
 The time complexity of the linear search algorithm is :math:`\mathcal{O}(n)`, where `n` is the size of the array, because in the worst-case scenario (the target value is not in the array or is the last element in the array), the algorithm has to examine every element in the array once.
 
 In the best-case scenario for the linear search algorithm, the target value is the very first element of the array.
-Therefore, in the best-case scenario, the time complexity of the linear search algorithm is O(1) or we can simply say that the algorithm is also in :math:`\Omega(1)`. The Java implementation is given next.
-
-
-.. _linear_search:
-
-..  code-block:: java
-    :caption: Linear Search algorithm
-    :name: Linear Search Algortithm
-
-    /**
-     * This method performs a linear search on an array.
-     *
-     * @param arr The input array.
-     * @param x   The target value to search for in the array.
-     * @return The index of the target value in the array if found, or -1 if the target value is not in the array.
-     */
-    public static int linearSearch(int[] arr, int x) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == x) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-
-
+Therefore, in the best-case scenario, the time complexity of the linear search algorithm is :math:`\mathcal{O}(1)` or we can simply say that the algorithm is also in :math:`\Omega(1)`.
 
 
 Merge Sort
@@ -401,7 +379,7 @@ Here's the basic idea behind merge sort:
 Here is a simple implementation of Merge Sort in Java:
 
 
-.. _merge_sort:
+.. _merge_sort_better:
 
 ..  code-block:: java
     :caption: Merge Sort Algorithm
@@ -574,7 +552,7 @@ up to index `i` already included.
 
 ..  code-block:: java
     :caption: An algorithm for solving the Subset Sum problem
-    :name: Subset Sum
+    :name: Subset Sum Algorithm
 
     /**
      * This method checks if there is a subset of the array that sums up to zero.
@@ -626,8 +604,8 @@ More exactly, If a function A() calls function B() (which can be A in case of re
 
 
 In the :ref:`Merge Sort <merge_sort>` implementation, new arrays are created at each level of recursion.
-The overall space complexity is thus of :math:`\mathcal{O}(n log n)`, where :math:`n` is the number of elements in the input array. 
-This is because, at each level of the recursion, new arrays are created, adding up to :math:`n` elements per level, and the recursion goes :math:`log n` levels deep.
+The overall space complexity is thus of :math:`\mathcal{O}(n \log n)`, where :math:`n` is the number of elements in the input array. 
+This is because, at each level of the recursion, new arrays are created, adding up to :math:`n` elements per level, and the recursion goes :math:`\log n` levels deep.
 
 
 .. figure:: _static/images/stack_merge_sort.png
@@ -644,8 +622,8 @@ As such, the space complexity of this version of the merge sort algorithm is :ma
 
 
 ..  code-block:: java
-    :caption: Merge Sort Algorithm
-    :name: Merge Sort Algortithm
+    :caption: Merge Sort Algortithm with Temporary Shared Array
+    :name: Merge Sort Algortithm with Temporary Shared Array
 
 
 	public class MergeSort {
@@ -701,8 +679,8 @@ As such, the space complexity of this version of the merge sort algorithm is :ma
 	}
 
 
-It's worth noting that in both versions of the algorithm, the time complexity remains the same: :math:`\mathcal{O}(n log n)`. 
-This is because the time complexity of merge sort is determined by the number of elements being sorted (n) and the number of levels in the recursion tree (log n), not by the amount of space used.
+It's worth noting that in both versions of the algorithm, the time complexity remains the same: :math:`\mathcal{O}(n \log n)`. 
+This is because the time complexity of merge sort is determined by the number of elements being sorted (n) and the number of levels in the recursion tree (:math:`\log n`), not by the amount of space used.
 
 It is quite frequent to have time complexity larger than the space complexity for an algorithm but the opposite is not true, at least for the auxiliary space complexity.
 The time complexity is necessarily at least the one of the auxiliary space complexity since you always need the same order as elementary steps as the one of the consumed memory.
