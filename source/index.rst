@@ -5,7 +5,7 @@
 
 
 ####################################################
-Concepts of Programming with Java
+Programming Concepts with Java
 ####################################################
 
 .. toctree::
