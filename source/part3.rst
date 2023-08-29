@@ -19,7 +19,7 @@ In other words, it allows us to predict the efficiency of our code before we eve
 It's like having a magic crystal ball that tells us how our algorithm will behave in the wild!
 
 
-Let's delve into the intricacies of time complexity and uncover the beauty and elegance of efficient code by studying first a very simple `sum` mehtod implemented next. It calculates the total sum of all the elements in an integer array provixed in argument.
+Let's delve into the intricacies of time complexity and uncover the beauty and elegance of efficient code by studying first a very simple `sum` mehtod that calculates the total sum of all the elements in an integer array provided in argument.
 
 
 .. _sum:
@@ -57,14 +57,14 @@ Here is an example of how to use it to measure the time of one call to the `sum`
 	        long startTime = System.currentTimeMillis();
 	        int totalSum = sum(values);
 	        long endTime = System.currentTimeMillis()
-	        long duration = (endTime - startTime);  // compute the duration in milliseconds
+	        long duration = (endTime - startTime);  // duration in milliseconds
 	    }
 	}
 
 
 Now, if one makes vary the size of values one can observe the evolution of execution time
 in function of the size of the input array given in argument to `sum` and plot it.
-Here is what we obtain a standard laptop.
+Here is what we obtain on a standard laptop.
 
 .. figure:: _static/images/sum_complexity.png
    :scale: 25 %
@@ -73,7 +73,8 @@ Here is what we obtain a standard laptop.
    Evolution of time measures taken by `sum` on arrays of increasing size.
 
 
-Undoubtedly, the absolute time is heavily reliant on the specifications of the machine the code is executed on. The same code running on a different laptop could produce different timing results. However, it's noteworthy that the time evolution appears to be linear with respect to the array size, as illustrated by the trend line. A crucial question arises: could this have been foreseen without even running the code? The answer is affirmative! :cite:t:`1965:hartmanis` layd down the foundations for such theoretical analyses from a source-code (or even pseudo-code, as the algorithm itself is of greater significance).
+Undoubtedly, the absolute time is heavily reliant on the specifications of the machine the code is executed on. The same code running on a different laptop could produce different timing results. However, it is noteworthy that the time evolution appears to be linear with respect to the array size, as illustrated by the trend line. A crucial question arises: could this have been foreseen without even running the code? The answer is affirmative! :cite:t:`1965:hartmanis` layd down the foundations for such theoretical analyses from the source-code without (or pseudo-code, as the algorithm itself is of greater significance) even without requiring running the code and measure time.
+This great invention is explained next, but first things first, we need a simple computation model.
 
 The Random Access Machine (RAM) model of computation
 -----------------------------------------------------
@@ -108,22 +109,21 @@ The next code add comments on the number of steps required to execute the sum al
 
 
 In practice, it is difficult to translate one step into a concrete time since it depends on many factors (machine, language, compiler, etc).
-Also, remember that it is a an approximation. In practice it not true that every operation takes exactly the same amount of time.
-For this reason we will simplyfy our counting of the number of steps further by using classes of function.
+It is also not true that every operation takes exactly the same amount of time.
+Remember that it is just an approximation. 
+We'll further simplify our step-counting approach by utilizing classes of functions that easily interpretable for practitioners like us.
+
+Let us first realize in the next section that even for a consistent input size, the execution time of an algorithm can vary significantly.
 
 
 The Best-Case, worst case execution of an algorithm
 ----------------------------------------------------------
 
 
-For given input size, the performance of the number of steps required by an algorithm may strongly depend on input content.
-To illustrate a simple extreme case of an algorithm exhibiting such behavior consider the `find` method looking if an array contains a specific target value and returning the first index having this value, or -1 if this value is not present in the array.
+Different inputs of the same size may cause an algorithm to take more or fewer steps to arrive at a result.
 
-
-The performance of an algorithm, in terms of the number of steps it requires, can significantly vary based on the content of the input. 
-In other words, different inputs of the same size may cause the algorithm to take more or fewer steps to arrive at a result.
-
-A simple example that highlights this behavior is the 'linearSearch' method. This method aims to determine whether a specific target value is present within an array. It achieves this by iterating through the array and returning the index of the first occurrence of the target value. If the target value isn't present, it returns -1.
+To illustrate this, consider the `linearSearch` method looking if an array contains a specific target value and returning the first index having this value, or -1 if this value is not present in the array.
+It achieves this by iterating through the array and returning the index of the first occurrence of the target value. If the target value isn't present, it returns -1.
 
 
 .. _linear_search:
@@ -137,7 +137,8 @@ A simple example that highlights this behavior is the 'linearSearch' method. Thi
      *
      * @param arr The input array.
      * @param x   The target value to search for in the array.
-     * @return The index of the target value in the array if found, or -1 if the target value is not in the array.
+     * @return The index of the target value in the array if found, 
+     *          or -1 if the target value is not in the array.
      */
     public static int linearSearch(int[] arr, int x) {
         for (int i = 0; i < arr.length; i++) {
@@ -150,21 +151,23 @@ A simple example that highlights this behavior is the 'linearSearch' method. Thi
 
 
 In this case, the number of steps the 'linearSearch' method takes to complete is heavily dependent on the position of the target value within the array. If the target value is near the beginning of the array, the 'linearSearch' method completes quickly.
-We call this the best-case scenario.
+We call this the *best-case scenario*.
 
 Conversely, if the target value is at the end of the array or not present at all, the method must iterate through the entire array, which naturally takes more steps.
-We call this, the worst-case scenario.
+We call this, the *worst-case scenario*.
 
 
-For certain algorithms, the number of operations required is primarily determined by the input size rather than the input content. 
+For other algorithms, the number of operations required is primarily determined by the input size rather than the input content. 
 This characteristic is exemplified by the 'sum' method we previously analyzed.
+
+The notation we are about to introduce for characterizing an algorithm's execution time should allow us to represent both the best and worst-case scenarios.
 
 
 The Big-O, Big-Omega and Big-Theta Clases of Functions
 ----------------------------------------------------------
 
 
-Let's assume that the number of steps an algorithm requires can be represented by the function :math:`T(n)` where :math:`n` refers to the size of the input, such as the number of elements in an array. While this function might encapsulate intricate details about the algorithm's execution, calculating it with high precision can be a substantial undertaking, and often, not worth the effort.
+Let us assume that the number of steps an algorithm requires can be represented by the function :math:`T(n)` where :math:`n` refers to the size of the input, such as the number of elements in an array. While this function might encapsulate intricate details about the algorithm's execution, calculating it with high precision can be a substantial undertaking, and often, not worth the effort.
 
 For sufficiently large inputs, the influence of multiplicative constants and lower-order terms within the exact runtime is overshadowed by the impact of the input size itself. This leads us to the concept of asymptotic efficiency, which is particularly concerned with how an algorithm's running time escalates with an increase in input size, especially as the size of the input grows unboundedly.
 
@@ -172,15 +175,16 @@ Typically, an algorithm that is asymptotically more efficient will be the superi
 This section introduces standard methods and notations used to simplify the asymptotic analysis of algorithms, thereby making this complex task more manageable.
 We shall see asymptotic notations that are well suited to characterizing running times no matter what the input.
 
-Those notations are sets or classes of functions.
+Those so-called Big-Oh notations are sets or classes of functions.
 We have classes of function asymtotically bounded by above, below or both:
 
-* :math:`f(n)\in \mathcal{O}(g(n)) \Longleftrightarrow` :math:`\exists c \in \mathbb{R}^+,n_0 \in \mathbb{N}: f(n) \leq c\cdot g(n)\ \forall n \geq n_0` (pper bound)
+* :math:`f(n)\in \mathcal{O}(g(n)) \Longleftrightarrow` :math:`\exists c \in \mathbb{R}^+,n_0 \in \mathbb{N}: f(n) \leq c\cdot g(n)\ \forall n \geq n_0` (upper bound)
 * :math:`f(n)\in \Omega(g(n)) \Longleftrightarrow` :math:`\exists c \in \mathbb{R}^+,n_0 \in \mathbb{N}: f(n) \geq c\cdot g(n)\ \forall n \geq n_0` (lower bound)
 *  :math:`f(n)\in \Theta(g(n)) \Longleftrightarrow`:math:`\exists c_1, c_2 \in \mathbb{R}^+,n_0 \in \mathbb{N}: c_1\cdot g(n) \leq f(n) \leq c_2\cdot g(n)\ \forall n \geq n_0` (exact bound)
 
 
-What is common in the definitions of these classes of function is taht we are not concerned about small constant , we care about the big-picture that is when :math:`n` becomes really large (say 10,000 or 1,000,000). The intuition for those classes of function notations are illustrated next.
+What is common in the definitions of these classes of function is that we are not concerned about small constant.
+Instead we care about the big-picture that is when :math:`n` becomes really large (say 10,000 or 1,000,000). The intuition for those classes of function notations are illustrated next.
 
 .. figure:: _static/images/bigo.png
    :scale: 25 %
@@ -197,8 +201,7 @@ The simplication principle that we have applied are the following:
 You can also use these inclusion relations to simplify:
 :math:`\mathcal{O}(1) \subseteq \mathcal{O}(\log n) \subseteq \mathcal{O}(n) \subseteq \mathcal{O}(n^2) \subseteq \mathcal{O}(n^3) \subseteq \mathcal{O}(c^n) \subseteq \mathcal{O}(n!)`
 
-As a general rule of thumb, you must simplify if possible to get rid of numerical coefficients.
-
+As a general rule of thumb, when speaking about the time complexity of an algorithm using Big-Oh notations, you must simplify if possible to get rid of numerical coefficients.
 
 
 
@@ -212,6 +215,9 @@ Say something about recurence equation + Graphical Method.
 Practical examples of different algorithms 
 -------------------------------------------
 
+To grasp a theoretical concept such as time complexity and Big O notation, concrete examples are invaluable. 
+For each of the common complexities, we will present an algorithmic example and then break down the reasons behind its specific time complexity.
+The following table provides an overview of the most prevalent complexity classes, accompanied by algorithm examples we will delve into.
 
 +-------------------------------------------------+---------------------------------------------------------------+
 | Complexity (name)                               | Algorithm                                                     |
@@ -239,7 +245,7 @@ Binary Search
 """"""""""""""""""""
 
 The Binary search, also known as dichotomic search, is a search algorithm that finds the position of a target value within a sorted array. 
-It works by halving the number of elements to be searched each time, which makes it incredibly efficient for large arrays.
+It works by halving the number of elements to be searched each time, which makes it incredibly efficient even for large arrays.
 
 Here's how the binary search algorithm works:
 
@@ -259,12 +265,11 @@ On this array of 16 entries, the search will never require more than four trials
    :alt: binarysearch
 
 
-
 This algorithm has a time complexity of :math:`\mathcal{O}(\log n)` because each time through the loop, the number of elements to be searched is halved and in the worst case, this process is repeated :math:`\log n` times.
 On the other hand, if one is lucky, the search immediatly find the element at the first iteration. 
 Therefore the best-case time complexity is :math:`Omega(1)`.
 
-Let's take a look at how to implement binary search in Java:
+Let us take a look at how to implement binary search in Java:
 
 .. _binary_search:
 
@@ -310,44 +315,10 @@ Notice that the expression `left + (right - left) / 2` is preferred over the som
 The main advantage of using `left + (right - left) / 2` over `(left + right) / 2` comes into play when you are dealing with large numbers. 
 The problem with `(left + right) / 2` is that the sum of `left` and `right` could exceed the maximum limit of the integer in the Java language that is is :math:`2^31-1`, causing an integer overflow, which can lead to unexpected results or errors.
 
-On the other hand, `left + (right - left) / 2` does not have this problem. It's just as efficient, and it's safer because it avoids the risk of overflow.
+On the other hand, `left + (right - left) / 2` does not have this problem. It is just as efficient, and it is safer because it avoids the risk of overflow.
 
-Keep in mind that when dealing with objects (as opposed to primitive types), we would want to use the `equals` method instead of `==`. This is because equals tests for logical equality, meaning it checks whether two objects are logically equivalent (even if they are different instances). On the other hand, `==` tests for reference equality, which checks whether two references point to the exact same object instance. For objects where logical equality is more meaningful than reference equality, like Strings or custom objects, using `equals is the appropriate choice."
-
-
-
-.. admonition:: Exercise
-   :class: note
-
-   What is the time complexity of next algorithm? 
-   Characterize the best and worst case.
-
-
-
-	..  code-block:: java
-	    :caption: BitCount 
-	    :name: Bitcount
-
-
-
-	    /**
-	     * This method counts the number of bits in the binary representation of a positive input number.
-	     * It halves it until it becomes zero counting the number of iterations.
-	     *
-	     * @param n The input number, which must be a positive integer.
-	     * @return The number of bits in the binary representation of the input number.
-	     */
-	    public static int bitCount(int n) {
-	        int bitCount = 0;
-
-	        while (n > 0) {
-	            bitCount++;
-	            n = n >> 1;  // bitwise shift to the right, which is equivalent to dividing by 2
-	        }
-
-	        return bitCount;
-	    }
-
+Keep in mind that when dealing with objects (as opposed to primitive types), we would want to use the `equals` method instead of `==`. 
+This is because equals tests for logical equality, meaning it checks whether two objects are logically equivalent (even if they are different instances). On the other hand, `==` tests for reference equality, which checks whether two references point to the exact same object instance. For objects where logical equality is more meaningful than reference equality, like Strings or custom objects, using `equals is the appropriate choice."
 
 
 Linear Search
@@ -360,7 +331,7 @@ Another example of a linear time complexity algorithm is the :ref:`linear_search
 The time complexity of the linear search algorithm is :math:`\mathcal{O}(n)`, where `n` is the size of the array, because in the worst-case scenario (the target value is not in the array or is the last element in the array), the algorithm has to examine every element in the array once.
 
 In the best-case scenario for the linear search algorithm, the target value is the very first element of the array.
-Therefore, in the best-case scenario, the time complexity of the linear search algorithm is :math:`\mathcal{O}(1)` or we can simply say that the algorithm is also in :math:`\Omega(1)`.
+Therefore, in the best-case scenario, the time complexity of the linear search algorithm is :math:`\mathcal{O}(1)` or we can simply say that the algorithm is also in :math:`\Omega (1)`.
 
 
 Merge Sort
@@ -368,7 +339,7 @@ Merge Sort
 
 
 Merge sort is a divide-and-conquer algorithm for sorting lists or arrays of items using pair-wise comparisons. 
-It works by dividing the unsorted list into n sublists, each containing one element (a list of one element is considered sorted), and then repeatedly merging sublists to produce newly sorted sublists until there is only one sublist remaining.
+It works by dividing the unsorted list into :math:`n sublists, each containing one element (a list of one element is considered sorted), and then repeatedly merging sublists to produce newly sorted sublists until there is only one sublist remaining.
 
 Here's the basic idea behind merge sort:
 
@@ -496,8 +467,8 @@ Or we can simply say that the insertion sort algorithm runs in :math:`\Omega(n)`
 Triple Sum
 """""""""""""""""
 
-Let's consider a simple example: an algorithm that checks for all combinations of three elements in the array that sum up to zero. 
-Here's a naive implementation in Java:
+We consider a algorithm that checks is there exist at leat one combinations of three elements in an array that sum up to zero. 
+Here an implementation in Java:
 
 .. _triple_sum:
 
@@ -529,8 +500,8 @@ Here's a naive implementation in Java:
 
 
 In this program, `checkTripleSum` goes through each possible combination of three elements in the input array. 
-If it finds a triple that sums up to zero, it immediately returns true. If no such triple is found after checking all combinations, it returns false. Since there are :math:`n*(n-1)*(n-2)` / 6 possible combinations of three elements in an array of length :math:`n`, and we're checking each combination once, the time complexity of this method is :math:`\mathcal{O}(n^3)` and :math:`\Omega(1)`.
-The best case scenerio occurs if the first three elements in the array sum to zero so that each of the loop executes only once before reaching the return instruction.
+If it finds a triple that sums up to zero, it immediately returns true. If no such triple is found after checking all combinations, it returns false. Since there are :math:`n*(n-1)*(n-2)/6` possible combinations of three elements in an array of length :math:`n`, and we're checking each combination once, the time complexity of this method is :math:`\mathcal{O}(n^3)` and :math:`\Omega(1)`.
+The best case scenario occurs if the first three elements in the array sum to zero so that each of the loop executes only once before reaching the `return` instruction.
 
 
 
@@ -584,7 +555,57 @@ The best time complexity is :math:`\Omega(1)` obtained when the first element in
 
 Note that this algorithm has an exponential time complexity (so far the algorithm we have studies were polynomial (e.g., :math:`\mathcal{O}(n^3)`). Therefore, although this approach will work fine for small arrays, it will be quite slow for larger ones.
 
-There are more efficient algorithms for the subset sum problem that use dynamic programming to avoid redundant work but these are out of the scope of this introduction.
+
+
+The question that arises is: can we find an efficient algorithm to solve this? By "efficient", we mean an algorithm that doesn't take an exponential time to compute as the size of the input grows.
+The answer is, maybe but we don't know.
+Researchers stumbled upon a category of problems discovered in the early 1970's, that share a common trait: they all seem hard to solve efficiently, but if you're handed a potential solution, you can verify its correctness quickly. 
+Subset-sum belongs to this class.
+This category is called NP (Nondeterministic Polynomial time).
+Now, within NP, there's a special class of problems dubbed NP-complete. 
+What's so special about them? Well, if you can find an efficient solution for one NP-complete problem, you've essentially found efficient solutions for all of them! 
+The Subset Sum problem is one of these NP-complete problems. Like its NP-complete siblings, we don't have efficient solutions for it yet. 
+But remember, this doesn't mean no efficient solution exists; we just haven't found one and it was also not yet proven that such an algorithm does not exist.
+
+
+This also doesn't mean that there are not faster algorithms for the subset sum problem that the one we have shown.
+For instance dynamic programming algorithm for subset-sum can avoid redundant work but they still have an exponential time behavior on this problem. Those are out of the scope of this introduction to algorithm.
+If you are interested to know more about this, you can follow at UCLouvain the "Calculability" course and "Advanced Algorithms for Optimization" courses.
+
+
+.. admonition:: Exercise
+   :class: note
+
+   What is the time complexity of next algorithm? 
+   Characterize the best and worst case.
+
+
+
+    ..  code-block:: java
+        :caption: BitCount 
+        :name: Bitcount
+
+
+
+        /**
+         * This method counts the number of bits in the binary representation of a positive input number.
+         * It halves it until it becomes zero counting the number of iterations.
+         *
+         * @param n The input number, which must be a positive integer.
+         * @return The number of bits in the binary representation of the input number.
+         */
+        public static int bitCount(int n) {
+            int bitCount = 0;
+
+            while (n > 0) {
+                bitCount++;
+                n = n >> 1;  // bitwise shift to the right, which is equivalent to dividing by 2
+            }
+
+            return bitCount;
+        }
+
+
 
 
 Space Complexity
@@ -722,7 +743,7 @@ The time complexity is necessarily at least the one of the auxiliary space compl
 
 
 Algorithm Correctness
-======================
+=========================
 
 A loop invariant is a condition or property that holds before and after each iteration of a loop. It's used as a technique for proving formally the correctness of an algorithm. The loop invariant must be true:
 
@@ -772,367 +793,6 @@ In this example, the loop invariant helps us understand why the Bubble Sort algo
 After each iteration of the outer loop, the largest element is "bubbled" up to its correct position, so by the time we've gone through all the elements, the array is sorted. 
 The loop invariant holds at the initialization (before the loop, no elements need to be in their final position), maintains at each iteration (after i-th iteration, the largest i elements are in their correct positions), and at termination (when the loop is finished, all elements are in their correct positions, so the array is sorted).
 
-
-Generics
-==========
-
-
-
-
-
-Abstract Data Types (ADT)
-==============================
-
-In the context of data structures, an Abstract Data Type (ADT) is a high-level description of a collection of data and the operations that can be performed on this data. 
-It specifies what operations can be done on the data, without prescribing how these operations will be implemented. 
-In essence, an ADT provides a blueprint or an interface, and the actual implementation details are abstracted away.
-
-The actual workings of the operations are hidden from the user, providing a layer of abstraction. This means that the underlying implementation of an ADT can change without affecting how users of the ADT interact with it.
-
-Abstract Data Types are present in the Java Collections Framework. 
-Let's consider the `List <https://docs.oracle.com/javase/8/docs/api/java/util/List.html>`_  interface.
-This is an Abstract Data Types.
-It defines an ordered collection of elements with duplicates allowed. 
-List is an ADT because it specifies a set of operations (add(E e),get(int index), remove(int index), size(), etc.) that you can perform on a list without specifying how these operations are implemented.
-To get a concrete implementation you must use one of the concrete classes that implement this interface, for instance `ArrayList <https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html>`_ or `LinkedList <https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html>`_  
-Whatever the one you choose the high level contract described at the interface level remain the same, although depending on the instanciation you might have different behaviors in terms of speed.
-
-
-..  code-block:: java
-    :caption: Example of usage of a Java List
-    :name: java_list
-
-
-    import java.util.LinkedList;
-    import java.util.List;
-
-    public class LinkedListExample {
-
-        public static void main(String[] args) {
-            
-            List<String> fruits; // declaring a List ADT reference
-
-            fruits = new LinkedList<>(); // Initializing it using LinkedList
-            // fruits = new ArrayList<>(); This would also work using ArrayList instead
-
-            // Adding elements
-            fruits.add("Apple");
-            fruits.add("Banana");
-            fruits.add("Cherry");
-
-
-            // Removing an element
-            fruits.remove("Banana");
-        }
-    }
-
-
-In the above example, you have seen a special notation using "<>" also called generics in java.
-Generics introduce the concept of type parameters to Java, allowing you to write code that is parametrized by one or more types. 
-This enables you to create generic algorithms that work on collections of different types, classes, interfaces, and methods that operate on a parameterized type.
-Generics offer a way to define and enforce strong type-checks at compile-time without committing to a specific data type. 
-The core idea is to allow type (classes and interfaces) to be parameters when defining classes, interfaces, and methods.
-
-
-In earlier versions of Java generics did not exit.
-You could add any type of objects to collections, which could lead to runtime type-casting errors. 
-
-
-..  code-block:: java
-    :caption: Example of ClassCastException at runtime
-    :name: java_list_no_generics
-
-
-    import java.util.LinkedList;
-    import java.util.List;
-
-    List list = new ArrayList();
-    list.add("hello");
-    list.add(1); // This is fine without generics
-    String s = (String) list.get(1); // ClassCastException at runtime
-
-
-With generics, the type of elements you can add is restricted at compile-time, eliminating the potential for ClassCastException at runtime.
-Generics enable you to write generalized algorithms and classed based on parameterized types, making it possible to reuse the same method, class, or interface for different data types.
-
-
-Stack ADT
-----------
-
-Let us now study in depth an ADT called Stack.
-A stack is a collection that operates on a Last-In-First-Out (LIFO) principle. 
-The primary operations are push, pop, and peek.
-
-..  code-block:: java
-    :caption: Stack ADT
-    :name: stack_adt
-
-
-    public interface StackADT<T> {
-        // Pushes an item onto the top of this stack.
-        void push(T item);
-        
-        // Removes and returns the top item from this stack.
-        T pop();
-        
-        // Returns the top item from this stack without removing it.
-        T peek();
-        
-        // Returns true if this stack is empty.
-        boolean isEmpty();
-    }
-
-
-
-A typical use of stacks is to evaluate arithmetic expressions as provided in the next algorithm.
-
-..  code-block:: java
-    :caption: Stack ADT
-    :name: stack_adt
-
-
-    public class ArithmeticExpression {
-        public static void main(String[] args) {
-            System.out.println(evaluate("( ( 2 * ( 3 + 5 ) ) / 4 )");
-        }
-
-        public static double evaluate(String expression) {
-
-            Stack<String> ops  = new Stack<String>();
-            Stack<Double> vals = new Stack<Double>();
-
-            for (String s: expression.split(" ")) {
-                // INVARIANT
-                if      (s.equals("("))               ;
-                else if (s.equals("+"))    ops.push(s);
-                else if (s.equals("-"))    ops.push(s);
-                else if (s.equals("*"))    ops.push(s);
-                else if (s.equals("/"))    ops.push(s);
-                else if (s.equals(")")) {
-                    String op = ops.pop();
-                    double v = vals.pop();
-                    if      (op.equals("+"))    v = vals.pop() + v;
-                    else if (op.equals("-"))    v = vals.pop() - v;
-                    else if (op.equals("*"))    v = vals.pop() * v;
-                    else if (op.equals("/"))    v = vals.pop() / v;
-                    vals.push(v);
-                }
-                else vals.push(Double.parseDouble(s));
-            }
-            return vals.pop();
-
-        }  
-    }
-
-
-
-To understand and convince one-self about the correctness of the algorithm, we should try to discover an invariant.
-As can be seen, a fully parenthesized expression can be represented as a binary tree where the parenthesis are not necessary:
-
-
-.. figure:: _static/images/expression.png
-   :scale: 100 %
-   :alt: Arithmetic Expression
-
-
-
-The internal nodes are the operator and the leaf nodes are the values.
-The algorithm uses two stacks. One stack (`ops`) is for operators and the other (`vals`) is for (reduced) values.
-The program splits the input string args[0] by spaces to process each token of the expression individually.
-
-
-We will not formalise completely the invariant here but give some intuition about what it is.
-
-At any point during the processing of the expression:
-
-1. The `vals` stack contains the results of all fully evaluated sub-expressions (reduced subtrees) encountered so far.
-2. The `ops` stack contains operators that are awaiting their right-hand operands to form a complete sub-expression (subtree) that can be reduced.
-3. For every operator in the ops stack, its corresponding left-hand operand is already in the vals stack, awaiting the completion of its subtree for reduction.
-
-The figure displays the status of the stacks at three distinct stages for our brief example.
-
-When we encounter an operand, it's like encountering a leaf of this tree, and we immediately know its value, so it's pushed onto the `vals` stack.
-
-When we encounter an operator, it's pushed onto the `ops` stack. This operator is awaiting its right-hand operand to form a complete subtree. Its left-hand operand is already on the vals stack.
-
-When a closing parenthesis `)` is encountered, it indicates the end of a fully parenthesized sub-expression, corresponding to an entire subtree of the expression. This subtree is "reduced" or "evaluated" in the following manner:
-
-1. The operator for this subtree is popped from the ops stack.
-2. The right-hand operand (the value of the right subtree) is popped from the vals stack.
-3. The left-hand operand (the value of the left subtree) is popped from the vals stack.
-4. The operator is applied to the two operands, and the result (the value of the entire subtree) is pushed back onto the vals stack.
-
-This invariant captures the essence of the algorithm's approach to the problem: it traverses the expression tree in a sort of depth-first manner, evaluating each subtree as it's fully identified by its closing parenthesis.
-
-
-
-
-
-This algorithm taking a String in input is a an example of an interpreter.
-Interpreted programming languages (like Python) do similarly but accept constructs that a slightly more complex that parenthetized arithmetic expressions.
-
-
-
-Implementing a Stack With Linked Structure
-"""""""""""""""""""""""""""""""""""""""""""
-
-The LinkedStack is a stack implementation that uses a linked list structure to store its elements. Each element in the stack is stored in a node, and each node has a reference to the next node. The top of the stack is maintained as a reference to the first node (head) of the linked list. 
-
-
-
-..  code-block:: java
-    :caption: Linked Stack ADT
-    :name: linked_stack
-
-
-    public class LinkedStack<T> implements Stack<T> {
-        private Node<T> top;
-        private int size;
-
-        private static class Node<T> {
-            T item;
-            Node<T> next;
-
-            Node(T item, Node<T> next) {
-                this.item = item;
-                this.next = next;
-            }
-        }
-
-        @Override
-        public void push(T item) {
-            top = new Node<>(item, top);
-            size++;
-        }
-
-        @Override
-        public T pop() {
-            if (isEmpty()) {
-                throw new RuntimeException("Stack is empty");
-            }
-            T item = top.item;
-            top = top.next;
-            size--;
-            return item;
-        }
-
-        @Override
-        public T peek() {
-            if (isEmpty()) {
-                throw new RuntimeException("Stack is empty");
-            }
-            return top.item;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return top == null;
-        }
-
-        @Override
-        public int size() {
-            return size;
-        }
-    }
-
-
-
-The state of the linked stack after pushing 1, 5 and 3 in this order is illustated on the next figure.
-
-
-.. figure:: _static/images/list.png
-   :scale: 100 %
-   :alt: LinkedStack
-
-
-Implementing a Stack With an Array
-""""""""""""""""""""""""""""""""""""
-
-
-Another method for implementing the Stack ADT is by utilizing an internal array to hold the elements.
-An implementation is given in the next fragment.
-The internal array is initialized with a size larger than the expected number of elements in the stack to prevent frequent resizing.
-
-An integer variable, often termed top or size, represents the current position in the stack. When pushing a new element onto the stack, it's added at the position indicated by this integer. Subsequently, the integer is incremented. The pop operation reverses this process: the element at the current position is retrieved, and the integer is decremented. Both the push and pop operations have constant time complexity: :math:`O(1)`.
-
-However, there's an inherent limitation when using arrays in Java: their size is fixed upon creation. Thus, if the stack's size grows to match the internal array's size, any further push operation risks an ArrayIndexOutOfBoundsException.
-
-To counteract this limitation, when the internal array is detected to be full, its size is doubled. This is achieved by creating a new array with double the capacity and copying the contents of the current array to the new one. Although this resizing operation has a linear time complexity of :math:`O(n)`, where 
-:math:`n` is the number of elements, it doesn't happen often.
-
-Additionally, to avoid inefficiencies, if the size of the stack drops to one-quarter of the internal array's capacity, the array size is halved. This prevents the array from being overly sparse and consuming unnecessary memory.
-
-Although resizing (either increasing or decreasing the size) requires :math:`O(n)`
-:math:`O(n)` time in the worst case, this cost is distributed over many operations, making the average cost constant. This is known as amortized analysis. Thus, when analyzed in an amortized sense, the average cost per operation over 
-:math:`n` operations is :math:`O(1)`.
-
-
-
-..  code-block:: java
-    :caption: Array Stack ADT
-    :name: array_stack
-
-
-    public class DynamicArrayStack<T> implements Stack<T> {
-        private T[] array;
-        private int top;
-
-        @SuppressWarnings("unchecked")
-        public DynamicArrayStack(int initialCapacity) {
-            array = (T[]) new Object[initialCapacity];
-            top = -1;
-        }
-
-        @Override
-        public void push(T item) {
-            if (top == array.length - 1) {
-                resize(2 * array.length); // double the size
-            }
-            array[++top] = item;
-        }
-
-        @Override
-        public T pop() {
-            if (isEmpty()) {
-                throw new RuntimeException("Stack is empty");
-            }
-            T item = array[top];
-            array[top--] = null; // to prevent loitering
-
-            // shrink the size if necessary
-            if (top > 0 && top == array.length / 4) {
-                resize(array.length / 2);
-            }
-            return item;
-        }
-
-        @Override
-        public T peek() {
-            if (isEmpty()) {
-                throw new RuntimeException("Stack is empty");
-            }
-            return array[top];
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return top == -1;
-        }
-
-        @Override
-        public int size() {
-            return top + 1;
-        }
-
-        @SuppressWarnings("unchecked")
-        private void resize(int newCapacity) {
-            T[] newArray = (T[]) new Object[newCapacity];
-            for (int i = 0; i <= top; i++) {
-                newArray[i] = array[i];
-            }
-            array = newArray;
-        }
-    } 
 
 
 
