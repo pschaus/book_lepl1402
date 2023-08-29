@@ -455,7 +455,7 @@ In conclusion, while they are closely related and often used together, `Iterable
 `Iterable` is about the ability to produce an `Iterator`, while `Iterator` is the mechanism that actually facilitates the traversal.
 
 
-Implementing our own iterators
+Implementing your own iterators
 ================================
 
 When implementing an iterator preperly, there are two possible strategies.
@@ -580,13 +580,466 @@ No other operations are involved in the iterator's creation, and notably, there 
 
 
 
-
 Delegation 
 ===========
 
+We consider the book class below
 
-Observer 
+..  code-block:: java
+    :caption: Book
+    :name: book
+
+
+	public class Book {
+	    private String title;
+	    private String author;
+	    private int publicationYear;
+
+	    public Book(String title, String author, int year) {
+	        this.title = title;
+	        this.author = author;
+	        this.publicationYear = year;
+	    }
+
+	    // ... getters, setters, and other methods ...
+	}
+
+We aim to sort a collection of Books based on their titles in lexicographic order. 
+This can be done by implementing the Comparable interface, requiring to define the compareTo method.
+The compareTo method, when implemented within the Book class, leverages the inherent compareTo method of the String class.
+
+..  code-block:: java
+    :caption: Book Comparable
+    :name: book_comparable
+
+	public class Book implements Comparable<Book> {
+	    final String title;
+	    final String author;
+	    final int publicationYear;
+
+	    public Book(String title, String author, int year) {
+	        this.title = title;
+	        this.author = author;
+	        this.publicationYear = year;
+	    }
+
+	    @Override
+	    public int compareTo(Book other) {
+	        return this.title.compareTo(other.title);
+	    }
+
+	    public static void main(String[] args) {
+	        List<Book> books = new ArrayList<>();
+	        books.add(new Book("The Great Gatsby", "F. Scott Fitzgerald", 1925));
+	        books.add(new Book("Moby Dick", "Herman Melville", 1851));
+	        books.add(new Book("1984", "George Orwell", 1949));
+
+	        Collections.sort(books);  // Sorts the books by title due to the implemented Comparable
+
+	        for (Book book : books) {
+	            System.out.println(book.getTitle());
+	        }
+	    }
+	}
+
+
+Imagine that the books are displayed on a website, allowing visitors to browse through an extensive catalog. 
+To enhance user experience, the website provides a feature to sort the books not just by their titles, but also by other attributes: the author's name or the publication year.
+
+Now, the challenge arises: our current Book class design uses the Comparable interface to determine the natural ordering of books based solely on their titles. While this design works perfectly for sorting by title, it becomes restrictive when we want to provide multiple sorting criteria. Since the Comparable interface mandates a single compareTo method, it implies that there's only one "natural" way to sort the objects of a class. This design decision binds us to sorting by title and makes it less straightforward to introduce additional sorting methods for other attributes.
+
+
+A general important principle of object-oriented design is the Open/Closed Principle (OCP): a software module (like a class or method) should be open for extension but closed for modification:
+
+1. Open for Extension: This means that the behavior of the module can be extended or changed as the requirements of the application evolve or new functionalities are introduced.
+2. Closed for Modification: Once the module is developed, it should not be modified to add new behavior or features. Any new functionality should be added by extending the module, not by making modifications to the existing code.
+
+
+
+The delegate design pattern can help us improve our design and is a nice example of the OCP.
+The delegation here occurs when the sorting algorithm (within Collections.sort) calls the compare method of the provided Comparator object. 
+The responsibility of defining how two Book objects compare is delegated to the Comparator object, allowing for flexibility in sorting criteria without modifying the Book class or the sorting algorithm itself.
+
+This delegation approach with Comparator has a clear advantage over inheritance because you can define countless sorting criteria without needing to modify or subclass the original Book class.
+
+Here are the three Comparator classes, one for each sorting criterion:
+
+
+..  code-block:: java
+    :caption: Book Comparators
+    :name: book_comparators
+
+	import java.util.Comparator;
+
+	public class TitleComparator implements Comparator<Book> {
+	    @Override
+	    public int compare(Book b1, Book b2) {
+	        return b1.getTitle().compareTo(b2.getTitle());
+	    }
+	}
+
+	public class AuthorComparator implements Comparator<Book> {
+	    @Override
+	    public int compare(Book b1, Book b2) {
+	        return b1.getAuthor().compareTo(b2.getAuthor());
+	    }
+	}
+
+	public class YearComparator implements Comparator<Book> {
+	    @Override
+	    public int compare(Book b1, Book b2) {
+	        return Integer.compare(b1.getPublicationYear(), b2.getPublicationYear());
+	    }
+	}
+
+
+
+As next example shows, we can now sort by title, author or publication year by just proding the corresponding comparator to the sorting algorithm.
+
+
+..  code-block:: java
+    :caption: Book Comparators
+    :name: book_comparators
+
+
+	import java.util.ArrayList;
+	import java.util.Collections;
+	import java.util.List;
+
+	public class Main {
+	    public static void main(String[] args) {
+	        List<Book> books = new ArrayList<>();
+	        books.add(new Book("The Great Gatsby", "F. Scott Fitzgerald", 1925));
+	        books.add(new Book("Moby Dick", "Herman Melville", 1851));
+	        books.add(new Book("1984", "George Orwell", 1949));
+
+	        Collections.sort(books, new TitleComparator());  // Sort by title
+	        Collections.sort(books, new AuthorComparator()); // Sort by author
+	        Collections.sort(books, new YearComparator());   // Sort by publication year
+	    }
+	}
+
+Exercise on Delegate pattern
+""""""""""""""""""""""""""""""
+
+You are developing a document management system. As part of the system, you have a Document class that contains content. 
+You want to provide a printing capability for the Document.
+
+Instead of embedding the printing logic directly within the Document class, you decide to use the delegate design principle. 
+This will allow the Document class to delegate the responsibility of printing to another class, thus adhering to the single responsibility principle.
+
+Complete the code below.
+
+
+..  code-block:: java
+    :caption: Book Comparators
+    :name: book_comparators
+
+
+	// The Printer interface
+	interface Printer {
+	    void print(String content);
+	}
+
+	// TODO: Implement the Printer interface for InkjetPrinter
+	class InkjetPrinter ... {
+	    ...
+	}
+
+	// TODO: Implement the Printer interface for LaserPrinter
+	class LaserPrinter ... {
+	    ...
+	}
+
+	// Document class
+	class Document {
+	    private String content;
+	    private Printer printerDelegate;
+
+	    public Document(String content) {
+	        this.content = content;
+	    }
+
+	    // TODO: Set the printer delegate
+	    public void setPrinterDelegate(...) {
+	        ...
+	    }
+
+	    // TODO: Print the document using the delegate
+	    public void printDocument() {
+	        ...
+	    }
+	}
+
+	// Demo
+	public class DelegateDemo {
+	    public static void main(String[] args) {
+	        Document doc = new Document("This is a sample document content.");
+
+	        // TODO: Set the delegate to InkjetPrinter and print
+	        ...
+
+	        // TODO: Set the delegate to LaserPrinter and print
+	        ...
+	    }
+	}
+
+
+Observer
 ==========
+
+In computer science, it is considered a good practice to have a loose coupling between objects (the opposite is generally called a spagetti code).
+Loose coupling allows for more modular and maintainable code.
+
+
+The *Observer Pattern* is a pattern that we can use to have a loose coupling between objects.
+
+First show how to use it in the context of GUI development (Graphical User Interface) , and then will show how to implement it.
+
+
+
+Observer pattern on GUI components
+""""""""""""""""""""""""""""""""""
+
+
+In Java, the `swing` and `awt` packages facilitate the creation of Graphical User Interfaces (GUIs). 
+Swing in Java uses a system based on the observer pattern to handle events like button clicks. 
+
+
+On the next example we have a solitary button that, when clicked, responds with the message "Thank you" to the user.
+
+
+
+
+
+
+..  code-block:: java
+    :caption: Simple GUI with Action Listener
+    :name: listener_gui
+
+	import javax.swing.JButton;
+	import javax.swing.JFrame;
+	import javax.swing.JOptionPane;
+	import java.awt.event.ActionEvent;
+	import java.awt.event.ActionListener;
+
+	class ButtonActionListener implements ActionListener {
+	    @Override
+	    public void actionPerformed(ActionEvent e){
+	        JOptionPane.showMessageDialog(null,"Thank you!");
+	    }
+	}
+
+	public class AppWithActionListener {
+	    public static void main(String[] args) {
+	        JFrame frame=new JFrame("Hello");
+	        frame.setSize(400,200);
+	        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+	        JButton button=new JButton("Press me!");
+	        button.addActionListener(new ButtonActionListener());
+	        frame.add(button);
+
+	        frame.setVisible(true);
+	    }
+	}
+
+
+
+The `ActionListener` is an interface within Java that contains a single method: `actionPerformed()`.
+In our application, we've implemented this interface within the ButtonActionListener class. 
+When invoked, it displays a dialog with the message "Thank you!" to the user. 
+However, this setup remains inactive until we associate an instance of our ButtonActionListener to a button using the addActionListener method. This ensures that every time the button is pressed, the actionPerformed method of our listener gets triggered.
+
+It's worth noting that the inner workings of how the button manages this relationship or stores the listener are abstracted away. 
+What's crucial for developers to understand is the contract: the listener's method will be invoked whenever the button is clicked. 
+This process is often referred to as attaching a callback to the button. 
+This concept echoes a well-known programming principle sometimes dubbed the Hollywood principle: "Don't call us, we'll call you."
+
+Although we have registered only one listener to the button, this is not a limitation.
+Buttons can accommodate multiple listeners. For example, another listener might track the total number of times the button has been clicked.
+
+This setup exemplifies the observer design pattern from the perspective of end users, using the JButton as an illustration. 
+Let's now delve into how to implement this pattern for custom classes.
+
+Implementing the Observer pattern
+"""""""""""""""""""""""""""""""""
+
+Imagine a scenario where there's a bank account that multiple people, say family members, can deposit into. Each family member possesses a smartphone and wishes to be alerted whenever a deposit occurs. For the sake of simplicity, these notifications will be printed to the console.
+The complete source code is given next.
+
+
+
+..  code-block:: java
+    :caption: Implementation of the Observable Design Pattern for an Account
+    :name: listener_account
+
+
+	public interface AccountObserver {
+	    public void accountHasChanged(int newValue);
+	}
+
+
+	class MyObserver implements AccountObserver {
+	    @Override
+	    public void accountHasChanged(int newValue) {
+	        System.out.println("The account has changed. New value: "+newValue);
+	    }
+	}
+
+	public class ObservableAccount {
+	    private int value ;
+	    private List<AccountObserver> observers = new LinkedList();
+
+	    public void deposit(int d) {
+	        value += d;
+	        for (AccountObserver o: observers) {
+	            o.accountHasChanged(value);
+	        }
+	    }
+
+	    public void addObserver(AccountObserver o) {
+	        observers.add(o);
+	    }
+
+	    public static void main(String [] args) {
+	        ObservableAccount account = new ObservableAccount();
+	        MyObserver observerFather = new MyObserver();
+	        MyObserver observerMother = new MyObserver();
+	        MyObserver observerGirl = new MyObserver();
+	        MyObserver observerBoy = new MyObserver();
+
+	        account.addObserver(observerFather);
+	        account.addObserver(observerMother);
+	        account.addObserver(observerGirl);
+	        account.addObserver(observerBoy);
+
+	        account.deposit(100); // we will see 4X "The account has changed. New Value: 100"
+	        account.deposit(50); // we will see 4X "The account has changed. New Value: 150"
+	    }
+	}
+
+
+In this context, our bank account is the subject being observed. 
+In our code, we'll refer to it as the ObservableAccount. 
+This account maintains a balance, which can be incremented through a deposit function.
+
+We require a mechanism to register observers (note: observers and listeners can be used interchangeably) who wish to be informed about deposits. The LinkedList data structure is an excellent choice for this purpose: it offers constant-time addition and seamlessly supports iteration since it implements the Iterable interface. 
+To add an AccountObserver, one would simply append it to this list. 
+We've chosen not to check for duplicate observers in the list, believing that ensuring uniqueness is the user's responsibility.
+
+Whenever a deposit occurs, the account balance is updated, and subsequently, each registered observer is notified by invoking its accountHasChangedMethod, which shares the updated balance.
+
+It's important to note that the notification order is determined by the sequence of registration because we're using a list. However, from a user's standpoint, depending on a specific order is inadvisable. We could have just as easily used a set, which does not guarantee iteration order.
+
+
+
+Exercise
+"""""""""
+
+In this exercise, you will use the Observer pattern in conjunction with the Java Swing framework. 
+The application MessageApp provides a simple GUI where users can type a message and submit it. 
+This message, once submitted, goes through a spell checker and then is meant to be displayed to observers.
+
+Your task is to make it work as exected: when a message is submitted, it is corrected by the spell checker and it is appended in the text area of the app (use `textArea.append(String text)`).
+
+.. figure:: _static/images/gui_exercise.png
+   :scale: 100 %
+   :alt: GUI Exercise
+
+
+It's imperative that your design allows for seamless swapping of the spell checker without necessitating changes to the MessageApp class. Additionally, the MessageSubject class should remain decoupled from the MessageApp. 
+It must not depend on it and should not even be aware that it exists.
+
+Use the observer pattern in your design. You'll have to add instance variables and additional arguments to some existing constructors.
+When possible always prefer to depend on interfaces rather than on concrete classes when declaring your parameters.
+With the progress of deep-learning we anticipate that we will soon have to replace the existing StupidSpellChecker by a more advanced one.
+Make this planned change as simple as possible, without having to change your classes.
+
+
+..  code-block:: java
+    :caption: Implementation of the Observable Design Pattern for an Account
+    :name: listener_account
+
+	import javax.swing.*;
+	import java.awt.event.*;
+
+	import java.util.ArrayList;
+	import java.util.List;
+
+
+	public class MessageApp {
+	    private JFrame frame;
+	    private JTextField textField;
+	    private JTextArea textArea;
+	    private JButton submitButton;
+
+	    public MessageApp() {
+
+	        frame = new JFrame("Observer Pattern with Swing");
+	        textField = new JTextField(16);
+	        textArea = new JTextArea(5, 20);
+	        submitButton = new JButton("Submit");
+
+	        frame.setLayout(new java.awt.FlowLayout());
+
+	        frame.add(textField);
+	        frame.add(submitButton);
+	        frame.add(new JScrollPane(textArea));
+
+	        // Hint: add an actionListner to the submitButon
+	        // Hint: use textField.getText() to retrieve the text
+
+	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	        frame.pack();
+	        frame.setVisible(true);
+	    }
+
+	    public static void main(String[] args) {
+	        SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	                new MessageApp();
+	            }
+	        });
+	    }
+	}
+
+	interface SpellChecker {
+    	String correct(String sentence);
+	}
+
+	class StupidSpellChecker implements SpellChecker {
+    	public String correct(String sentence) {
+        	return sentence;
+   	 	}
+	}
+
+	interface MessageObserver {
+	    void updateMessage(String message);
+	}
+
+
+	class MessageSubject {
+
+	    private List<MessageObserver> observers = new ArrayList<>();
+	    private String message;
+
+	    public void addObserver(MessageObserver observer) {
+	        observers.add(observer);
+	    }
+
+	    public void setMessage(String message) {
+	        this.message = message;
+	        notifyAllObservers();
+	    }
+
+	    private void notifyAllObservers() {
+	        for (MessageObserver observer : observers) {
+	            observer.updateMessage(message);
+	        }
+	    }
+	}
+
 
 
 
