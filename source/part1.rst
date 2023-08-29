@@ -117,7 +117,7 @@ Python is a *strongly typed* language. That means that all "things" in Python ha
     >>> type(True)
     <class 'bool'>
 
-Java is a strongly typed language, too. However, there is a big difference to Python: Java is also a *statically typed* language. That means that you (the programmer) MUST indicate for *every* variable in your program what type of "things" it can contain. Here is a simple :ref:`python_with_types`:
+Java is a strongly typed language, too. However, there is a big difference to Python: Java is also a *statically typed* language. We will not discuss all the details here, but most of the time that means that you (the programmer) must indicate for *every* variable in your program what type of "things" it can contain. Here is a simple :ref:`python_with_types`:
 
 ..  code-block:: python
     :caption: Python program to calculate and print the area of a square
@@ -159,8 +159,8 @@ And here is the equivalent :ref:`java_with_types`:
 
 Let's see what's happening with the types in the Java code:
 
-- The line :code:`int calculateArea(int side)` indicates that the method "calculateArea" has a parameter "side" of type :code:`int`. Furthermore, the method returns a value of type :code:`int`. This is called the *return type* of the method.
-- The line :code:`void printArea(String message, int side)` specifies that the method "printArea" has a parameter of type :code:`String` (the "message") and a parameter of type :code:`int` (the "side"). The method does not return anything, therefore it has the special return type :code:`void`.
+- The line :code:`int calculateArea(int side)` indicates that the method "calculateArea" has a parameter "side" of type :code:`int`. Furthermore, the :code:`int` before "calculateArea" specifies that this method returns a value of type :code:`int`. This is called the *return type* of the method.
+- The line :code:`void printArea(String message, int side)` defines that the method "printArea" has a parameter of type :code:`String` (the "message") and a parameter of type :code:`int` (the "side"). The method does not return anything, therefore it has the special return type :code:`void`.
 - Inside the method "printArea", we can see in the line :code:`int area = calculateArea(side)` that the variable "area" has the type :code:`int`.
 - (Exercise for you: look at the types that you can see in the "main" method. We will explain later why the "main" method always has a parameter named "args")
 
