@@ -216,8 +216,8 @@ Practical examples of different algorithms
 -------------------------------------------
 
 To grasp a theoretical concept such as time complexity and Big O notation, concrete examples are invaluable. 
-For each of the common complexities, we will present an algorithmic example and then break down the reasons behind its specific time complexity.
-The following table provides an overview of the most prevalent complexity classes, accompanied by algorithm examples we will delve into.
+For each of the common complexities, we present an algorithmic example and then break down the reasons behind its specific time complexity.
+The following table provides an overview of the most prevalent complexity classes, accompanied by algorithm examples we explain after.
 
 +-------------------------------------------------+---------------------------------------------------------------+
 | Complexity (name)                               | Algorithm                                                     |
@@ -267,9 +267,9 @@ On this array of 16 entries, the search will never require more than four trials
 
 This algorithm has a time complexity of :math:`\mathcal{O}(\log n)` because each time through the loop, the number of elements to be searched is halved and in the worst case, this process is repeated :math:`\log n` times.
 On the other hand, if one is lucky, the search immediatly find the element at the first iteration. 
-Therefore the best-case time complexity is :math:`Omega(1)`.
+Therefore the best-case time complexity is :math:`\Omega(1)`.
 
-Let us take a look at how to implement binary search in Java:
+The Java code is a direct translation of the explanation of the algorithm.
 
 .. _binary_search:
 
@@ -284,7 +284,8 @@ Let us take a look at how to implement binary search in Java:
 	 *
 	 * @param arr The input array, which must be sorted in ascending order.
 	 * @param x   The target value to search for in the array.
-	 * @return The index of the target value in the array if found, or -1 if the target value is not in the array.
+	 * @return The index of the target value in the array if found, 
+     *          or -1 if the target value is not in the array.
 	 */
     public static int binarySearch(int arr[], int x) {
         int left = 0, right = arr.length - 1;
@@ -309,27 +310,27 @@ Let us take a look at how to implement binary search in Java:
     }
 
 
-The code is a direct translation of the explanation of the algorithm.
-Notice that the expression `left + (right - left) / 2` is preferred over the somewhat simpler `(left + right) / 2` to calculate the middle index in a binary search. At first glance, they seem to do the same thing, and indeed, they usually do give the same result. However, they can behave differently in certain scenarios.
 
-The main advantage of using `left + (right - left) / 2` over `(left + right) / 2` comes into play when you are dealing with large numbers. 
-The problem with `(left + right) / 2` is that the sum of `left` and `right` could exceed the maximum limit of the integer in the Java language that is is :math:`2^31-1`, causing an integer overflow, which can lead to unexpected results or errors.
 
-On the other hand, `left + (right - left) / 2` does not have this problem. It is just as efficient, and it is safer because it avoids the risk of overflow.
 
-Keep in mind that when dealing with objects (as opposed to primitive types), we would want to use the `equals` method instead of `==`. 
-This is because equals tests for logical equality, meaning it checks whether two objects are logically equivalent (even if they are different instances). On the other hand, `==` tests for reference equality, which checks whether two references point to the exact same object instance. For objects where logical equality is more meaningful than reference equality, like Strings or custom objects, using `equals is the appropriate choice."
+.. tip::
+    Notice that the expression `left + (right - left) / 2` is preferred over the somewhat simpler `(left + right) / 2` to calculate the middle index in a binary search. At first glance, they seem to do the same thing, and indeed, they usually do give the same result. 
+    The main advantage of using `left + (right - left) / 2` over `(left + right) / 2` comes into play when you are dealing with large numbers. 
+    The problem with `(left + right) / 2` is that the sum of `left` and `right` could exceed the maximum limit of the integer in the Java language that is is :math:`2^{31}-1`, causing an integer overflow, which can lead to unexpected results or errors.
+    The one used `left + (right - left) / 2` does not have this overflow risk problem.
+
+
+.. tip::
+    Keep in mind that when dealing with objects (as opposed to primitive types), we would want to use the `equals` method instead of `==`. 
+    This is because equals tests for logical equality, meaning it checks whether two objects are logically equivalent (even if they are different instances). On the other hand, `==` tests for reference equality, which checks whether two references point to the exact same object instance. For objects where logical equality is more meaningful than reference equality, like `Strings` or custom objects, using `equals` is the appropriate choice.
 
 
 Linear Search
 """""""""""""""""
 
 We already have seen the :ref:`sum` algorithm and its :math:`\Theta(n)` time complexity.
-
 Another example of a linear time complexity algorithm is the :ref:`linear_search`.
-
 The time complexity of the linear search algorithm is :math:`\mathcal{O}(n)`, where `n` is the size of the array, because in the worst-case scenario (the target value is not in the array or is the last element in the array), the algorithm has to examine every element in the array once.
-
 In the best-case scenario for the linear search algorithm, the target value is the very first element of the array.
 Therefore, in the best-case scenario, the time complexity of the linear search algorithm is :math:`\mathcal{O}(1)` or we can simply say that the algorithm is also in :math:`\Omega (1)`.
 
@@ -338,7 +339,7 @@ Merge Sort
 """"""""""""""
 
 
-Merge sort is a divide-and-conquer algorithm for sorting lists or arrays of items using pair-wise comparisons. 
+Merge sort is a *divide-and-conquer* algorithm for sorting lists or arrays of items using pair-wise comparisons. 
 It works by dividing the unsorted list into :math:`n sublists, each containing one element (a list of one element is considered sorted), and then repeatedly merging sublists to produce newly sorted sublists until there is only one sublist remaining.
 
 Here's the basic idea behind merge sort:
@@ -422,7 +423,7 @@ Insertion Sort
 
 The insertion sort algorithm is probably the one you use when sorting a hand of playing cards. 
 You start with one card in your hand (the sorted portion). 
-For each new card, you "insert" it in the correct position in your hand by moving over any cards that should come after it.
+For each new card, you insert it in the correct position in your hand by moving over any cards that should come after it.
 
 The Java code is given next.
 
@@ -458,7 +459,7 @@ Moving the larger elements up is the goal of the inner `while` loop.
 
 The time complexity of insertion sort is :math:`\mathcal{O}(n^2)` in the worst-case scenario, because each of the `n` elements could potentially need to be compared with each of the `n` already sorted elements. 
 However, in the best-case scenario (when the input array is already sorted), the time complexity is :math:`\mathcal{O}(n)`, because each element only needs to be compared once with the already sorted elements.
-Or we can simply say that the insertion sort algorithm runs in :math:`\Omega(n)` and :math:`\mathcal{O}(n^2)`.
+Alternatively, we can simply say that the insertion sort algorithm runs in :math:`\Omega(n)` and :math:`\mathcal{O}(n^2)`.
 
 
 
@@ -467,7 +468,7 @@ Or we can simply say that the insertion sort algorithm runs in :math:`\Omega(n)`
 Triple Sum
 """""""""""""""""
 
-We consider a algorithm that checks is there exist at leat one combinations of three elements in an array that sum up to zero. 
+We consider a algorithm that checks if there exists at leat one combination of three elements in an array that sum up to zero. 
 Here an implementation in Java:
 
 .. _triple_sum:
@@ -501,7 +502,7 @@ Here an implementation in Java:
 
 In this program, `checkTripleSum` goes through each possible combination of three elements in the input array. 
 If it finds a triple that sums up to zero, it immediately returns true. If no such triple is found after checking all combinations, it returns false. Since there are :math:`n*(n-1)*(n-2)/6` possible combinations of three elements in an array of length :math:`n`, and we're checking each combination once, the time complexity of this method is :math:`\mathcal{O}(n^3)` and :math:`\Omega(1)`.
-The best case scenario occurs if the first three elements in the array sum to zero so that each of the loop executes only once before reaching the `return` instruction.
+The best case scenario occurs if the first three elements in the array sum to zero so that each loop is in its first iteration when the `return` instruction occurs.
 
 
 
@@ -511,7 +512,7 @@ Subset-Sum
 The subset sum problem is a classic problem in computer science: given a set of integers, is there a subset of the integers that sums to zero?
 This is a generalization of the `checkTripleSum` problem we have seen before.
 
-The algorithm we will use for solving the problem is a brute-force approach that will enumerate all subsets to solve this problem.
+The algorithm we will use for solving the problem is a *brute-force* approach that will enumerate all subsets to solve this problem.
 A common approach to enumerate all the subsets is to use recursion. 
 We can consider each number in the set and make a recursive call for two cases: one where we exclude the number in the subset, and one where we include it.
 
@@ -553,24 +554,21 @@ up to index `i` already included.
 The time complexity of this algorithm is :math:`\mathcal{O}(2^n)`, because in the worst case it generates all possible subsets of the array, and there are :math:`2^n` possible subsets for an array of n elements. The worst-case is obtained when there is no solution and that false is returned.
 The best time complexity is :math:`\Omega(1)` obtained when the first element in the array is zero so that the algorithm immediatly returns true.
 
-Note that this algorithm has an exponential time complexity (so far the algorithm we have studies were polynomial (e.g., :math:`\mathcal{O}(n^3)`). Therefore, although this approach will work fine for small arrays, it will be quite slow for larger ones.
+Note that this algorithm has an exponential time complexity (so far the algorithm we have studied were polynomial e.g., :math:`\mathcal{O}(n^3)`). Therefore, although this approach will work fine for small arrays, it will be quite slow for larger ones.
 
 
-
-The question that arises is: can we find an efficient algorithm to solve this? By "efficient", we mean an algorithm that doesn't take an exponential time to compute as the size of the input grows.
-The answer is, maybe but we don't know.
-Researchers stumbled upon a category of problems discovered in the early 1970's, that share a common trait: they all seem hard to solve efficiently, but if you're handed a potential solution, you can verify its correctness quickly. 
-Subset-sum belongs to this class.
-This category is called NP (Nondeterministic Polynomial time).
-Now, within NP, there's a special class of problems dubbed NP-complete. 
-What's so special about them? Well, if you can find an efficient solution for one NP-complete problem, you've essentially found efficient solutions for all of them! 
-The Subset Sum problem is one of these NP-complete problems. Like its NP-complete siblings, we don't have efficient solutions for it yet. 
-But remember, this doesn't mean no efficient solution exists; we just haven't found one and it was also not yet proven that such an algorithm does not exist.
-
-
-This also doesn't mean that there are not faster algorithms for the subset sum problem that the one we have shown.
-For instance dynamic programming algorithm for subset-sum can avoid redundant work but they still have an exponential time behavior on this problem. Those are out of the scope of this introduction to algorithm.
-If you are interested to know more about this, you can follow at UCLouvain the "Calculability" course and "Advanced Algorithms for Optimization" courses.
+.. tip::
+    The question that arises is: Can we find an efficient algorithm to solve this problem more efficiently? By "efficient", we mean an algorithm that doesn't take an exponential time to compute as the size of the input grows.
+    The answer is, maybe but we don't know.
+    Researchers stumbled upon a category of problems discovered in the early 1970's, that share a common trait: they all seem hard to solve efficiently, but if you're handed a potential solution, you can at least verify its correctness quickly. 
+    The subset-sum problem belongs to this class.
+    This category is called *NP* (Nondeterministic Polynomial time).
+    Now, within NP, there's a special class of problems dubbed *NP-complete*. 
+    What is so special about them? Well, if you can find an efficient solution for one *NP-complete* problem, you've essentially found efficient solutions for all of them! 
+    The subset-sum problem is one of these NP-complete problems. Like its NP-complete siblings, we don't have efficient solutions for it yet. 
+    But remember, this doesn't mean no efficient solution exists; we just haven't found one and it was also not yet proven that such an algorithm does not exist.
+    This also doesn't mean that there are not faster algorithms for the subset sum problem that the one we have shown.
+    For instance a *dynamic programming* algorithm (out of scope of this introduction to algorithms) for subset-sum could avoid redundant work but it still has a worst-case exponential time complexity.
 
 
 .. admonition:: Exercise
@@ -588,7 +586,8 @@ If you are interested to know more about this, you can follow at UCLouvain the "
 
 
         /**
-         * This method counts the number of bits in the binary representation of a positive input number.
+         * Counts the minimum number of bits in the binary representation 
+         * of a positive input number. Example: 9 requires 4 bits (1001).
          * It halves it until it becomes zero counting the number of iterations.
          *
          * @param n The input number, which must be a positive integer.
@@ -599,7 +598,7 @@ If you are interested to know more about this, you can follow at UCLouvain the "
 
             while (n > 0) {
                 bitCount++;
-                n = n >> 1;  // bitwise shift to the right, which is equivalent to dividing by 2
+                n = n >> 1;  // bitwise shift to the right, equivalent to dividing by 2
             }
 
             return bitCount;
@@ -611,32 +610,88 @@ If you are interested to know more about this, you can follow at UCLouvain the "
 Space Complexity
 ===================
 
-The space complexity of an algorithm quantifies the amount of space or memory taken by an algorithm to run as a function of the length of the input. 
-It represents the amount of memory space that the algorithm needs to execute and 
-includes the space taken by the input data and the additional space (usually called auxiliary space) taken by the algorithm to execute:
-:math:`Space Complexity = Auxiliary Space + Input space`
+Aside from the time, the memory is also a scarce resource that is worse analyzing for an algorithm.
+The *space complexity* of an algorithm quantifies the amount of space or memory taken by an algorithm to run as a function of the length of the input. 
+Since this notion of space is subject to interpretation, let us separate it in two less ambiguous definitions.
+* The *auxiliary space* is the extra space or the temporary space used by the algorithm during its execution.
+* The *input space* is the space taken by the argument of the algorithm or the instance variables if any.
 
-The Auxiliary Space is the extra space or the temporary space used by the algorithm during it's execution.
-The Input space is the space taken by the argument of the algorithm or the instance variables if any.
+The definition of space complexity includes both: space complexity = auxiliary space complexity + input space complexity.
+
+
+
+
+
+Space Complexity of recursive algorithms
+"""""""""""""""""""""""""""""""""""""""""
+
 Notice that the extra space may also take into account the stack space in the case of a recursive algorithm.
 In such a situation, when the recursive call happens, the current local variables are pushed onto the system stack, where they wait for the call the return
 and unstack the local variables.
 More exactly, If a function A() calls function B() (which can be A in case of recursion) inside it, then all the variables still in the scope of the function A() will get stored on the system stack temporarily, while the function B() is called and executed inside the function A().
 
 
-In the :ref:`Merge Sort <merge_sort>` implementation, new arrays are created at each level of recursion.
-The overall space complexity is thus of :math:`\mathcal{O}(n \log n)`, where :math:`n` is the number of elements in the input array. 
-This is because, at each level of the recursion, new arrays are created, adding up to :math:`n` elements per level, and the recursion goes :math:`\log n` levels deep.
+Let us compare the space and time complexity of an iterative and a recursive computation of the factorial of a number expressed in function of :math:`n`, the value of the number for which we want to compute the factorial.
 
 
-.. figure:: _static/images/stack_merge_sort.png
+
+    ..  code-block:: java
+        :caption: Factorial 
+        :name: Recursive
+
+
+
+        public class Factorial {
+            public static long factorialRecur(int n) {
+                if (n == 0) {
+                    return 1;
+                } else {
+                    return n * factorialRecur(n - 1);
+                }
+            }
+            public static long factorialIter(int n) {
+                long result = 1;
+                for (int i = 1; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            }
+        }
+
+
+Both have a time complexity of :math:`\Theta (n)` but the space complexity of the iterative version is :math:`O(1)` while the one of the recursive version is :math:`\Theta (n)`. You may be a bit surprised by this result since not array of size :math:`n` is ever created in the recursive version.
+True! but a stack is created of size `n`. A tack ? Yes a stack, but it is not visible and it is created by the JVM. 
+As explained before, every recursive call requires to store the local context or *frame* so that when the recursion returns, the multiplication can be performed. It means that our execution stack for computing 10! will look like [10*[9*[8*[7*[6*[5*[4*[3*[2*[1]]]]]]]]]].
+This stack can be visualized by using the debugger and adding a break point in the method. 
+The call stack is show at the bottom left in IntelliJ and you can see what the local context is by clicking on each *frame*.
+
+
+.. figure:: _static/images/stack_factorial.png
    :scale: 25 %
    :alt: Sum time
 
 
 
+.. tip::
+    It is quite frequent to have time complexity larger than the space complexity for an algorithm but the opposite is not true, at least for the auxiliary space complexity.
+    The time complexity is necessarily at least the one of the auxiliary space complexity since you always need the same order as elementary steps as the one of the consumed memory.
 
-The time complexity required by our merge sort algorithm can be lowered to :math:`\mathcal{O}(n)` for the Auxiliary space.
+
+.. tip::
+    When an uncatched exception occurs, you can also visualize the output, the execution stack of the successive calls from the main method up to the line of code that caused the exception to be thrown.
+
+
+
+Improving the space complexity of merge sort
+---------------------------------------------
+
+In the :ref:`Merge Sort <merge_sort>` implementation, new arrays are created at each level of recursion.
+The overall space complexity is thus of :math:`\mathcal{O}(n \log n)`, where :math:`n` is the number of elements in the input array. 
+This is because, at each level of the recursion, new arrays are created, adding up to :math:`n` elements per level, and the recursion goes :math:`\log n` levels deep.
+
+
+
+The time complexity required by our merge sort algorithm can be lowered to :math:`\mathcal{O}(n)` for the auxiliary space.
 We can indeed create a single temporary array of size :math:`n` once and reusing it in every merge operation. 
 This temporary array requires :math:`n` units of space, which is independent of the depth of the recursion. 
 As such, the space complexity of this version of the merge sort algorithm is :math:`\mathcal{O}(n)`, which is an improvement over the original version.
@@ -700,44 +755,15 @@ As such, the space complexity of this version of the merge sort algorithm is :ma
 	}
 
 
-It's worth noting that in both versions of the algorithm, the time complexity remains the same: :math:`\mathcal{O}(n \log n)`. 
+It is worth noting that in both versions of the algorithm, the time complexity remains the same: :math:`\mathcal{O}(n \log n)`. 
 This is because the time complexity of merge sort is determined by the number of elements being sorted (n) and the number of levels in the recursion tree (:math:`\log n`), not by the amount of space used.
 
-It is quite frequent to have time complexity larger than the space complexity for an algorithm but the opposite is not true, at least for the auxiliary space complexity.
-The time complexity is necessarily at least the one of the auxiliary space complexity since you always need the same order as elementary steps as the one of the consumed memory.
 
 
 
 
-.. admonition:: Exercise
-   :class: note
-
-   Compare the space and time complexity of the iterative and recursive computation of the factorial of a number expressed in function of :math:`n`, the value of the number for which we want to compute the factorial.
 
 
-
-	..  code-block:: java
-	    :caption: Factorial 
-	    :name: Recursive
-
-
-
-		public class Factorial {
-		    public static long factorialRecur(int n) {
-		        if (n == 0) {
-		            return 1;
-		        } else {
-		            return n * factorialRecur(n - 1);
-		        }
-		    }
-		    public static long factorialIter(int n) {
-		        long result = 1;
-		        for (int i = 1; i <= n; i++) {
-		            result *= i;
-		        }
-		        return result;
-		    }
-		}
 
 
 
