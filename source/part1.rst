@@ -243,7 +243,7 @@ Java performs automatic conversions between values of different types if the des
 ..  code-block:: java
 
     float a = 34;             // int to float is okay
-    float b = a * 4.5f;       // int * float gives float
+    float b = 6 * 4.5f;       // int * float gives float
     
 But this is not allowed:
 
