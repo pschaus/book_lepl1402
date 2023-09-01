@@ -169,15 +169,115 @@ Whenever you want to execute a Java program, IntelliJ uses a special tool called
 Here are some examples that contain type errors. Can you find the mistakes?
 
 - :code:`int t = "Hello";`
-- :code:`bool t = calculateArea(3);`
+- :code:`boolean t = calculateArea(3);`
 - :code:`printArea(t, "Size of square");` (This example shows why it is easier to find bugs in Java than in Python)
 
 
+The Java compiler and class files
+=================================
+
+In the previous section, we mentioned that a special tool, the Java compiler, checks your program for type errors *before* it is executed. This process is part of another fundamental difference between Python and Java.
+
+Python is an *interpreted language*. That means that when you start a program written in Python in an IDE like Thonny or on the command line with
+
+..  code-block:: bash
+
+    python myprogram.py
+    
+the Python-Interpreter will
+
+1. load the file "myprogram.py" (and the modules you have imported in your program with the :code:`import` command),
+2. do some checks to verify that your program doesn't contain syntax errors such as :code:`print('Hello')))`,
+3. execute your program.
+
+Java, being a *compiled language*, works differently. To execute a Java program, another step is needed:
+
+1. First, the Java code has to be compiled. This is the job of the Java compiler, a tool that is part of the JDK. THe compiler does two things:
+
+    - It verifies that your source code is a well-formed Java program. This includes the type checking described in the previous section.
+    - It translates your Java source code into a more compact representation that is easier to process for your computer. This compact representation is called a *class file*. One such file will be created per class in your program. In IntelliJ, you can find the generated class files in the directory "out" in your project.
+    
+2. The class files are loaded and executed by the JVM.
+
+The JVM doesn't need the source code (the .java files) of your program to execute it since the class files contain all the necessary information. If you are a professional software developer, it's usually the class files that you give to your customer, not the source code.
+
+The IntelliJ IDE is running the Java compiler for you, but it's perfectly possible to do it by hand on the command line:
+
+..  code-block:: bash
+
+    javac Main.java     // javac is part of the JDK. It will generate the file Main.class
+    java Main           // this command starts the JVM with your Main class
 
 
 Primitive Types
 ===============
 
+As explained, Java requires that you specify the type of all variables and the return types of all functions.
+Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are:
+
+======== ========================================================= ========================
+Type     Possible values                                           Example
+======== ========================================================= ========================
+int      :math:`-2^{31} .. 2^{31}-1`                               :code:`int a = 3;`
+long     :math:`-2^{63} .. 2^{63}-1`                               :code:`long a = 3;`
+short    :math:`-2^{15} .. 2^{15}-1`                               :code:`short a = 3;`
+byte     :math:`-2^{7} .. 2^{7}-1`                                 :code:`byte a = 3;`
+float    :math:`1.4*10^{-45}.. 3.4*10^{38}`                        :code:`float a = 3.45f;`
+double   :math:`4.9*10^{-324}.. 1.7*10^{308}`                      :code:`double a = 3.45;`
+char     :math:`0 .. 2^{16}-1`                                     :code:`char a = 'X';`
+boolean  true, false                                               :code:`boolean a = true;`
+======== ========================================================= ========================
+
+As you can see, each primitive type has a limited range of values it can represent. If you don't respect this range, very strange things will happen in your program. Try this code in IntelliJ (copy it into the "main" method of your program):
+
+..  code-block:: java
+
+    int a = 123456789;
+    int b = a * 100000;     // This is too large for the int type!
+    System.out.println(b);  // What will you get here?
+
+For most calculations, it will be sufficient to use :code:`int` (for natural numbers) and :code:`float` (for real numbers). The types :code:`long` and :code:`double` provide a wider value range and more precision, but they are slower and your program will consume more memory when running.
+
+Java performs automatic conversions between values of different types if the destination type is wide enough to hold the result. This is called a *type cast*. For example, this is allowed:
+
+..  code-block:: java
+
+    float a = 34;             // int to float is okay
+    float b = a * 4.5f;       // int * float gives float
+    
+But this is not allowed:
+
+..  code-block:: java
+
+    int a = 4.5f;             // Error! float to int is not okay
+    float b = 4.5f * 6.7;     // Error! float * double gives double
+
+You can force the conversion by doing a manual type cast, but the result will be less precise:
+
+..  code-block:: java
+
+    int a = (int)4.5f;             // this will give 4 
+    float b = (float)(4.5f * 6.7); // works, but the result might change depending on the values
+
+The Java package "java.lang.Math" provides a large set of functions to work with numbers of different types. Here is an example:
+
+..  code-block:: java
+
+    double area = 123.4;
+    double radius = Math.sqrt(area / Math.PI);
+
+    System.out.println("Area of disk: " + area);
+    System.out.println("Radius of disk: " + radius);
+    
+When working with variables of primitive types, you can imagine that every time you declare a variable in your program, the JVM will uses a small part of the main memory of your computer to store the value of the variable:
+
+When you assign the content of a variable to another variable, the value is copied:
+
+
+
+
+
+ 
 
 Arrays and ArrayLists
 ======================
