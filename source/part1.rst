@@ -259,7 +259,7 @@ You can force the conversion by doing a manual type cast, but the result will be
     int a = (int)4.5f;             // this will give 4 
     float b = (float)(4.5f * 6.7); // works, but the result might change depending on the values
 
-The Java package "java.lang.Math" provides a large set of functions to work with numbers of different types. Here is an example:
+The Java package "Math" provides a large set of methods (functions) to work with numbers of different types. Here is an example:
 
 ..  code-block:: java
 
@@ -269,24 +269,209 @@ The Java package "java.lang.Math" provides a large set of functions to work with
     System.out.println("Area of disk: " + area);
     System.out.println("Radius of disk: " + radius);
     
-When working with variables of primitive types, you can imagine that every time you declare a variable in your program, the JVM will uses a small part of the main memory of your computer to store the value of the variable:
+When working with variables of primitive types, you can imagine that every time your program reaches a line where a variable is declared, the JVM will uses a small part of the main memory of your computer to store the value of the variable.
+
++-----------------------+-----------------------------------------------------------------------------------------------+
+| Java code             | In memory during execution                                                                    |
++=======================+===============================================================================================+
+| .. code::             | .. raw:: html                                                                                 |
+|                       |                                                                                               |
+|    int a = 3;         |    <div style="border-width:3px; width:40%; text-align:center;                                |
+|    int b = 4;         |       border-style:solid; border-color:#0000ff; padding:0.2em;">a: 3</div>                    |
+|                       |    <div style="border-width:3px; width:40%; text-align:center;                                |
+|                       |       border-style:solid; border-color:#0000ff; padding:0.2em;">b: 4</div>                    |
+|                       |                                                                                               |
++-----------------------+-----------------------------------------------------------------------------------------------+
 
 When you assign the content of a variable to another variable, the value is copied:
 
++-----------------------+-----------------------------------------------------------------------------------------------+
+| Java code             | In memory during execution                                                                    |
++=======================+===============================================================================================+
+| .. code::             | .. raw:: html                                                                                 |
+|                       |                                                                                               |
+|    a = b;             |    <div style="border-width:3px; width:40%; text-align:center;                                |
+|                       |       border-style:solid; border-color:#0000ff; padding:0.2em;">a: 4</div>                    |
+|                       |    <div style="border-width:3px; width:40%; text-align:center;                                |
+|                       |       border-style:solid; border-color:#0000ff; padding:0.2em;">b: 4</div>                    |
+|                       |                                                                                               |
++-----------------------+-----------------------------------------------------------------------------------------------+
+
+The same also happens with the parameters of methods; when you call a method, the values will be copied into the parameter variables of the called method.
+
+In our examples so far, all variables were either parameter variables or local variables of a method. Such variables are only "alive" when the program is inside the method during variable execution. Note that it is illegal to use a local variable before assigning a value to it. Here is an example:
+
+..  code-block:: java
+
+    public static void main(String[] args) {
+        int a;            // a is not initialized
+        int b;            // b is not initialized
+        b = 3;            // We now initialize b
+        int c = b * 3;    // This is okay. b has a value.
+        int d = a * 3;    // This is not okay. a has not a value.
+    }
+
+Similar to Python, you can have variables that "live" outside a method. These variables are called *class variables* because they "belong" to the class, not to a specific method. Similar to static methods, we mark them with the keyword :code:`static`:
+
+..  code-block:: java
+
+  public class Main {
+
+    static int a = 3;
+
+    static void increment() {
+        a += 5;  // this is equivalent to  a = a + 5
+    }
+
+    public static void main(String[] args) {
+        increment();
+        System.out.println(a);
+    }
+  }
+  
+In contrast to local variables, class members do not need to be manually initialized. They are automatically initialized to 0 (for number types) or :code:`false` (for the boolean type). This code is accepted by the compiler:
+
+..  code-block:: java
+
+  public class Main {
+
+    static int a;   //  is equivalent to  a = 0
+
+    public static void main(String[] args) {
+        System.out.println(a);
+    }
+  }
+
+Arrays
+======
+
+If you need a certain number of variables of the same primitive type, it can be useful to use an array type instead. An array variable has to be initialized with an array that you create with the :code:`new` keyword:
+
+..  code-block:: java
+
+    int[] a = new int[4];  // a new int array with 4 elements
+    
+Once the array has been created, you can access the elements of the array. The elements of an int array are automatically initialized to 0.
+
+..  code-block:: java
+
+    a[2] = 5;
+    int b = a[0] + a[2];   // gives 5 because a[0] is automatically initialized to 0
+
+Note that the size of an array is fixed. Once you have created it, you cannot change the number of elements in it:
+
+..  code-block:: java
+
+    a[5] = 3;   // Error! The array has only three elements.
+
+There is an important difference between array variables and primitive-type variable. An array variable does not directly represent a part of your memory that contains the values of the array elements. Instead, an array variable represents a "reference" to the array. You can imagine it like this:
+
++-----------------------+------------------------------------------------------------+
+| Java code             | In memory during execution                                 |
++=======================+============================================================+
+| .. code::             |  .. image:: _static/images/part1/array.svg                 |
+|                       |     :width: 40%                                            |
+|  int[] a = new int[4];|                                                            |
++-----------------------+------------------------------------------------------------+
+
+This difference becomes important when you assign an array variable to another array variable: 
+
++-----------------------+------------------------------------------------------------+
+| Java code             | In memory during execution                                 |
++=======================+============================================================+
+| .. code::             |  .. image:: _static/images/part1/array2.svg                |
+|                       |     :width: 40%                                            |
+|  int[] a = new int[4];|                                                            |
+|  int[] b = a;         |                                                            |
++-----------------------+------------------------------------------------------------+
+
+In that case, **only the reference to the array is copied, not the array itself**. This means that both variables "a" and "b" are now referencing the same array:
+
+..  code-block:: java
+
+    int[] a = new int[4];
+    int[] b = a;
+    b[2] = 5;
+    System.out.println(a[2]);   // a[2] and b[2] are the same element
+
+There is a convenient way to create and initialize an array in one step:
+
+..  code-block:: java
+
+    int[] a = new int[]{ 2, 5, 6, -3 };  // an array with four elements
+    
+Arrays can have more than one dimension. Two-dimensional arrays are often used to represent matrices:
+
+..  code-block:: java
+
+    int[][] a = new int[3][5];  // this array can be used like a 3x5 matrix
+    a[2][4] = 5;
+
+You can imagine a two-dimensional array as an array where each element is again a reference to an array:
+
+.. image:: _static/images/part1/arrayarray.svg
+   :width: 30%                            
+   
+Therefore, the following code is valid:
+
+..  code-block:: java
+
+    int[][] a = new int[3][5];
+    int b[] = a[0]; // b is now a reference to the first element of a. This is an int[5] array
+    b[3] = 7;
+    System.out.println(a[0][3]);  // b[3] and a[0][3] are the same element
+
+It is possible to create an "incomplete" two-dimension array in Java:
+   
+..  code-block:: java
+   
+    int[][] a = new int[3][];
+    
+Again, this is an array of arrays. However, because we have only specified the size of the first dimension, the elements of the array are initialized to :code:`null`. We can initialize them later:
+
+..  code-block:: java
+   
+    int[][] a = new int[3][];
+    a[0] = new int[5];
+    a[1] = new int[5];
+    a[2] = new int[2]; // this is allowed!
+    System.out.println(a[0][3]);  // Okay. The element a[0][3] exists.
+    System.out.println(a[2][3]);  // Error! The element a[2][3] does not exist
+    
+As shown in the above example, the elements of a multi-dimensional array are arrays, but they do not need to have the same size.
+
+Again, there is a convenient way to create and initialize multi-dimensional arrays in one step:
+
+..  code-block:: java
+
+    int[][] a = new int[][] {   // 3x3 unit matrix
+        { 1, 0, 0 },
+        { 0, 1, 0 },
+        { 0, 0, 1 }
+    };
+
+Array variables can be class variables (with the :code:`static` keyword), too. If you don't provide an initial value, the variable will be initialized with the value :code:`null`:
+
+..  code-block:: java
+
+  public class Main {
+
+    static int[] a;   //  initialized to null
+
+    public static void main(String[] args) {
+        // this compiles, but it gives an error during execution,
+        // because we have not initialized a
+        System.out.println(a[2]);
+    }
+  }
+
+Loops
+=====
 
 
-
-
- 
-
-Arrays and ArrayLists
-======================
 
 Strings
 =======
-
-Loops
-======
 
 Conditional Statements
 =======================
@@ -294,6 +479,9 @@ Conditional Statements
 
 Classes and Objects
 ====================
+
+ArrayLists
+==========
 
 Organizing Code: Packages
 ==========================
