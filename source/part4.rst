@@ -336,7 +336,7 @@ As can be seen, a fully parenthesized expression can be represented as a binary 
 
 
 .. figure:: _static/images/expression.png
-   :scale: 100 %
+   :scale: 50 %
    :alt: Arithmetic Expression
 
 
