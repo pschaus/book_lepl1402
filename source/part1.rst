@@ -192,10 +192,10 @@ the Python-Interpreter will
 
 Java, being a *compiled language*, works differently. To execute a Java program, another step is needed:
 
-1. First, the Java code has to be compiled. This is the job of the Java compiler, a tool that is part of the JDK. THe compiler does two things:
+1. First, the Java code has to be compiled. This is the job of the Java compiler, a tool that is part of the JDK. The compiler does two things:
 
-    - It verifies that your source code is a well-formed Java program. This includes the type checking described in the previous section.
-    - It translates your Java source code into a more compact representation that is easier to process for your computer. This compact representation is called a *class file*. One such file will be created per class in your program. In IntelliJ, you can find the generated class files in the directory "out" in your project.
+- It verifies that your source code is a well-formed Java program. This includes the type checking described in the previous section.
+- It translates your Java source code into a more compact representation that is easier to process for your computer. This compact representation is called a *class file*. One such file will be created per class in your program. In IntelliJ, you can find the generated class files in the directory "out" in your project.
     
 2. The class files are loaded and executed by the JVM.
 
