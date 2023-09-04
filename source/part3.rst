@@ -623,7 +623,7 @@ The definition of space complexity includes both: space complexity = auxiliary s
 
 
 Space Complexity of recursive algorithms
-"""""""""""""""""""""""""""""""""""""""""
+-------------------------------------------
 
 Notice that the extra space may also take into account the stack space in the case of a recursive algorithm.
 In such a situation, when the recursive call happens, the current local variables are pushed onto the system stack, where they wait for the call the return
@@ -683,7 +683,7 @@ The call stack is show at the bottom left in IntelliJ and you can see what the l
 
 
 Improving the space complexity of merge sort
----------------------------------------------
+""""""""""""""""""""""""""""""""""""""""""""""""
 
 In the :ref:`Merge Sort <merge_sort>` implementation, new arrays are created at each level of recursion.
 The overall space complexity is thus of :math:`\mathcal{O}(n \log n)`, where :math:`n` is the number of elements in the input array. 
