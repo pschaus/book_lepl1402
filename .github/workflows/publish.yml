@@ -1,4 +1,4 @@
-name: Build PDFs and html files
+name: Build PDFs and html files for LEPL1402 Book
 
 on:
   push:
