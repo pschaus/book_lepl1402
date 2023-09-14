@@ -1,0 +1,35 @@
+name: Build PDFs and html files
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: guillaumederval/build-linfo1121
+    steps:
+    - uses: actions/checkout@v2
+    - name: Sphinx build
+      run: make html
+    - name: Save build in /tmp
+      run: |
+        mkdir /tmp/gh-pages
+        cp -r build/html/* /tmp/gh-pages
+    - uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+    - name: Commit the new html build
+      run: |
+        rm -rf *
+        cp -r /tmp/gh-pages/* .
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update" -a || true
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
