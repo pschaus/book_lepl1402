@@ -6,12 +6,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
-      - name: Install dependencies
+      - name: Install TeX Live
         run: |
-          pip install sphinxcontrib-bibtex
+          sudo apt-get update && sudo apt-get install -y texlive texlive-publishers texlive-science latexmk cm-super
       - name: Sphinx build
         run: |
-          sphinx-build source _build
+          ./build.sh
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
