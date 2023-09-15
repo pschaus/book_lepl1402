@@ -130,3 +130,6 @@ dmypy.json
 
 # Emacs backups
 *~
+
+_build/
+source/_static/lepl1402.pdf

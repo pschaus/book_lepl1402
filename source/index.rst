@@ -28,4 +28,5 @@ Indices and tables
  * :ref:`genindex`
  * :ref:`modindex`
  * :ref:`search`
+ * :download:`PDF version of the book<_static/lepl1402.pdf>`
 
