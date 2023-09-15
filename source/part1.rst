@@ -10,7 +10,7 @@ Your first Java program with IntelliJ
 Installing IntelliJ
 -------------------
 
-In the course LINFO1101, you used the Thonny Integrated Development Environment (IDE) to write your Python programs. In this course, we will do something similar to write Java programs: we will use the free "Community Edition" of Intellij IDEA (we will just call it "IntelliJ" in the following). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community edition, you don't need the commercial Ultimate edition). Start the installer and follow the instructions.
+In the course LINFO1101, you used the Thonny Integrated Development Environment (IDE) to write your Python programs. In this course, we will do something similar to write Java programs: we will use the free "Community Edition" of Intellij IDEA (we will just call it "IntelliJ" in the following). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
 
 The second thing you will need is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools and libraries that you need to build and run Java programs. Fortunately, IntelliJ can download it for you when you create a new project, so you don't have to take care of that. (We just mention it here, so you know what to do when you want to run your Java application without IntelliJ. The JDK can be downloaded from `<https://openjdk.org/>`_)
 
@@ -23,7 +23,7 @@ Start IntelliJ. A window will open where you can create a new project. Click on 
   :width: 90%
   :alt: Starting a new project
 
-To create a new project, you have to enter a project name (in the field "Name") and a location on your disk where you want to store the project (in the field "Location"). Keep the other fields "Language", "Build system", and "Add sample code" as shown in the above picture. But there is something to do in the field "JDK". As you can see in the picture, there was already JDK version 20 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropbox and choose "Download JDK..." as shown in the picture below:
+To create a new project, you have to enter a project name (in the field "Name") and a location on your disk where you want to store the project (in the field "Location"). Keep the other fields "Language", "Build system", and "Add sample code" as shown in the above picture. But there is something to do in the field "JDK". As you can see in the picture, there was already JDK version 20 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose "Download JDK..." as shown in the picture below:
 
 .. image:: _static/images/part1/select_jdk_screenshot.png
   :width: 90%
@@ -70,16 +70,16 @@ And here is how an equivalent Python program would look like:
 
 Why does the Java code look more complicated than the Python code? First of all, unlike Python, Java doesn't allow to write a statement like :code:`print('Hello world!')` directly in a source code file. In Java, all statements MUST be inside a method and all methods MUST be inside a class. In our example, the statement :code:`System.out.println("Hello world!")` is in the method "main" and this method is in the class "Main". Of course, a class in Java can have more than one method, and a Java program can contain more than one class.
 
-You have already learned about classes and methods in the course LINFO1101 and you might remember that classes are used to describe objects and methods are used to work with the objects. In our simple Java example, we don't need objects and all the complicated things that come with them (constructors, inheritance, etc.). The word :code:`static` in the line :code:`public static void main(String[] args)` indicates that the method "main" behaves more like a function in Python and not like a real method with objects. In fact, no object is needed to execute a static method like "main". We will learn more about this later.
+You have already learned about classes and methods in the course LINFO1101 and you might remember that classes are used to describe objects and methods are used to work with those objects. In our simple Java example, we don't need objects and all the complicated things that come with them (constructors, inheritance, etc.). The word :code:`static` in the line :code:`public static void main(String[] args)` indicates that the method "main" behaves more like a traditional function in Python and not like a method for objects. In fact, no object is needed to execute a static method like "main". We will learn more about this later.
 
-The second thing you might have noticed is the word :code:`public` in the first two lines of the code:
+The second thing you might have noticed is the word :code:`public` appearing twice in the first two lines of the code:
 
 ..  code-block:: java
 
     public class Main {
         public static void main(String[] args) {
         
-The :code:`public` in the first line indicates that the class "Main" can be used by others. It is not strictly necessary for this simple program and, in fact, our program will continue to work if you remove it (try it!). However, there is something important you have to know about public classes: If a class is public, the source file that contains the class must have the same name as the class. That's the reason why the file is called "Main.java" and the class is called "Main". Try to change the name of the class and see what happens! Apart from that, the name "Main" doesn't have any special meaning. Our program would still work if we renamed the class (and the file!) to "Catweazle" or "Cinderella".
+The :code:`public` in the first line indicates that the class "Main" can be used by others. It is not strictly necessary for this simple program and, in fact, our program will still work if you remove it (try it!). However, there is something important you have to know about public classes: If a class is marked as public, the source file that contains the class must have the same name as the class. That's the reason why the file is called "Main.java" and the public class in the file is called "Main" (Try to change the name of the class and see what happens!). Apart from that, the name "Main" for a class doesn't have any special meaning in Java. Our program would still work if we renamed the class to "Catweazle" or "Cinderella", as long as we don't forget to rename the file as well.
 
 The :code:`public` in the second line is much more important for our example. A Java program can only be executed if it contains a method "main" that is :code:`public` and :code:`static`. Remove the :code:`public` or :code:`static` from the second line and see what happens when you try to run the program.
 
@@ -101,10 +101,30 @@ In general, **a Java program always starts at the public static main method**. W
     
 (By the way, have you noticed the difference between :code:`System.out.print` and :code:`System.out.println`?)
 
+A .java file can contain more than class, however only one of them can be public. Here is the example from above with two classes:
+
+..  code-block:: java
+
+    class MyOtherClass {
+        static void printHello() {
+            System.out.print("How do ");
+            System.out.println("you do, ");
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            MyOtherClass.printHello();
+            System.out.println("fellow kids?");
+        }
+    }
+
+You can access the static content of a class from another class by using the name of the class, as demonstrated in the line :code:`MyOtherClass.printHello()` in the example.
+
 Types
 =====
 
-Python is a *strongly typed* language. That means that all "things" in Python have a specific type. You can see that by entering the following statements in the Python prompt:
+You might already know that Python is a *strongly typed* language. That means that all "things" in Python have a specific type. You can see that by entering the following statements in the Python prompt:
 
 ..  code-block:: python
 
@@ -117,7 +137,7 @@ Python is a *strongly typed* language. That means that all "things" in Python ha
     >>> type(True)
     <class 'bool'>
 
-Java is a strongly typed language, too. However, there is a big difference to Python: Java is also a *statically typed* language. We will not discuss all the details here, but most of the time that means that you (the programmer) must indicate for *every* variable in your program what type of "things" it can contain.
+Java is a strongly typed language, too. However, there is a big difference to Python: Java is also a *statically typed* language. We will not discuss all the details here, but in Java that means that most of the time you (the programmer) must indicate for *every* variable in your program what type of "things" it can contain.
 
 Here is a simple Python program to calculate and print the area of a square:
 
@@ -157,7 +177,7 @@ And here is the equivalent Java program:
 
 Let's see what's happening with the types in the Java code:
 
-- The line :code:`int calculateArea(int side)` indicates that the method "calculateArea" has a parameter "side" of type :code:`int`. Furthermore, the :code:`int` in :code:`int calculateArea(...` specifies that this method returns a value of type :code:`int`. This is called the *return type* of the method.
+- The line :code:`int calculateArea(int side)` indicates that the method "calculateArea" has a parameter "side" of type :code:`int`. Furthermore, the :code:`int` at the beginning of :code:`int calculateArea(...` specifies that this method returns a value of type :code:`int`. This is called the *return type* of the method.
 - The line :code:`void printArea(String message, int side)` defines that the method "printArea" has a parameter "message" of type :code:`String` and a parameter "side" of type :code:`int`. The method does not return anything, therefore it has the special return type :code:`void`.
 - Inside the method "printArea", we can see in the line :code:`int area = calculateArea(side)` that the variable "area" has the type :code:`int`.
 - (Exercise for you: look at the types that you can see in the "main" method. We will explain later why the "main" method always has a parameter named "args")
@@ -168,41 +188,42 @@ Here are some examples that contain type errors. Can you find the mistakes?
 
 - :code:`int t = "Hello";`
 - :code:`boolean t = calculateArea(3);`
-- :code:`printArea(t, "Size of square");` (This example shows why it is easier to find bugs in Java than in Python)
+- :code:`printArea(5, "Size of square");` (This example shows why it is easier to find bugs in Java than in Python)
 
 
 The Java compiler and class files
 =================================
 
-In the previous section, we mentioned that a special tool, the Java compiler, checks your program for type errors *before* it is executed. This process is part of another fundamental difference between Python and Java.
+In the previous section, we mentioned that a special tool, the *Java compiler*, checks your program for type errors *before* it is executed. This check is part of another fundamental difference between Python and Java.
 
 Python is an *interpreted language*. That means that when you start a program written in Python in an IDE like Thonny or on the command line with
 
 ..  code-block:: bash
 
-    python myprogram.py
+    > python myprogram.py
     
-the Python-Interpreter will
+the Python-Interpreter will do the following things:
 
-1. load the file "myprogram.py" (and the modules you have imported in your program with the :code:`import` statement),
-2. do some checks to verify that your program doesn't contain syntax errors such as :code:`print('Hello')))))`,
-3. execute your program.
+1. Load the file "myprogram.py" (and the modules you have imported in your program with the :code:`import` statement),
+2. Do some checks to verify that your program doesn't contain syntax errors such as :code:`print('Hello')))))`,
+3. Execute your program.
 
-Java, being a *compiled language*, works differently. To execute a Java program, another step is needed:
+Java, being a *compiled language*, works differently. To execute a Java program, there is another step done before your program can be executed:
 
 1. First, the Java code has to be compiled. This is the job of the Java compiler, a tool that is part of the JDK. The compiler does two things:
 
-   - It verifies that your source code is a well-formed Java program. This includes the type checking described in the previous section.
+   - It verifies that your source code is a well-formed Java program. This verification process includes the type checking described in the previous section.
    - It translates your Java source code into a more compact representation that is easier to process for your computer. This compact representation is called a *class file*. One such file will be created per class in your program. In IntelliJ, you can find the generated class files in the directory "out" in your project.
     
-2. If the compilation of your code was successful, the *Java Virtual Machine* (JVM) is started. The JVM is a special program that can load and execute class files. The JVM doesn't need the source code (the .java files) of your program to execute it since the class files contain all the necessary information. If you are a professional software developer, it's usually the class files that you give to your customer, not the source code.
+2. If the compilation of your code was successful, the *Java Virtual Machine* (JVM) is started. The JVM is a special program that can load and execute class files. The JVM doesn't need the source code (the .java files) of your program to execute it since the class files contain all the necessary information. When you are developing software for other people, it's usually the class files that you give to them, not the source code.
 
 IntelliJ runs the Java compiler and starts the JVM for you when you press the green start button, but it's perfectly possible to do it by hand on the command line without an IDE:
 
 ..  code-block:: bash
 
-    javac Main.java   # javac is the compiler and part of the JDK. It will generate the file Main.class
-    java Main         # this command starts the JVM with your Main class
+    > javac Main.java   # javac is the compiler and part of the JDK. It will generate the file Main.class
+    
+    > java Main         # this command starts the JVM with your Main class
 
 
 Primitive Types
@@ -211,8 +232,8 @@ Primitive Types
 Many primitive types...
 -----------------------
 
-As explained, Java requires that you specify the type of all variables and the return types of all methods.
-Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are used for numbers (integers and real numbers), for boolean values (*true* and *false*) and for single characters ('a', 'b', etc.). However, there are several number types, as shown in the following table:
+As explained, Java requires that you specify the type of all variables (including method parameters) and the return types of all methods.
+Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are used for numbers (integers and real numbers), for boolean values (*true* and *false*) and for single characters ('a', 'b', etc.). However, there are several different number types. The below table shows all primitive types:
 
 ======== ========================================================= ========================
 Type     Possible values                                           Example
@@ -235,7 +256,7 @@ As you can see, each primitive type has a limited range of values it can represe
     int b = a * 100000;     // This is too large for the int type!
     System.out.println(b);  // What will you get here?
 
-For most calculations, it will be sufficient to use :code:`int` (for integer numbers) and :code:`float` (for real numbers). The types :code:`long` and :code:`double` provide a wider value range and more precision, but they are slower and your program will consume more memory when running.
+For most calculations that we do in this book, it will be sufficient to use :code:`int` (for integer numbers) and :code:`float` (for real numbers). The types :code:`long` and :code:`double` provide a wider value range and more precision, but they are slower and your program will consume more memory when running.
 
 You might wonder why the :code:`char` type is shown in the above table as a type with values between 0 and 65535, although it is used for variables containing single characters, like 'a' or 'X'. This is because Java represents characters by numbers following a standard called *Unicode*. You can find more information about Unicode on `<https://en.wikipedia.org/wiki/Unicode>`_.
 
@@ -247,24 +268,24 @@ Java performs automatic conversions between values of different types if the des
 
 ..  code-block:: java
 
-    float a = 34;             // int to float is okay
-    float b = 6 * 4.5f;       // int * float gives float
+    float a = 34;             // int 34 is automatically casted to float 34.0f
+    float b = 6 * 4.5f;       // int multiplied by float gives float
     
 But this is not allowed:
 
 ..  code-block:: java
 
-    int a = 4.5f;             // Error! float to int is not okay
+    int a = 4.5f;             // Error! float is not automatically cased to int
     float b = 4.5f * 6.7;     // Error! float * double gives double
 
-You can force the conversion by doing a manual type cast, but the result will be less precise:
+You can force the conversion by doing a *manual* type cast, but the result will be less precise or even wrong:
 
 ..  code-block:: java
 
     int a = (int)4.5f;             // this will give 4 
-    float b = (float)(4.5f * 6.7); // this works, but the result might not be correct
+    float b = (float)(4.5f * 6.7); // the result is correct because the values are small
 
-The Java package "Math" provides a large set of methods to work with numbers of different types. Here is an example:
+The Java class "Math" provides a large set of methods to work with numbers of different types. It also defines useful constants like :code:`Math.PI`. Here is an example:
 
 ..  code-block:: java
 
@@ -273,9 +294,11 @@ The Java package "Math" provides a large set of methods to work with numbers of 
 
     System.out.println("Area of disk: " + area);
     System.out.println("Radius of disk: " + radius);
+
+The complete documentation of the "Math" class can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Math.html>`_.
  
-Mental model
-------------
+What is a variable? A mental model
+----------------------------------
  
 When working with variables of primitive types, you can imagine that every time your program reaches a line in your code where a variable is declared, the JVM will use a small part of the main memory (RAM) of your computer to store the value of the variable.
 
@@ -300,16 +323,16 @@ When you assign the content of a variable to another variable, the value is copi
 |                       |                                                 |
 +-----------------------+-------------------------------------------------+
 
-The same also happens with the parameters of methods; when you call a method with arguments, the argument values will be copied into the parameter variables of the called method.
+The same also happens with the parameters of methods; when you call a method with arguments, for example :code:`printArea("Area of square", t)`, the argument values are copied into the parameter variables of the called method.
 
-Note that it is illegal to use a local variable before assigning a value to it:
+Note that it is illegal to use a local variable that doesn't have a value:
 
 ..  code-block:: java
 
     public static void main(String[] args) {
         int a;
         int b;
-        b = 3;            // We now initialize b
+        b = 3;
         int c = b * 3;    // This is okay. b has a value.
         int d = a * 3;    // Error! a has not been initialized.
     }
@@ -324,7 +347,7 @@ Similar to Python, you can have variables that "live" outside a method. These va
 
   public class Main {
 
-    static int a = 3;
+    static int a = 3;   // this is a class variable
 
     static void increment() {
         a += 5;  // this is equivalent to  a = a + 5
@@ -355,30 +378,25 @@ Arrays (*fr.* tableaux)
 Working with arrays
 -------------------
 
-If you need a certain number of variables of the same primitive type, it can be useful to use an array type instead. Arrays are created with the :code:`new` keyword:
+If you need a certain number of variables of the same primitive type, it can be useful to use an array type instead. Arrays are similar to lists in python. One big difference is that when you create a new array you have to specify its size, i.e., the number of elements in it:
 
 ..  code-block:: java
 
     int[] a = new int[4];  // an array of integers with 4 elements
     
-Once the array has been created, you can access the elements :code:`a[0]`, :code:`a[1]`, :code:`a[2]`, :code:`a[3]` of the array. The elements of an array of integers (type :code:`int[]`) are automatically initialized to 0.
+Once the array has been created, you can access its elements :code:`a[0]`, :code:`a[1]`, :code:`a[2]`, :code:`a[3]`. The elements of an array of integers (type :code:`int[]`) are automatically initialized to 0 when the array is created:
 
 ..  code-block:: java
 
     a[2] = 5;
     int b = a[1] + a[2];   // gives 5 because a[1] is automatically initialized to 0
 
-Note that the size of an array is fixed. Once you have created it, you cannot change the number of elements in it:
+Note that the size of an array is fixed. Once you have created it, you cannot change the number of elements in it. Unlike Python lists , arrays in Java do not have slice() or append() methods to add or remove elements. However, we will see later the more flexible :code:`ArrayList` class.
 
-..  code-block:: java
+Mental model for arrays
+-----------------------
 
-    int[] a = new int[4];
-    a[4] = 3;   // Error! The array only has four elements a[0] to a[3]
-
-Mental model
-------------
-
-There is an important difference between array variables and primitive-type variable. An array variable does not directly represent a part of the RAM that contains the values of the array elements. Instead, an array variable represents a "reference" to the array somewhere in your computer's RAM. You can imagine it like this:
+There is an important difference between array variables and primitive-type variables. An array variable does not directly represent a part of the RAM that contains the values of the array elements. Instead, an array variable represents a "reference" to the array. You can imagine it like this:
 
 +-----------------------+------------------------------------------------------------+
 | Java code             | In memory during execution                                 |
@@ -500,7 +518,7 @@ The two most common loop constructs in Java are the :code:`while` loop and the :
 While loops
 -----------
 
-The while statement in Java is very similar to its namesake in Python. It repeats one or more statements as long a condition is met. Here is an example calculating the sum of the numbers from 0 to 9 (again, the surrounding "main" method is not shown):
+The while loop in Java is very similar to its namesake in Python. It repeats one or more statements (we call them the *body* of the loop) as long a condition is met. Here is an example calculating the sum of the numbers from 0 to 9 (again, the surrounding "main" method is not shown):
 
 ..  code-block:: java
 
@@ -513,7 +531,7 @@ The while statement in Java is very similar to its namesake in Python. It repeat
     }
     System.out.println("The sum is " + sum);
 
-**Warning:** The two statements inside the while loop (we call them the *body* of the loop) must be put in curly braces :code:`{...}`. If you forget the braces, only the *first* statement will be executed by the loop, independently of how the line is indented:
+**Warning:** The two statements inside the while loop must be put in curly braces :code:`{...}`. If you forget the braces, only the *first* statement will be executed by the loop, independently of how the line is indented:
 
 ..  code-block:: java
 
@@ -528,7 +546,7 @@ The while statement in Java is very similar to its namesake in Python. It repeat
 
 This is also true for other types of loops and for if/else statements.
 
-**It is highly recommended to always use braces for the body of a loop, even if the body only contains one statement.**
+**To avoid "accidents" like the one shown above, it is highly recommended to always use braces for the body of a loop or if/else statement, even if the body only contains one statement.**
 
 Simple For loops
 ----------------
@@ -562,9 +580,9 @@ There is also a more complex version of the for loop. Here is again our example 
 
 The for loop consists of three components:
 
-1. a statement that is executed when the for loop starts. In our example: :code:`int i = 0`.
-2. an expression evaluated *before* each iteration of the for loop. If the expression is :code:`false`, the loop stops. Here: :code:`i<10`.
-3. a statement that is executed *after* each iteration of the for loop. Here: :code:`i++`.
+1. a statement that is executed when the loop starts. In our example: :code:`int i = 0`.
+2. an expression evaluated *before* each iteration of the loop. If the expression is :code:`false`, the loop stops. Here: :code:`i<10`.
+3. a statement that is executed *after* each iteration of the loop. Here: :code:`i++`.
 
 This version of the for loop is very flexible because it gives you full control over what is happening in each iteration. Here is an example where we calculate the sum of every second element of an array:
 
@@ -577,7 +595,7 @@ This version of the for loop is very flexible because it gives you full control 
         }
         System.out.println("The sum is " + sum);
 
-In this example, we have done two new things. We have written `myArray.length` to get the size of the array "myArray". And we have used the statement :code:`i+=2` in the for loop to increase :code:`i` by 2 after each iteration.
+In this example, we have done two new things. We have written `myArray.length` to get the size of the array "myArray". And we have used the statement :code:`i+=2` in the loop to increase :code:`i` by 2 after each iteration.
 
 Stopping a loop and skipping iterations
 ---------------------------------------
@@ -605,11 +623,13 @@ And we can immediately go to the next iteration with the :code:`continue` statem
         }
         sum += i;
         
-        // Not a nice example :) You could just write:
-        //    if(i!=5) {
-        //       sum += i;
+        // Note that you could just write:
+        //    for( int i = 0; i<10; i++ ) {
+        //       if(i!=5) {
+        //          sum += i;
+        //       }
         //    }
-        // Only use break and continue if they make the code easier to read.
+        // Only use break and continue if they make the code easier to read!
     }
 
 Conditional Statements
@@ -641,62 +661,271 @@ As you have seen in the examples for :code:`break` and :code:`continue`, Java ha
     System.out.println("The number of negative values is " + countNegative);
     System.out.println("The number of positive values is " + countPositive);
 
+Like loops, don't forget using curly braces :code:`{...}` if the body of the if/else statement contains more than one statement. **It is highly recommended to always use braces, even if the body contains only one statement.**
 
 Comparison and logical operators
 --------------------------------
 
-Like loops, don't forget using curly braces :code:`{...}` if the body of the if/else statement contains more than one statement. **It is highly recommended to always use braces, even if the block contains only one statement.**
-
 Boolean expressions are expressions that are evaluated to :code:`true` or :code:`false`. They are quite similar to the ones you know from Python. 
 
-.. code-block::
+.. code-block:: java
 
     boolean b1 = 3 < 4;     // Like <, >, <=, >=, ==, !=  in Python
-    boolean b2 = !b1;       // Like "not" in Python
-    boolean b3 = b1 && b2;  // Like "and" in Python
-    boolean b4 = b1 || b2;  // Like "or" in Python
+    boolean b2 = !b1;       // "not" in Python
+    boolean b3 = b1 && b2;  // "and" in Python
+    boolean b4 = b1 || b2;  // "or" in Python
     
 Strings
 =======
 
+Working with strings
+--------------------
+
 Variables holding string values have the type :code:`String`. Strings can be concatenated with the + operator:
 
-.. code-block::
+.. code-block:: java
 
     String s1 = "This is a string";
     String s2 = "This is another string";
     String s3 = s1 + "---" + s2;
     System.out.println(s3);
     
+The :code:`String` class defines many interesting methods that you can use to work with strings. If you check the documentation at  `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html>`_, you will notice that some methods of the :code:`String` class are static and some are not.
+The static method :code:`valueOf` transforms a number value into a string:
+
+.. code-block:: java
+
+    double x = 1.234;
+    String s = String.valueOf(x);
+    System.out.println(s);
+
+But most methods of the :code:`String` class are not static; you have to call them on a string. Here are some of them:
+
+.. code-block:: java
+
+    String s = "Hello world";
+    int l = s.length();                 // the length of the string
+    boolean b = s.isEmpty();            // true if the string has length 0
+    char c = s.charAt(3);               // the character in the string at position 3
+    boolean b2 = s.startsWith("Hello"); // true if the string starts with "Hello"
+    int i = s.indexOf("o");             // gives the position of the character "o" in the string
+    String t = s.substring(2);          // the string starting at position 2: "llo world"
+    
+There are also some methods for strings located in other classes. The most useful ones are the methods to convert strings to numbers. For :code:`int` values, there is for example the static method :code:`parseInt` in the :code:`Integer` class:
+
+.. code-block:: java
+
+    int i = Integer.parseInt("1234");
+    
+Similar methods exist in the classes :code:`Long`, :code:`Float`, :code:`Double`, etc. for the other primitive types. All these classes are defined in the package :code:`java.lang` for which you can find the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/lang/package-summary.html>`_.
 
 
+Mental model for strings
+------------------------
+
+Like array variables, string variables are references to the content of the string:
+
++-----------------------+-------------------------------------------------+
+| Java code             | In memory during execution                      |
++=======================+=================================================+
+| .. code::             | .. image:: _static/images/part1/string.svg      |
+|                       |    :width: 60%                                  |
+|    String a = "Hello";|                                                 |
+|                       |                                                 |
++-----------------------+-------------------------------------------------+
 
 
+Comparing things
+================
 
-Variables inside blocks
-=======================
+Primitive-type values can be tested for equality with the :code:`==` operator:
 
+.. code-block:: java
 
+    int i = 3;
+    if( i==3 ) {
+        System.out.println("They are the same!");
+    }
 
-Comparing references
-=====================
+However, this will not work for array and strings. Since array and string variables only contain references, the :code:`==` operator will compare the *references*, not the *content* of the arrays or strings! The following example shows the difference:
+
+.. code-block:: java
+    
+    int i = 3;
+    System.out.println( i==3 );     // true. Primitive type.
+    
+    int[] a = {1,2,3};
+    int[] b = {1,2,3};
+    System.out.println( a==b );     // false. Different arrays.
+
+    int[] c = a;
+    System.out.println( a==c );     // true. Same reference.
+    
+    String s1 = "Hello" + String.valueOf(1234);
+    String s2 = "Hello1234";
+    System.out.println( s1==s2 );   // false. Different strings.
+
+**Comparing arrays or strings with == is a very common mistake in Java. Be careful!**
+
+To compare the *content* of two strings, you must use their :code:`equals` method:
+
+.. code-block:: java
+
+    String s1 = "Hello" + String.valueOf(1234);
+    String s2 = "Hello1234";
+    System.out.println( s1.equals(s2) );   // true
+
+There is also an :code:`equals` method to compare the *content* of two arrays, but it is a static method of the class :code:`Arrays` in the package :code:`java.util`. To use this class, you have to import it into your program. Here is the complete code:
+
+.. code-block:: java
+
+    import java.util.Arrays;
+
+    public class Main {
+        public static void main(String[] args) {
+            int[] a = {1,2,3};
+            int[] b = {1,2,3};
+            System.out.println( Arrays.equals(a,b) );  // true
+        }
+    }
+
+You might wonder why we didn't need to write import statements for the classes :code:`Math`, :code:`Integer` or :code:`String` in the other examples. That's because those classes are in the package :code:`java.lang`, which is automatically imported by the Java compiler.
 
 
 Classes and Objects
-====================
+===================
+
+Creating your own objects
+-------------------------
+
+Writing programs is about organizing and processing data. In some cases the primitive types, arrays and strings are enough, but often you have data that is more complex than that.
+
+Imagine a program to manage employees in a company. We can describe be the fact that each employee has a name (which is a string) and a salary (which is an integer), in a new *class* in our Java program:
+
+.. code-block:: java
+
+    class Employee {
+        String name;    // the name of the employee
+        int salary;     // the salary of the employee     
+    }
+    
+Classes allow us to create new *objects* from them. In our example, each object of the class "Employee" represents an employee. Here is a complete example with two employees:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        int salary;    
+    }
+
+    public class Main {    
+        public static void main(String[] args) {
+            Employee person1 = new Employee();    // a new object!
+            person1.name = "Peter";
+            person1.salary = 42000;
+            
+            Employee person2 = new Employee();    // a new object!
+            person2.name = "Anna";
+            person2.salary = 45000;
+
+            int salaryDifference = person1.salary - person2.salary;
+            System.out.println("The salary difference is " + salaryDifference);
+        }
+    }
+
+The two objects that we created and put into the local variables "person1" and "person2" are called *instances* of the class "Employee", and the two variables "name" and "age" are called *instance variables* of the class "Employee". Since they are not static, they belong to the instances. As you can see in the example above, each object has its own "name" and "age".
+
+Initializing objects
+--------------------
+
+In the above example, we first created the object, and then initialized its instance variables:
+
+.. code-block:: java
+
+    Employee person1 = new Employee();
+    person1.name = "Peter";
+    person1.salary = 42000;
+
+Like static variables, instance variables are automatically initialized with the value 0 (for number variables), with :code:`false` (for boolean variables), or with :code:`null` (for all other variables). In our example, this is dangerous because we could forget to specify the salary of the employee:
+
+.. code-block:: java
+
+    Employee person1 = new Employee();
+    person1.name = "Peter";
+    // oops, the salary is 0
+
+To avoid this, you can define a *constructor method* for your class. The constructor method has the same name as the class:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        int salary;
+        
+        Employee(String n, int s) {   // this is the constructor
+            this.name = n;
+            this.salary = s;
+        }
+    }
+
+If you provide such a constructor for your class, you are not allowed anymore to simply create a new Employee instance with :code:`new Employee()`. The Java compiler will verify that you use the constructor to create new objects:
+
+.. code-block:: java
+
+    Employee person1 = new Employee("Peter", 42000);
+    // person1.name is now "Peter"
+    // person1.salary is 42000
+
+In this example, the constructor takes two parameters "n" and "s" and uses them to initialize the instance variables "name" and "salary" of a new "Employee" object. But how does the constructor know which object to initialize? Do we have to tell the constructor that the new object is in the variable "person1"? Fortunately, it's easier than that. the constructor can always access the object by using the keyword :code:`this`. The line
+
+.. code-block:: java
+
+    this.name = n;
+
+means that the value of the parameter "n" will be used to initialize the instance variable "name" of the new object. We could even use the same names for the parameter variables and for the instance variables:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        int salary;
+        
+        Employee(String name, int salary) {
+            this.name = name;
+            this.salary = salary;
+        }
+    }
+
+When the Java compiler sees a parameter and an instance variable with the same name, it will always assume that you mean the parameter when you just write the variable, like on the right hand side of this assignment:
+
+.. code-block:: java
+
+   // "name" is the parameter
+   // "this.name" is the instance variable
+   this.name = name;  
+
+Mental model
+============
+
+Like array variables and String variables, object variables contain a reference to the object in your computer's main memory:
+
+
+
+
+
 
 ArrayLists
 ==========
+
+Overloading
+===========
+
 
 Organizing Code: Packages
 ==========================
 
 Visibility Modifiers
 ====================
-
-
-Static and Non-Static Methods and Members
-==========================================
 
 Passing Arguments
 =================
