@@ -79,11 +79,12 @@ The second thing you might have noticed is the word :code:`public` appearing twi
     public class Main {
         public static void main(String[] args) {
         
-The :code:`public` in the first line indicates that the class "Main" can be used by others. It is not strictly necessary for this simple program and, in fact, our program will still work if you remove it (try it!). However, there is something important you have to know about public classes: If a class is marked as public, the source file that contains the class must have the same name as the class. That's the reason why the file is called "Main.java" and the public class in the file is called "Main" (Try to change the name of the class and see what happens!). Apart from that, the name "Main" for a class doesn't have any special meaning in Java. Our program would still work if we renamed the class to "Catweazle" or "Cinderella", as long as we don't forget to rename the file as well.
+The word :code:`public` in the first line indicates that the class "Main" can be used by others. It is not strictly necessary for this simple program and, in fact, our program will still work if you remove it (try it!). However, there is something important you have to know about public classes: If a class is marked as public, the source file that contains the class must have the same name as the class. That's the reason why the file is called "Main.java" and the public class in the file is called "Main" (Try to change the name of the class and see what happens!). Apart from that, the name "Main" for a class doesn't have any special meaning in Java. Our program would still work if we renamed the class to "Catweazle" or "Cinderella", as long as we don't forget to rename the file as well. But note that **all class names in Java (public or not) start with an uppercase letter**.
 
 The :code:`public` in the second line is much more important for our example. A Java program can only be executed if it contains a method "main" that is :code:`public` and :code:`static`. Remove the :code:`public` or :code:`static` from the second line and see what happens when you try to run the program.
+In general, **a Java program always starts at the public static main method**. If your program contains multiple classes with a main method, you have tell IntelliJ which one you want to start.
 
-In general, **a Java program always starts at the public static main method**. With this knowledge, can you guess what the following program prints?
+With this knowledge, can you guess what the following program prints?
 
 ..  code-block:: java
 
@@ -258,24 +259,34 @@ As you can see, each primitive type has a limited range of values it can represe
 
 For most calculations that we do in this book, it will be sufficient to use :code:`int` (for integer numbers) and :code:`float` (for real numbers). The types :code:`long` and :code:`double` provide a wider value range and more precision, but they are slower and your program will consume more memory when running.
 
-You might wonder why the :code:`char` type is shown in the above table as a type with values between 0 and 65535, although it is used for variables containing single characters, like 'a' or 'X'. This is because Java represents characters by numbers following a standard called *Unicode*. You can find more information about Unicode on `<https://en.wikipedia.org/wiki/Unicode>`_.
+Java supports the usual arithmetic operations with number types, that is :code:`+` (addition), :code:`-` (subtraction), :code:`*` (multiplication), :code:`/` (division), and :code:`%` (modulo). There is also a group of operators that can be used to manipulate integer values on bit level (for example, :code:`<<` (left shift) and `&` (bitwise and), but we will not discuss them further here).
+
+You might wonder why the :code:`char` type is shown in the above table as a type with values between 0 and 65535, although it is used for variables containing single characters, like 'a' or 'X'. This is because Java represents characters by numbers following a standard called *Unicode*. Consequently, you can do calculations with characters:
+
+.. code-block:: java
+
+    char c = 'a';
+    c = c + 1;
+    System.out.println(c);
+
+You can find more information about Unicode on `<https://en.wikipedia.org/wiki/Unicode>`_.
 
 
 Type casting
 ------------
 
-Java performs automatic conversions between values of different types if the destination type is wide enough to hold the result. This is called a *type cast*. For example, this is allowed:
+Java performs automatic conversions between values of different types if the destination type is wide enough to hold the result. This is called a *type cast*. For example, these two statements are allowed:
 
 ..  code-block:: java
 
-    float a = 34;             // int 34 is automatically casted to float 34.0f
+    float a = 34;             // the int value 34 is automatically casted to float 34.0f
     float b = 6 * 4.5f;       // int multiplied by float gives float
     
 But this is not allowed:
 
 ..  code-block:: java
 
-    int a = 4.5f;             // Error! float is not automatically cased to int
+    int a = 4.5f;             // Error! float is not automatically casted to int
     float b = 4.5f * 6.7;     // Error! float * double gives double
 
 You can force the conversion by doing a *manual* type cast, but the result will be less precise or even wrong:
@@ -323,9 +334,9 @@ When you assign the content of a variable to another variable, the value is copi
 |                       |                                                 |
 +-----------------------+-------------------------------------------------+
 
-The same also happens with the parameters of methods; when you call a method with arguments, for example :code:`printArea("Area of square", t)`, the argument values are copied into the parameter variables of the called method.
+The same also happens with the parameters of methods; when you call a method with arguments, for example :code:`calculateArea(side)`, the argument values are copied into the parameter variables of the called method.
 
-Note that it is illegal to use a local variable that doesn't have a value:
+Note that it is illegal to use a local variable, i.e., a variable declared inside a method, before you have assigned a value to it:
 
 ..  code-block:: java
 
@@ -341,7 +352,7 @@ Class variables
 ----------------
 
 In our examples so far, all variables were either parameter variables or local variables of a method. Such variables are only "alive" when the program is inside the method during execution. 
-Similar to Python, you can have variables that "live" outside a method. These variables are called *class variables* because they "belong" to the class, not to a specific method. Similar to static methods, we mark them with the keyword :code:`static`:
+However, you can also have variables that "live" outside a method. These variables are called *class variables* because they belong to a class, not to a specific method. Similar to static methods, we mark them with the keyword :code:`static`:
 
 ..  code-block:: java
 
@@ -359,7 +370,7 @@ Similar to Python, you can have variables that "live" outside a method. These va
     }
   }
   
-In contrast to local variables, class members do not need to be manually initialized. They are automatically initialized to 0 (for number types) or :code:`false` (for the boolean type). This code is accepted by the compiler:
+In contrast to local variables, class variables do not need to be manually initialized. They are automatically initialized to 0 (for number types) or :code:`false` (for the boolean type). This code is accepted by the compiler:
 
 ..  code-block:: java
 
@@ -391,12 +402,12 @@ Once the array has been created, you can access its elements :code:`a[0]`, :code
     a[2] = 5;
     int b = a[1] + a[2];   // gives 5 because a[1] is automatically initialized to 0
 
-Note that the size of an array is fixed. Once you have created it, you cannot change the number of elements in it. Unlike Python lists , arrays in Java do not have slice() or append() methods to add or remove elements. However, we will see later the more flexible :code:`ArrayList` class.
+Note that the size of an array is fixed. Once you have created it, you cannot change the number of elements in it. Unlike Python lists, arrays in Java do not have slice() or append() methods to add or remove elements. However, we will see later the more flexible :code:`ArrayList` class.
 
 Mental model for arrays
 -----------------------
 
-There is an important difference between array variables and primitive-type variables. An array variable does not directly represent a part of the RAM that contains the values of the array elements. Instead, an array variable represents a "reference" to the array. You can imagine it like this:
+There is an important difference between array variables and primitive-type variables. An array variable does not directly represent the array elements. Instead, an array variable can be seen as a "reference" to the content of the array. You can imagine it like this:
 
 +-----------------------+------------------------------------------------------------+
 | Java code             | In memory during execution                                 |
@@ -422,10 +433,9 @@ In that case, **only the reference to the array is copied, not the array itself*
 ..  code-block:: java
 
     int[] a = new int[4];
-    int[] b = a;
+    int[] b = a;                // a and b are now references to the same array
     b[2] = 5;
     System.out.println(a[2]);   // a[2] and b[2] are the same element
-
 
 Initializing an array
 ---------------------
@@ -501,7 +511,7 @@ Array variables can be class variables (with the :code:`static` keyword), too. I
 
   public class Main {
 
-    static int[] a;   //  initialized to null
+    static int[] a;   //  automatically initialized to null
 
     public static void main(String[] args) {
         // this compiles, but it gives an error during execution,
@@ -526,8 +536,8 @@ The while loop in Java is very similar to its namesake in Python. It repeats one
     int i = 0;
     while(i<10) {
         sum += i;    // this is equivalent to sum = sum + i
-        i++;         // this is equivalent to i = i + 1
         System.out.println("Nearly there");
+        i++;         // this is equivalent to i = i + 1
     }
     System.out.println("The sum is " + sum);
 
@@ -539,8 +549,8 @@ The while loop in Java is very similar to its namesake in Python. It repeats one
     int i = 0;
     while(i<10)                              // oops, we forgot to put a brace '{' here!
         sum += i;                            // this statement is INSIDE the loop
-        i ++;                                // this statement is OUTSIDE the loop!!!
         System.out.println("Nearly there");  // this statement is OUTSIDE the loop!!!
+        i++;                                 // this statement is OUTSIDE the loop!!!
     
     System.out.println("The sum is " + sum);
 
@@ -551,7 +561,7 @@ This is also true for other types of loops and for if/else statements.
 Simple For loops
 ----------------
 
-There are two different ways how for loops can be used. The simple for loop is often used to do something with each element of an array (or list. We will learn more about lists later):
+There are two different ways how for loops can be used. The simple for loop is often used to do something with each element of an array or list (We will learn more about lists later):
 
 ..  code-block:: java
 
@@ -562,7 +572,7 @@ There are two different ways how for loops can be used. The simple for loop is o
     }
     System.out.println("The sum is " + sum);
 
-The for loop will do as many iterations as number of elements in the array, with the variable "elem" successively taking the values of the elements.
+The for loop will do as many iterations as number of elements in the array, with the variable "elem" successively taking the values of the elements. 
 
 Complex For loops
 -----------------
@@ -578,13 +588,13 @@ There is also a more complex version of the for loop. Here is again our example 
     }
     System.out.println("The sum is " + sum);
 
-The for loop consists of three components:
+The first line of the loop consists of three components:
 
 1. a statement that is executed when the loop starts. In our example: :code:`int i = 0`.
 2. an expression evaluated *before* each iteration of the loop. If the expression is :code:`false`, the loop stops. Here: :code:`i<10`.
 3. a statement that is executed *after* each iteration of the loop. Here: :code:`i++`.
 
-This version of the for loop is very flexible because it gives you full control over what is happening in each iteration. Here is an example where we calculate the sum of every second element of an array:
+The complex for loop is more flexible than the simple version because it gives you full control over what is happening in each iteration. Here is an example where we calculate the sum of every second element of an array:
 
 ..  code-block:: java
 
@@ -595,7 +605,7 @@ This version of the for loop is very flexible because it gives you full control 
         }
         System.out.println("The sum is " + sum);
 
-In this example, we have done two new things. We have written `myArray.length` to get the size of the array "myArray". And we have used the statement :code:`i+=2` in the loop to increase :code:`i` by 2 after each iteration.
+In this example, we have done two new things. We have used :code:`myArray.length` to get the size of the array "myArray". And we have used the statement :code:`i+=2` to increase :code:`i` by 2 after each iteration.
 
 Stopping a loop and skipping iterations
 ---------------------------------------
@@ -622,15 +632,19 @@ And we can immediately go to the next iteration with the :code:`continue` statem
             continue;
         }
         sum += i;
-        
-        // Note that you could just write:
-        //    for( int i = 0; i<10; i++ ) {
-        //       if(i!=5) {
-        //          sum += i;
-        //       }
-        //    }
-        // Only use break and continue if they make the code easier to read!
     }
+    
+But you should only use :code:`break` and :code:`continue` if they make your program clearer. Our above example was actually not a good example :( The program would be easier to understand if we just wrote:
+
+..  code-block:: java
+
+    for( int i = 0; i<10; i++ ) {
+        if(i!=5) {
+            sum += i;
+        }
+    }
+
+
 
 Conditional Statements
 ======================
@@ -645,23 +659,21 @@ As you have seen in the examples for :code:`break` and :code:`continue`, Java ha
     int[] myArray = new int[]{ 2, -5, 6, 0, -4, 1 };
     int countNegative = 0;
     int countPositive = 0;
-    for( int i = 0; i<myArray.length; i++ ) {
-        if(myArray[i]<0) {
+    for(int elem : myArray) {
+        if(elem<0) {
             countNegative++;
         }
-        else if(myArray[i]>0) {
+        else if(elem>0) {
             countPositive++;
         }
         else {
             System.out.println("Value zero found");
-            System.out.println("Let's stop");
-            break;
         }
     }
     System.out.println("The number of negative values is " + countNegative);
     System.out.println("The number of positive values is " + countPositive);
 
-Like loops, don't forget using curly braces :code:`{...}` if the body of the if/else statement contains more than one statement. **It is highly recommended to always use braces, even if the body contains only one statement.**
+As with loops, be careful not to forget to use curly braces :code:`{...}` if the body of the if/else statement contains more than one statement. **It is highly recommended to always use braces, even if the body contains only one statement.**
 
 Comparison and logical operators
 --------------------------------
@@ -670,28 +682,29 @@ Boolean expressions are expressions that are evaluated to :code:`true` or :code:
 
 .. code-block:: java
 
-    boolean b1 = 3 < 4;     // Like <, >, <=, >=, ==, !=  in Python
+    boolean b1 = 3 < 4;     // we also have <, >, <=, >=, ==, !=
     boolean b2 = !b1;       // "not" in Python
     boolean b3 = b1 && b2;  // "and" in Python
     boolean b4 = b1 || b2;  // "or" in Python
-    
+
+ 
 Strings
 =======
 
 Working with strings
 --------------------
 
-Variables holding string values have the type :code:`String`. Strings can be concatenated with the + operator:
+Variables holding string values have the type :code:`String`. Strings (and also primitive types) can be concatenated with the + operator.
 
 .. code-block:: java
 
     String s1 = "This is a string";
     String s2 = "This is another string";
-    String s3 = s1 + "---" + s2;
+    String s3 = s1 + "---" + s2 + 12345;
     System.out.println(s3);
     
 The :code:`String` class defines many interesting methods that you can use to work with strings. If you check the documentation at  `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html>`_, you will notice that some methods of the :code:`String` class are static and some are not.
-The static method :code:`valueOf` transforms a number value into a string:
+For example, the static method :code:`valueOf` transforms a number value into a string:
 
 .. code-block:: java
 
@@ -699,7 +712,7 @@ The static method :code:`valueOf` transforms a number value into a string:
     String s = String.valueOf(x);
     System.out.println(s);
 
-But most methods of the :code:`String` class are not static; you have to call them on a string. Here are some of them:
+But most methods of the :code:`String` class are not static, i.e., you have to call them on a string value or string variable. Here are some frequently used methods:
 
 .. code-block:: java
 
@@ -708,16 +721,16 @@ But most methods of the :code:`String` class are not static; you have to call th
     boolean b = s.isEmpty();            // true if the string has length 0
     char c = s.charAt(3);               // the character in the string at position 3
     boolean b2 = s.startsWith("Hello"); // true if the string starts with "Hello"
-    int i = s.indexOf("o");             // gives the position of the character "o" in the string
-    String t = s.substring(2);          // the string starting at position 2: "llo world"
+    int i = s.indexOf("wo");            // gives the position of "wo" in the string
+    String t = s.substring(2);          // the string starting at position 2
     
-There are also some methods for strings located in other classes. The most useful ones are the methods to convert strings to numbers. For :code:`int` values, there is for example the static method :code:`parseInt` in the :code:`Integer` class:
+There are also some methods for strings that are located in other classes. The most useful ones are the methods to convert strings to numbers. For :code:`int` values, there is for example the static method :code:`parseInt` in the :code:`Integer` class:
 
 .. code-block:: java
 
     int i = Integer.parseInt("1234");
     
-Similar methods exist in the classes :code:`Long`, :code:`Float`, :code:`Double`, etc. for the other primitive types. All these classes are defined in the package :code:`java.lang` for which you can find the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/lang/package-summary.html>`_.
+Similar methods exist in the classes :code:`Long`, :code:`Float`, :code:`Double`, etc. for the other primitive types. All these classes are defined in the package :code:`java.lang` for which you can find the documentation at `<https://docs.oracle.com/javase/20/docs/api/java/lang/package-summary.html>`_.
 
 
 Mental model for strings
@@ -756,14 +769,14 @@ However, this will not work for array and strings. Since array and string variab
     
     int[] a = {1,2,3};
     int[] b = {1,2,3};
-    System.out.println( a==b );     // false. Different arrays.
+    System.out.println( a==b );     // false. Two different arrays.
 
     int[] c = a;
     System.out.println( a==c );     // true. Same reference.
     
     String s1 = "Hello" + String.valueOf(1234);
     String s2 = "Hello1234";
-    System.out.println( s1==s2 );   // false. Different strings.
+    System.out.println( s1==s2 );   // false. Two different strings.
 
 **Comparing arrays or strings with == is a very common mistake in Java. Be careful!**
 
@@ -775,7 +788,7 @@ To compare the *content* of two strings, you must use their :code:`equals` metho
     String s2 = "Hello1234";
     System.out.println( s1.equals(s2) );   // true
 
-There is also an :code:`equals` method to compare the *content* of two arrays, but it is a static method of the class :code:`Arrays` in the package :code:`java.util`. To use this class, you have to import it into your program. Here is the complete code:
+There is also an :code:`equals` method to compare the content of two arrays, but it is a static method of the class :code:`Arrays` in the package :code:`java.util`. To use this class, you have to import it into your program. Here is the complete code:
 
 .. code-block:: java
 
@@ -789,7 +802,9 @@ There is also an :code:`equals` method to compare the *content* of two arrays, b
         }
     }
 
-You might wonder why we didn't need to write import statements for the classes :code:`Math`, :code:`Integer` or :code:`String` in the other examples. That's because those classes are in the package :code:`java.lang`, which is automatically imported by the Java compiler.
+The :code:`Arrays` class contains many useful methods to work with classes, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Arrays.html>`_.
+
+You might wonder why we didn't need to write import statements for the classes :code:`Math`, :code:`Integer` or :code:`String` in the other examples. That's because those classes are in the package :code:`java.lang`, which is the only class that is automatically imported by the Java compiler.
 
 
 Classes and Objects
@@ -798,9 +813,8 @@ Classes and Objects
 Creating your own objects
 -------------------------
 
-Writing programs is about organizing and processing data. In some cases the primitive types, arrays and strings are enough, but often you have data that is more complex than that.
-
-Imagine a program to manage employees in a company. We can describe be the fact that each employee has a name (which is a string) and a salary (which is an integer), in a new *class* in our Java program:
+*Computer programs are about organizing data and working with that data*. In some cases the primitive types, arrays and strings are enough, but often you have data that is more complex than that.
+For example, imagine a program to manage employees in a company. We can describe the fact that each employee has a name and a salary, in a new *class* in our Java program:
 
 .. code-block:: java
 
@@ -809,7 +823,7 @@ Imagine a program to manage employees in a company. We can describe be the fact 
         int salary;     // the salary of the employee     
     }
     
-Classes allow us to create new *objects* from them. In our example, each object of the class "Employee" represents an employee. Here is a complete example with two employees:
+Classes allow us to create new *objects* from them. In our example, each object of the class "Employee" represents an employee, which makes it easy to organize our data:
 
 .. code-block:: java
 
@@ -833,7 +847,7 @@ Classes allow us to create new *objects* from them. In our example, each object 
         }
     }
 
-The two objects that we created and put into the local variables "person1" and "person2" are called *instances* of the class "Employee", and the two variables "name" and "age" are called *instance variables* of the class "Employee". Since they are not static, they belong to the instances. As you can see in the example above, each object has its own "name" and "age".
+The two objects that we created and put into the local variables "person1" and "person2" are called *instances* of the class "Employee", and the two variables "name" and "age" are called *instance variables* of the class "Employee". Since they are not static, they belong to the instances, and each instance has its own "name" and "age".
 
 Initializing objects
 --------------------
@@ -854,7 +868,16 @@ Like static variables, instance variables are automatically initialized with the
     person1.name = "Peter";
     // oops, the salary is 0
 
-To avoid this, you can define a *constructor method* for your class. The constructor method has the same name as the class:
+There are several ways to avoid this kind of mistake. One way is to initialize the variable in the class definition:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        int salary = 10000;
+    }
+    
+Of course, this only works if you want that all employees start with a salary of 10000. The other way is to define a *constructor* in your class. The constructor is a special method that has the same name as the class. It can have parameters but it has no return type:
 
 .. code-block:: java
 
@@ -862,21 +885,25 @@ To avoid this, you can define a *constructor method* for your class. The constru
         String name;
         int salary;
         
-        Employee(String n, int s) {   // this is the constructor
+        // the constructor
+        Employee(String n, int s) {   
             this.name = n;
             this.salary = s;
         }
     }
 
-If you provide such a constructor for your class, you are not allowed anymore to simply create a new Employee instance with :code:`new Employee()`. The Java compiler will verify that you use the constructor to create new objects:
+If you provide a constructor for your class, the Java compiler will verify that you use it to create new objects:
 
 .. code-block:: java
 
     Employee person1 = new Employee("Peter", 42000);
-    // person1.name is now "Peter"
-    // person1.salary is 42000
+    // Okay. We have now a new employee with
+    //    person1.name "Peter"
+    //    person1.salary 42000
+    
+    Employee person2 = new Employee();   // not allowed. You must use the constructor!
 
-In this example, the constructor takes two parameters "n" and "s" and uses them to initialize the instance variables "name" and "salary" of a new "Employee" object. But how does the constructor know which object to initialize? Do we have to tell the constructor that the new object is in the variable "person1"? Fortunately, it's easier than that. the constructor can always access the object by using the keyword :code:`this`. The line
+In our example, the constructor took two parameters "n" and "s" and used them to initialize the instance variables "name" and "salary" of a new "Employee" object. But how does the constructor know which object to initialize? Do we have to tell the constructor that the new object is in the variable "person1"? Fortunately, it's easier than that. The constructor can always access the object being constructed by using the keyword :code:`this`. The line
 
 .. code-block:: java
 
@@ -896,7 +923,7 @@ means that the value of the parameter "n" will be used to initialize the instanc
         }
     }
 
-When the Java compiler sees a parameter and an instance variable with the same name, it will always assume that you mean the parameter when you just write the variable, like on the right hand side of this assignment:
+When the Java compiler sees a parameter (or local variable) and an instance variable with the same name, it will always assume that you mean the parameter (or local variable) when you just write the variable name without :code:`this.` in front of it. This happens for example in this line:
 
 .. code-block:: java
 
@@ -907,18 +934,441 @@ When the Java compiler sees a parameter and an instance variable with the same n
 Mental model
 ============
 
-Like array variables and String variables, object variables contain a reference to the object in your computer's main memory:
+Like array variables and String variables, object variables contain a reference to the object in your computer's main memory. The object itself contains the instance variables. Note that an instance variable can be again a reference. For our employee "Peter" we get the following structure:
+
++------------------------------------------+-------------------------------------------------+
+| Java code                                | In memory during execution                      |
++==========================================+=================================================+
+| .. code::                                | .. image:: _static/images/part1/object.svg      |
+|                                          |    :width: 70%                                  |
+|    Employee person1 =                    |                                                 |
+|       new Employee("Peter", 42000);      |                                                 |
+|                                          |                                                 |
++------------------------------------------+-------------------------------------------------+
+
+Because of this, what we have already said about array variables and String variables also holds for object variables: Assigning an object variable to another variable only copies the reference and comparing two object variables only compares the references, not the content of the objects:
+
+.. code-block:: java
+
+    Employee person1 = new Employee("Peter", 42000);
+    Employee person2 = new Employee("Peter", 42000);
+    System.out.println( person1==person2 );         // false. Two different objects.
+    
+    Employee person3 = person1;
+    System.out.println( person1==person3 );         // true. Same object.
+
+Working with objects
+====================
+
+Many things that you can do with primitive types and strings, you can also do them with objects. For example, you can create arrays of objects. The elements of a new array of objects are automatically initialized to :code:`null`, as shown in this example:
+
+
+.. code-block:: java
+
+    Employee[] myTeam = new Employee[3];
+    myTeam[0] = new Employee("Peter", 42000);
+    myTeam[1] = new Employee("Anna", 45000);
+    System.out.println(myTeam[0].name);       // is "Peter"
+    System.out.println(myTeam[1].name);       // is "Anna"
+    System.out.println(myTeam[2].name);       // Error! myTeam[2] is null
+    
+
+You can also have class variables and instance variables that are object variables. Again, they will be automatically initialized to :code:`null`, if you don't provide an initial value. In the following example, we have extended our "Employee" class by a new instance variable "boss":
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        int salary;
+        Employee boss;
+        
+        Employee(String name, int salary, Employee boss) {
+            this.name = name;
+            this.salary = salary;
+            this.boss = boss;
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            // Anna has no boss
+            Employee anna = new Employee("Anna", 45000, null);
+        
+            // Anna is the boss of Peter        
+            Employee peter = new Employee("Peter", 42000, anna);            
+        }
+    }
+    
+Exercise for you: Take a sheet of paper and draw the mental model image for the object of Peter.
+
+Question: In the above example, what value do we give to the "boss" instance variable of an employee who has no boss?
+
+Methods
+=======
+
+In the following example, we define a static method to increase the salary of an employee:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        int salary;
+        
+        Employee(String name, int salary) {
+            this.name = name;
+            this.salary = salary;
+        }
+    }
+
+    public class Main {
+        static void increaseSalary(Employee employee, int raise) {
+            // we only raise the salary if the raise is less than 10000
+            if(raise<10000) {
+                employee.salary += raise;
+            }
+        }
+    
+        public static void main(String[] args) {
+            Employee anna = new Employee("Anna", 45000);
+            Employee peter = new Employee("Peter", 45000);
+
+            // Anna and Peter get a salary raise
+            increaseSalary(anna, 2000);
+            increaseSalary(peter, 3000);
+            
+            System.out.println("New salary of Anna is "+anna.salary);
+            System.out.println("New salary of Peter is "+peter.salary);
+        }
+    }
+
+The above code works. But in Object-Oriented Programming (OOP) languages like Java, we generally prefer that all methods that modify instance variables of an object should be put into the class of the object. In large program, this makes it easier to understand who is doing what with an object. To implement this, we replace the static method "increaseSalary" of the "Main" class by a non-static method in the "Employee" class:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        int salary;
+        
+        Employee(String name, int salary) {
+            this.name = name;
+            this.salary = salary;
+        }
+        
+        void increaseSalary(int raise) {
+            if(raise<10000) {
+                this.salary += raise;
+            }
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Employee anna = new Employee("Anna", 45000);
+            Employee peter = new Employee("Peter", 45000);
+            
+            // Anna and Peter get a salary raise
+            anna.increaseSalary(2000);
+            peter.increaseSalary(3000);
+            
+            System.out.println("New salary of Anna is "+anna.salary);
+            System.out.println("New salary of Peter is "+peter.salary);
+        }
+    }
+
+Because "increaseSalary" is now a non-static method of "Employee", we can directly call it on the Employee object. Inside a method (or constructor), the :code:`this` keyword stands for the object for which the method has been called. Therefore, when we call the method with :code:`anna.increaseSalary(10000)`, the method will change the salary instance variable of the Anna object.
+
+Restricting access
+------------------
+
+The nice thing about our "increaseSalary" method is that we can make sure that raises are limited to 10000 Euro :) However, nobody stops the programmer to use our Employee class and manually change the salary:
+
+.. code-block:: java
+
+    Employee anna = new Employee("Anna", 45000, null);
+    anna.salary += 150000;   // ha!
+
+This kind of mistake can quickly happen in a large program with hundreds of classes.    
+We can prevent this by declaring the instance variable "salary" as :code:`private`:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        private int salary;
+        
+        Employee(String name, int salary) {
+            this.name = name;
+            this.salary = salary;
+        }
+        
+        void increaseSalary(int raise) {
+            if(raise<10000) {
+                this.salary += raise;
+            }
+        }
+    }
+
+A private instance variable is only accessible *inside* the class. So the access :code:`anna.salary += 50000` in the "Main" class doesn't work anymore.
+
+Of course, that's a bit annoying because it also means that we cannot access anymore Anna's salary in :code:`System.out.println("New salary of Anna is "+anna.salary)`. To fix this, we can add a method "getSalary" whose only purpose is to give us the value of the private salary variable. Here is the new version of the code:
+
+.. code-block:: java
+
+    class Employee {
+        String name;
+        private int salary;
+        
+        Employee(String name, int salary) {
+            this.name = name;
+            this.salary = salary;
+        }
+        
+        void increaseSalary(int raise) {
+            if(raise<10000) {
+                this.salary += raise;
+            }
+        }
+        
+        int getSalary() {
+            return this.salary;
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Employee anna = new Employee("Anna", 45000);
+            
+            anna.increaseSalary(2000);
+            
+            System.out.println("New salary of Anna is "+anna.getSalary());
+        }
+    }
+
+Inheritance
+===========
+
+Creating subclasses
+-------------------
+
+Let's say we are writing a computer game, for example an RPG. We implement weapons as objects of the class "Weapon". The damage that a weapon can deal depends on its "level". The price of a weapon also depends on its level.
+
+.. code-block:: java
+
+    class Weapon {
+        private int level;
+        private String name;
+
+        public Weapon(String name, int level) {
+            this.name = name;
+            this.level = level;
+        }
+
+        public int getPrice() {
+            return this.level * 1000;
+        }
+
+        public int getSimpleDamage() {
+            return this.level * 10;
+        }
+        
+        public int getDoubleDamage() {
+            return this.getSimpleDamage() * 2;
+        }
+    }
+    
+    public class Main {   
+        public static void main(String[] args) {
+            Weapon dagger = new Weapon("Small dagger", 2);
+            
+            System.out.println("Price is " + dagger.getPrice());
+            System.out.println("Simple damage is " + dagger.getSimpleDamage());
+            System.out.println("Double damage is " + dagger.getDoubleDamage());
+        }
+    }
+    
+**Before you continue, carefully study the above program and make sure that you understand what it does. Things are about to get a little more complicated in the following!**
+    
+In our game, there is also a special weapon type, the *Mighty Swords*. These swords always deal a damage of 1000, independently of their level. In Java, we can implement this new weapon type like this:
+
+.. code-block:: java
+
+    class MightySword extends Weapon {
+
+        public MightySword(String name, int level) {
+            super(name,level);
+        }
+
+        public int getSimpleDamage() {
+            return 1000;
+        }
+    } 
+ 
+According to the first line of this code, the class "MightySword" *extends* the class "Weapon". We say that "MightySword" is *a subclass* of "Weapon" (or we can say that "Weapon" is a *superclass* of "MightySword"). In practice, this means that everything we can do with objects of the class "Weapon" we can also do with objects of the class "MightySword":
+
+.. code-block:: java
+
+    public static void main(String[] args) {
+        Weapon weapon = new MightySword("Magic sword", 3);
+        System.out.println("Price is " + weapon.getPrice());
+        System.out.println("Simple damage is " + weapon.getSimpleDamage());
+        System.out.println("Double damage is " + weapon.getDoubleDamage());
+    }
+
+At first glance, there seems to be a mistake in the above "main" method. Why is the line
+
+.. code-block:: java
+
+    Weapon weapon = new MightySword("Magic sword", 3);
+    
+not a type error? The left side and the right side seem to have different types. On the left, we have "Weapon" and on the right we have "MightySword", which is a subclass of "Weapon". But this is acceptable for the compiler because, Java has the following rule:
+
+**Rule 1: A variable of type X can hold a reference to an object of class X or to an object of a subclass of X**.
+
+The next line looks strange, too:
+
+.. code-block:: java
+
+    System.out.println("Price is " + weapon.getPrice());
+
+Our class "MightySword" has not defined a method "getPrice" so why can we call :code:`weapon.getPrice()` on a MightySword object? This is another rule in Java:
+
+**Rule 2: Methods defined in a class X can be also used on objects of subclasses of X. The subclass inherits the methods of its superclass.**
+
+Let's look at the next line. It is:
+
+.. code-block:: java
+
+    System.out.println("Simple damage is " + weapon.getSimpleDamage());
+    
+You might expect that :code:`weapon.getSimpleDamage()` calls the "getSimpleDamage" method of the "Weapon" class because the variable "weapon" has been declared as :code:`Weapon weapon`. However, if you check the output of the program, you will see that the method "getSimpleDamage" of the class "MightySword" is called. Why? Because the variable "weapon" contains a reference to an object of the class "MightySword". The rule is:
+
+**Rule 3: When you call a method on a variable declared as "X x" and the variable contains a reference to an object of class Y (subclass of X) and the method is defined in X and in Y, the JVM will call the method defined in Y.**
+
+For objects of the class "MightySword", calling "getSimpleDamage" will always execute the method as defined in "MightySword". We say that the method "getSimpleDamage" in "MightySword" *overrides* the method definition in the class "Weapon".
+
+With the above three rules, can you now guess what happens in the next line?
+
+.. code-block:: java
+
+    System.out.println("Double damage is " + weapon.getDoubleDamage());
+
+According to rule 2, the class "MightySword" inherits the method "getDoubleDamage" of the class "Weapon". So, let's check how that method was defined in "Weapon":
+
+.. code-block:: java
+
+    public int getDoubleDamage() {
+        return this.getSimpleDamage() * 2;
+    }
+    
+The method calls :code:`this.getSimpleDamage()`. Which method "getSimpleDamage" will be called? The one defined in "Weapon" or the one in "MightySword"?
+
+To answer this question, you have to remember rule 3! The :code:`this` in :code:`this.getSimpleDamage()` refers to the object on which the method was called. Since our method is an object of the class "MightySword", the method "getSimpleDamage" of "MightySword" will be called, even if "getDoubleDamage" is defined in the class "Weapon".
+
+Super
+-----
+
+There is one thing left in our Mighty Sword example that we have not yet explained. It's the constructor:
+
+.. code-block:: java
+
+    class MightySword extends Weapon {
+
+        public MightySword(String name, int level) {
+            super(name,level);
+        }
+
+        ...
+     }
+     
+The keyword :code:`super` stands for the superclass of "MightySword", that is "Weapon". Therefore, the line :code:`super(name,level)` simply calls the constructor as defined in "Weapon".
+
+:code:`super` can be also used in methods. Imagine we want to define a new weapon type "ExpensiveWeapon" that costs exactly 100 more than a normal weapon. We can implement it as follows:
+
+.. code-block:: java
+
+    class ExpensiveWeapon extends Weapon {
+
+        public ExpensiveWeapon(String name, int level) {
+            super(name,level);
+        }
+
+        public int getPrice() {
+            return super.getPrice() + 100;
+        }
+    } 
+
+The expression :code:`super.getPrice()` calls the method "getPrice" as defined in the superclass "Weapon". Basically, :code:`super` can be used to break rule 3.
+
+Extending, extending,...
+------------------------
+
+A subclass cannot only override methods of its superclass, it can also add new instance variables and new methods. For example, we can define a new type of Mighty Swords that can do magic:
+
+.. code-block:: java
+
+    class MagicSword extends MightySword {
+        private int magicLevel;
+
+        public MagicSword(String name, int level, int magicLevel) {
+            super(name,level);
+            this.magicLevel = magicLevel;
+        }
+
+        public int getMagicDamage() {
+            return this.magicLevel * 5;
+        }
+    } 
+
+As you can see, you can create subclasses of subclasses. Note that the constructor calls the constructor of the superclass and then initializes the new instance variable "magicLevel".
+
+How can we call the method "getMagicDamage"? Can we do this?
+
+.. code-block:: java
+
+    Weapon weapon = new MagicSword("Elven sword", 7, 3);
+    System.out.println(weapon.getMagicDamage());
+    
+The answer is no! Rule 3 is only applied for methods that are defined in a class and in the superclass. This is not the case for "getMagicDamage" because it only exists in "MagicWeapon". To call it, you have to convince the compiler that the variable really contains a reference to a MagicWeapon object. For example, you could change the type of the variable "weapon":
+
+.. code-block:: java
+
+    MagicSword weapon = new MagicSword("Elven sword", 7, 3);
+    System.out.println(weapon.getMagicDamage());
+
+Alternatively, you can do a type cast:
+
+    Weapon weapon = new MagicSword("Elven sword", 7, 3);
+    System.out.println(((MagicSword)weapon).getMagicDamage());
+
+However, be careful with such type casts. If the type cast was not correct, you will get a runtime error:
+
+    Weapon weapon = new Weapon("Elven sword", 7);
+    System.out.println(((MagicSword)weapon).getMagicDamage()); //  Error! This is not a magic sword
+
+Class tree
+----------
+
+If we take all the different weapon classes that we created in the previous examples, we get a so-called class tree that shows the relationships between them:
 
 
 
 
 
+
+Switch/case
+===========
 
 ArrayLists
 ==========
 
 Overloading
 ===========
+
+Generics
+========
+
+Comparator
+==========
 
 
 Organizing Code: Packages
