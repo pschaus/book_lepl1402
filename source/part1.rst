@@ -1321,14 +1321,16 @@ A subclass cannot only override methods of its superclass, it can also add new i
 
 As you can see, you can create subclasses of subclasses. Note that the constructor calls the constructor of the superclass and then initializes the new instance variable "magicLevel".
 
-How can we call the method "getMagicDamage"? Can we do this?
+How can we call the method "getMagicDamage"? Can we do this:
 
 .. code-block:: java
 
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(weapon.getMagicDamage());
     
-The answer is no! Rule 3 is only applied for methods that are defined in a class and in the superclass. This is not the case for "getMagicDamage" because it only exists in "MagicWeapon". To call it, you have to convince the compiler that the variable really contains a reference to a MagicWeapon object. For example, you could change the type of the variable "weapon":
+The answer is no! Rule 3 is only applied to methods that are defined in a class *and* in the superclass. This is not the case for "getMagicDamage" because it only exists in "MagicSword".
+
+In this case, the Java compiler will not accept the call :code:`weapon.getMagicDamage()` because it cannot be 100% sure that the object in the variable "weapon" really has a method "getMagicDamage" (yes, the compiler is stupid). To be able to call the method, you have to convince the compiler that the variable contains a reference to a Magic Sword object. For example, you could change the type of the variable "weapon":
 
 .. code-block:: java
 
@@ -1337,10 +1339,14 @@ The answer is no! Rule 3 is only applied for methods that are defined in a class
 
 Alternatively, you can do a type cast:
 
+.. code-block:: java
+
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(((MagicSword)weapon).getMagicDamage());
 
-However, be careful with such type casts. If the type cast was not correct, you will get a runtime error:
+However, be careful with such type casts. If the type cast is not valid, you will get a runtime error:
+
+.. code-block:: java
 
     Weapon weapon = new Weapon("Elven sword", 7);
     System.out.println(((MagicSword)weapon).getMagicDamage()); //  Error! This is not a magic sword
