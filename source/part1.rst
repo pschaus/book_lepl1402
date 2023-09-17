@@ -1158,20 +1158,20 @@ Let's say we are writing a computer game, for example an RPG. We implement weapo
         private int level;
         private String name;
 
-        public Weapon(String name, int level) {
+        Weapon(String name, int level) {
             this.name = name;
             this.level = level;
         }
 
-        public int getPrice() {
+        int getPrice() {
             return this.level * 1000;
         }
 
-        public int getSimpleDamage() {
+        int getSimpleDamage() {
             return this.level * 10;
         }
         
-        public int getDoubleDamage() {
+        int getDoubleDamage() {
             return this.getSimpleDamage() * 2;
         }
     }
@@ -1194,11 +1194,11 @@ In our game, there is also a special weapon type, the *Mighty Swords*. These swo
 
     class MightySword extends Weapon {
 
-        public MightySword(String name, int level) {
+        MightySword(String name, int level) {
             super(name,level);
         }
 
-        public int getSimpleDamage() {
+        int getSimpleDamage() {
             return 1000;
         }
     } 
@@ -1256,7 +1256,7 @@ According to rule 2, the class "MightySword" inherits the method "getDoubleDamag
 
 .. code-block:: java
 
-    public int getDoubleDamage() {
+    int getDoubleDamage() {
         return this.getSimpleDamage() * 2;
     }
     
@@ -1273,7 +1273,7 @@ There is one thing left in our Mighty Sword example that we have not yet explain
 
     class MightySword extends Weapon {
 
-        public MightySword(String name, int level) {
+        MightySword(String name, int level) {
             super(name,level);
         }
 
@@ -1288,11 +1288,11 @@ The keyword :code:`super` stands for the superclass of "MightySword", that is "W
 
     class ExpensiveWeapon extends Weapon {
 
-        public ExpensiveWeapon(String name, int level) {
+        ExpensiveWeapon(String name, int level) {
             super(name,level);
         }
 
-        public int getPrice() {
+        int getPrice() {
             return super.getPrice() + 100;
         }
     } 
@@ -1309,12 +1309,12 @@ A subclass cannot only override methods of its superclass, it can also add new i
     class MagicSword extends MightySword {
         private int magicLevel;
 
-        public MagicSword(String name, int level, int magicLevel) {
+        MagicSword(String name, int level, int magicLevel) {
             super(name,level);
             this.magicLevel = magicLevel;
         }
 
-        public int getMagicDamage() {
+        int getMagicDamage() {
             return this.magicLevel * 5;
         }
     } 
@@ -1351,21 +1351,131 @@ However, be careful with such type casts. If the type cast is not valid, you wil
     Weapon weapon = new Weapon("Elven sword", 7);
     System.out.println(((MagicSword)weapon).getMagicDamage()); //  Error! This is not a magic sword
 
-Class tree
-----------
+Polymorphism
+------------
 
-If we take all the different weapon classes that we created in the previous examples, we get a so-called class tree that shows the relationships between them:
+The inheritance mechanism of Java makes it possible to write methods and data structures that can be used with objects of different classes. Thanks to rule 1, you can define an array that contains different types of weapons:
 
+.. code-block:: java
 
+    Weapon[] inventory = new Weapon[4];
+    inventory[0] = new Weapon("Dagger", 2);
+    inventory[1] = new MagicSword("Elven sword", 7, 3);
+    inventory[2] = new ExpensiveWeapon("Golden pitchfork", 3);
+    // inventory[3] is not intialized here and therefore null
 
+And thanks to rules 2 and 3, you can write methods that work for different types of weapons:
 
+.. code-block:: java
+
+    int getPriceOfInventory(Weapon[] inventory) {
+        int sum = 0;
+        for(Weapon weapon : inventory) {
+            if(weapon!=null) {  // ignore unused elements in the inventory
+                sum += weapon.getPrice();
+            }
+        }
+        return sum;
+    }
+
+Object
+------
+
+If we take all the different weapon classes that we created in the previous examples, we get a so-called class hierarchy that shows the subclass-superclass relationship between them:
+
+.. image:: _static/images/part1/classhierarchy.svg
+   :width: 40%                                 
+
+The class "Object" that is above our "Weapon" class was not defined by us. It is automatically created by Java and is the superclass of *all* non-primitive types, even of arrays and strings! A variable of type "Object" therefore can refer to any object:
+
+.. code-block:: java
+
+    Object o;
+    o = "Hello";
+    o = new int[]{1,2,3};
+    o = new MagicSword("Elven sword", 7, 3);
+
+The class "Object" defines several interesting methods that can be used on all objects. One of them is the "toString" method. This method is important because it is called by methods like :code:`String.valueOf` and :code:`System.out.println` when you call them with an object as parameter. Therefore, if we override this method in our own class, we will get a nice output:
+
+.. code-block:: java
+
+    class Player {
+        private String name;
+
+        Player(String name) {
+            this.name = name;
+        }
+
+        public String toString() {
+            return "Player " + name;
+        }
+    }
+    
+    public class Main {   
+        public static void main(String[] args) {
+            Player peter = new Player("Peter");
+            System.out.println(peter);
+        }
+    }
+
+The method "toString" is declared as "public" in the class "Object" and, therefore, when we override it we have to declare it as public, too. We will talk about the meaning of "public" later.
+
+ArrayList and boxing
+--------------------
+
+Using the class "Object" can be useful in situation when we want to write methods that work with all types of objects. For example, we have seen before that a disadvantage of arrays in Java over lists in Python is that arrays cannot change their size. In the package :code:`java.util`, there is a class "ArrayList" that can do that:
+
+.. code-block:: java
+
+    import java.util.ArrayList;
+
+    public class Main {
+        public static void main(String[] args) {
+            ArrayList list = new ArrayList();
+
+            list.add("Hello");
+            list.add(new int[]{1,2,3});
+
+            System.out.println(list.size());
+        }
+    }
+
+As you can see in the above example, the method "add" of "ArrayList" accepts any object as argument.  Internally, "ArrayList" uses an array of type :code:`Object[]` to store the elements.
+
+Unfortunately, primitive types are not subclasses of "Object". Therefore, we cannot simple add an int value to  an ArrayList, at least not without the help of the compiler:
+
+.. code-block:: java
+
+    list.add(3);  // does that work?
+        
+However, we can do that if we create an object of the class :code:`Integer` from the int value. 
+
+.. code-block:: java
+
+    Integer value = Integer.valueOf(3);
+    list.add(value);
+
+This is called *boxing* because we put the int value 3 in a small box (the Integer object). The "Integer" class is really simple and basically only exists for the above reason. You can imagine its implementation like this:
+
+.. code-block:: java
+
+    class Integer {     // defined in the package java.lang
+        int value;
+    }
+    
+As already said, there are also equivalent classes "Long", "Float", etc. for the other primitive types.
+
+In fact, the Java compiler does the boxing for you. You can just write:
+
+.. code-block:: java
+
+    list.add(3);  // this automatically calls "Integer.valueOf(3)"
+
+If you plan to use Java in your studies for a scientific project with a lot of data, you should know that boxing is very inefficient because instead of storing a primitive-type value you store the reference to an object that contains the value. Using :code:`int[]` instead of :code:`Integer[]` is always better in terms of speed and memory consumption.
 
 
 Switch/case
 ===========
-
-ArrayLists
-==========
 
 Overloading
 ===========
