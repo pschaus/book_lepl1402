@@ -1410,30 +1410,108 @@ One of them is the "toString" method. This method is very useful because it is c
 
     class Player {
         private String name;
+        private int birthYear;
 
-        Player(String name) {
+        Player(String name, int birthYear) {
             this.name = name;
+            this.birthYear = birthYear;
         }
 
         public String toString() {
-            return "Player " + name;
+            return "Player " + this.name + " born in " + this.birthYear;
         }
     }
     
     public class Main {   
         public static void main(String[] args) {
-            Player peter = new Player("Peter");
+            Player peter = new Player("Peter", 1993);
             System.out.println(peter);   // this will call toString() of Player
         }
     }
 
 The method "toString" is declared as "public" in the class "Object" and, therefore, when we override it we have to declare it as public, too. We will talk about the meaning of "public" later.
 
-ArrayList
-=========
+Another interesting method defined by "Object" is "equals". We have already learned that we have to use the method "equals" when we want to compare the content of two strings because the equality operator "==" only compares references. This is also recommended for your own objects. However, comparing objects is more difficult than comparing strings. For our class "Player" shown above, when are two players equal? The Java language cannot answer this question for us, so we have to provide our own implementation of "equals". For example, we could say that two Player objects are equal if they have the same name and the same birth year:
 
-Boxing
-------
+.. code-block:: java
+
+    class Player {
+        private String name;
+        private int birthYear;
+
+        Player(String name, int birthYear) {
+            this.name = name;
+            this.birthYear = birthYear;
+        }
+
+        public String toString() {
+            return "Player " + this.name + " born in " + this.birthYear;
+        }
+        
+        public boolean equals(Object obj) {
+            if(obj instanceof Player) {
+                Player otherPlayer = (Player)obj;
+                return otherPlayer.name.equals(this.name) && otherPlayer.birthYear==this.birthYear;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+
+    public class Main {   
+        public static void main(String[] args) {
+            Player peter1 = new Player("Peter", 1993);
+            Player peter2 = new Player("Peter", 1993);
+            System.out.println( peter1.equals(peter2) );    // true
+            System.out.println( peter1.equals("Hello") );   // false
+        }
+    }
+
+What's happening in the above code? One difficulty with "equals" is that it can be called with any object as parameter, even with objects that are not instances of the class "Player". We are doing that in the "main" method:
+
+.. code-block:: java
+
+    System.out.println( peter1.equals("Hello") );
+
+So, before we can compare the name and the birth year of a Player object with another object, we first have to check whether the other object actually is a Player object! In the implementation of "equals", this happens in this line:
+
+.. code-block:: java
+
+    if(obj instanceof Player) {
+
+If the result of :code:`instanceof` is true, we can be sure that the typecast in the next line never fails:
+
+.. code-block:: java
+
+    Player otherPlayer = (Player)obj;
+
+After that we can compare the name and birth year of :code:`this` player and the other Player object.
+
+Starting from Java version 17, the :code:`instanceof` test and the typecast can be written in just one line:
+
+.. code-block:: java
+
+    public boolean equals(Object obj) {
+        if(obj instanceof Player otherPlayer) {
+            return otherPlayer.name.equals(this.name) && otherPlayer.birthYear==this.birthYear;
+        }
+        else {
+            return false;
+        }
+    } 
+
+By the way, what happens if we call the "equals" method with a :code:`null` parameter, like this:
+
+.. code-block:: java
+
+    System.out.println( peter1.equals(null) );
+    
+This actually works because an instanceof-test with :code:`null` always fails, i.e., the result is always false. In some sense, :code:`null` is a very strange "thing". It can be assigned to any variable, e.g., :code:`Person person = null`, but it does not belong to any class.
+
+
+Boxing and ArrayList
+====================
 
 Using the class "Object" can be useful in situations where we want to write methods that work with all types of objects. For example, we have seen before that a disadvantage of arrays in Java over lists in Python is that arrays cannot change their size. In the package :code:`java.util`, there is a class "ArrayList" that can do that:
 
@@ -1489,18 +1567,96 @@ This trick is called *boxing* because we put the int value 3 in a small "box" (t
 
 The :code:`java.lang` package also contains equivalent classes "Long", "Float", etc. for the other primitive types.
 
-Boxing is ugly and it only exists in Java because primitive types are not subclasses of "Object". Fortunately, we get a little help from the compiler. In fact, the Java compiler does the boxing for you. You can just write:
+Boxing is ugly and it is only needed in Java because primitive types are not subclasses of "Object". Fortunately, we get a little bit of help from the compiler. In fact, the Java compiler can do the boxing for you. This is called *autoboxing*. You can just write:
 
 .. code-block:: java
 
     list.add(3);  // this automatically calls "Integer.valueOf(3)"
 
 
-Switch/case
-===========
+Method overloading
+==================
 
-Overloading
-===========
+In Java, it is allowed to have two methods with the same name as long as they have different parameters. This is called *method overloading*. Here is an example:
+
+.. code-block:: java
+
+    class Player {
+        private String name;
+        private int birthYear;
+
+        Player(String name, int birthYear) {
+            this.name = name;
+            this.birthYear = birthYear;
+        }
+
+        public String toString() {
+            return "Player " + this.name + " born in " + this.birthYear;
+        }
+
+        public void set(String name) {
+            this.name = name;
+        }
+
+        public void set(String name, int birthYear) {
+            this.name = name;
+            this.birthYear = birthYear;
+        }
+    }
+
+If we call the "set" method, the Java compiler knows which of the two methods you wanted to call by looking at the parameters:
+
+.. code-block:: java
+
+    Person person = new Person("Peter", 1993);
+    person.set("Pierre", 1993);     // this is the set method with parameters String and int
+
+However, you have to be careful when you write overloaded methods where the parameters are classes and subclasses. Here is minimal example of a Player class with such an overloaded method:
+
+.. code-block:: java
+
+    class Weapon {
+        // ...
+    }
+
+    class MightySword extends Weapon {
+        // ...
+    }
+
+    class Player {
+        Weapon weapon;
+        int magic;
+
+        void giveWeapon(Weapon weapon) {
+            this.weapon = weapon;
+            this.magic = 0;
+        }
+
+        void giveWeapon(MightySword weapon) {
+            this.weapon = weapon;
+            this.magic = 10;   // a Mighty Sword increases the magic power of the player
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Player player = new Player();
+
+            Weapon weapon = new MightySword();
+            player.giveWeapon(weapon);
+            
+            System.out.println(player.magic);
+        }
+    }
+
+What will :code:`System.out.println(player.magic)` print after we gave a Mighty Sword to the player?
+
+Surprisingly, it will print "0". The method :code:`void giveWeapon(MightySword weapon)` is **not** called although we called "giveWeapon" with a MightySword object! The explanation for this is that the Java compiler only looks at the type of the variable as declared in the source code when deciding which method to call. In our example, the type of the variable "weapon" is "Weapon", therefore the method :code:`void giveWeapon(Weapon weapon)` is called. For the compiler, it is not important that the variable contains a reference to a MightySword object.
+
+Lesson learned: **Method calls in Java are only dynamic for the object on which the method is called (rule 3!). They are not dynamic for the parameters of the method.**
+
+
+
 
 Generics
 ========
