@@ -1164,7 +1164,7 @@ Let's say we are writing a computer game, for example an RPG. We implement weapo
         }
 
         int getPrice() {
-            return this.level * 1000;
+            return this.level * 500;
         }
 
         int getSimpleDamage() {
@@ -1178,22 +1178,22 @@ Let's say we are writing a computer game, for example an RPG. We implement weapo
     
     public class Main {   
         public static void main(String[] args) {
-            Weapon dagger = new Weapon("Small dagger", 2);
+            Weapon dagger;
             
+            weapon = new Weapon("Small dagger", 2);            
             System.out.println("Price is " + dagger.getPrice());
             System.out.println("Simple damage is " + dagger.getSimpleDamage());
             System.out.println("Double damage is " + dagger.getDoubleDamage());
         }
     }
     
-**Before you continue, carefully study the above program and make sure that you understand what it does. Things are about to get a little more complicated in the following!**
+**Before you continue, carefully study the above program and make sure that you understand what it does. Run it in IntelliJ. Things are about to get a little more complicated in the following!**
     
 In our game, there is also a special weapon type, the *Mighty Swords*. These swords always deal a damage of 1000, independently of their level. In Java, we can implement this new weapon type like this:
 
 .. code-block:: java
 
     class MightySword extends Weapon {
-
         MightySword(String name, int level) {
             super(name,level);
         }
@@ -1203,12 +1203,14 @@ In our game, there is also a special weapon type, the *Mighty Swords*. These swo
         }
     } 
  
-According to the first line of this code, the class "MightySword" *extends* the class "Weapon". We say that "MightySword" is *a subclass* of "Weapon" (or we can say that "Weapon" is a *superclass* of "MightySword"). In practice, this means that everything we can do with objects of the class "Weapon" we can also do with objects of the class "MightySword":
+According to the first line of this code, the class "MightySword" *extends* the class "Weapon". We say that "MightySword" is *a subclass* (or *subtype*) of "Weapon" or we can say that "Weapon" is a *superclass* of "MightySword". In practice, this means that everything we can do with objects of the class "Weapon" we can also do with objects of the class "MightySword":
 
 .. code-block:: java
 
     public static void main(String[] args) {
-        Weapon weapon = new MightySword("Magic sword", 3);
+        Weapon weapon;
+
+        weapon = new MightySword("Magic sword", 3);
         System.out.println("Price is " + weapon.getPrice());
         System.out.println("Simple damage is " + weapon.getSimpleDamage());
         System.out.println("Double damage is " + weapon.getDoubleDamage());
@@ -1218,21 +1220,23 @@ At first glance, there seems to be a mistake in the above "main" method. Why is 
 
 .. code-block:: java
 
-    Weapon weapon = new MightySword("Magic sword", 3);
+    weapon = new MightySword("Magic sword", 3);
     
-not a type error? The left side and the right side seem to have different types. On the left, we have "Weapon" and on the right we have "MightySword", which is a subclass of "Weapon". But this is acceptable for the compiler because, Java has the following rule:
+not a type error? On the left, we have the variable "weapon" of type "Weapon" and on the right we have a new object of "MightySword". But this is acceptable for the compiler because, Java has the following rule:
 
 **Rule 1: A variable of type X can hold a reference to an object of class X or to an object of a subclass of X**.
 
-The next line looks strange, too:
+Because of rule 1, the compiler is perfectly happy with putting a reference to a MightySword object in a variable declared as type "Weapon". For Java, MightySword objects are just special Weapon objects.
+
+The next line of the "main" method looks strange, too:
 
 .. code-block:: java
 
     System.out.println("Price is " + weapon.getPrice());
 
-Our class "MightySword" has not defined a method "getPrice" so why can we call :code:`weapon.getPrice()` on a MightySword object? This is another rule in Java:
+Our class "MightySword" has not defined a method "getPrice" so why can we call :code:`weapon.getPrice()`? This is another rule in Java:
 
-**Rule 2: Methods defined in a class X can be also used on objects of subclasses of X. The subclass inherits the methods of its superclass.**
+**Rule 2: The subclass inherits the methods of its superclass. Methods defined in a class X can be also used on objects of a subclass of X.**
 
 Let's look at the next line. It is:
 
@@ -1240,9 +1244,9 @@ Let's look at the next line. It is:
 
     System.out.println("Simple damage is " + weapon.getSimpleDamage());
     
-You might expect that :code:`weapon.getSimpleDamage()` calls the "getSimpleDamage" method of the "Weapon" class because the variable "weapon" has been declared as :code:`Weapon weapon`. However, if you check the output of the program, you will see that the method "getSimpleDamage" of the class "MightySword" is called. Why? Because the variable "weapon" contains a reference to an object of the class "MightySword". The rule is:
+Just by looking at this line, you might expect that :code:`weapon.getSimpleDamage()` calls the "getSimpleDamage" method of the "Weapon" class because the variable "weapon" has been declared as :code:`Weapon weapon`. However, if you check the output of the program, you will see that the method "getSimpleDamage" of the class "MightySword" is called. Why? Because we have put an object of the class "MightySword" into the variable "weapon". The rule is:
 
-**Rule 3: When you call a method on a variable declared as "X x" and the variable contains a reference to an object of class Y (subclass of X) and the method is defined in X and in Y, the JVM will call the method defined in Y.**
+**Rule 3: Let x be a variable declared as "X x" (where X is a class) and let's assign an object of class Y (where Y is a subclass of X) to x. When you call a method on x and the method is defined in X and in Y, the JVM will execute the method defined in Y.**
 
 For objects of the class "MightySword", calling "getSimpleDamage" will always execute the method as defined in "MightySword". We say that the method "getSimpleDamage" in "MightySword" *overrides* the method definition in the class "Weapon".
 
@@ -1252,7 +1256,7 @@ With the above three rules, can you now guess what happens in the next line?
 
     System.out.println("Double damage is " + weapon.getDoubleDamage());
 
-According to rule 2, the class "MightySword" inherits the method "getDoubleDamage" of the class "Weapon". So, let's check how that method was defined in "Weapon":
+According to rule 2, the class "MightySword" inherits the method "getDoubleDamage" of the class "Weapon". So, let's check how that method was defined in the class "Weapon":
 
 .. code-block:: java
 
@@ -1260,9 +1264,7 @@ According to rule 2, the class "MightySword" inherits the method "getDoubleDamag
         return this.getSimpleDamage() * 2;
     }
     
-The method calls :code:`this.getSimpleDamage()`. Which method "getSimpleDamage" will be called? The one defined in "Weapon" or the one in "MightySword"?
-
-To answer this question, you have to remember rule 3! The :code:`this` in :code:`this.getSimpleDamage()` refers to the object on which the method was called. Since our method is an object of the class "MightySword", the method "getSimpleDamage" of "MightySword" will be called, even if "getDoubleDamage" is defined in the class "Weapon".
+The method calls :code:`this.getSimpleDamage()`. Which method "getSimpleDamage" will be called? The one defined in "Weapon" or the one in "MightySword"? To answer this question, you have to remember rule 3! The :code:`this` in :code:`this.getSimpleDamage()` refers to the object on which the method was called. Since our method is an object of the class "MightySword", the method "getSimpleDamage" of "MightySword" will be called. The fact that "getDoubleDamage" is defined in the class "Weapon" does not change rule 3.
 
 Super
 -----
@@ -1280,7 +1282,7 @@ There is one thing left in our Mighty Sword example that we have not yet explain
         ...
      }
      
-The keyword :code:`super` stands for the superclass of "MightySword", that is "Weapon". Therefore, the line :code:`super(name,level)` simply calls the constructor as defined in "Weapon".
+In the constructor, the keyword :code:`super` stands for the constructor of the superclass of "MightySword", that is "Weapon". Therefore, the line :code:`super(name,level)` simply calls the constructor as defined in "Weapon".
 
 :code:`super` can be also used in methods. Imagine we want to define a new weapon type "ExpensiveWeapon" that costs exactly 100 more than a normal weapon. We can implement it as follows:
 
@@ -1297,7 +1299,7 @@ The keyword :code:`super` stands for the superclass of "MightySword", that is "W
         }
     } 
 
-The expression :code:`super.getPrice()` calls the method "getPrice" as defined in the superclass "Weapon". Basically, :code:`super` can be used to break rule 3.
+The expression :code:`super.getPrice()` calls the method "getPrice" as defined in the superclass "Weapon". That means that the keyword :code:`super` can be used to call methods of the superclass, which would normally not be possible because of rule 3.
 
 Extending, extending,...
 ------------------------
@@ -1310,7 +1312,7 @@ A subclass cannot only override methods of its superclass, it can also add new i
         private int magicLevel;
 
         MagicSword(String name, int level, int magicLevel) {
-            super(name,level);
+            super(name,level);  // call the constructor of MightySword
             this.magicLevel = magicLevel;
         }
 
@@ -1329,13 +1331,14 @@ How can we call the method "getMagicDamage"? Can we do this:
     System.out.println(weapon.getMagicDamage());
     
 The answer is no! Rule 3 is only applied to methods that are defined in a class *and* in the superclass. This is not the case for "getMagicDamage" because it only exists in "MagicSword".
-
-In this case, the Java compiler will not accept the call :code:`weapon.getMagicDamage()` because it cannot be 100% sure that the object in the variable "weapon" really has a method "getMagicDamage" (yes, the compiler is stupid). To be able to call the method, you have to convince the compiler that the variable contains a reference to a Magic Sword object. For example, you could change the type of the variable "weapon":
+In this situation, the Java compiler will not accept the call :code:`weapon.getMagicDamage()` because it cannot be sure that the object in the variable "weapon" really has a method "getMagicDamage". The compiler is stupid and will not read the entire source code to analyze what you might have done with the "weapon" variable. To be able to call the method, you have to convince the compiler that the variable contains a reference to a Magic Sword object. For example, you could change the type of the variable "weapon":
 
 .. code-block:: java
 
     MagicSword weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(weapon.getMagicDamage());
+
+In this way, it's 100% clear for the compiler that the variable "weapon" will always refer to a "MagicSword" object (or to an object of a subclass of "MagicSword", remember rule 1). Therefore, it's guaranteed that the method "getMagicDamage" can be executed.
 
 Alternatively, you can do a type cast:
 
@@ -1344,58 +1347,64 @@ Alternatively, you can do a type cast:
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(((MagicSword)weapon).getMagicDamage());
 
-However, be careful with such type casts. If the type cast is not valid, you will get a runtime error:
+However, be careful with such type casts. The compiler will trust you and if you do an invalid typecast, you will get an error during program execution:
 
 .. code-block:: java
 
-    Weapon weapon = new Weapon("Elven sword", 7);
-    System.out.println(((MagicSword)weapon).getMagicDamage()); //  Error! This is not a magic sword
+    Weapon weapon = new Weapon("Dagger", 7);
+    
+    MagicSword sword = (MagicSword)weapon;       // oh oh... Runtime error!
+    System.out.println(sword.getMagicDamage());
 
 Polymorphism
 ------------
 
-The inheritance mechanism of Java makes it possible to write methods and data structures that can be used with objects of different classes. Thanks to rule 1, you can define an array that contains different types of weapons:
+The three rules make it possible to write code that can be used with objects of different classes. Thanks to rule 1, you can define an array that contains different types of weapons:
 
 .. code-block:: java
 
-    Weapon[] inventory = new Weapon[4];
+    Weapon[] inventory = new Weapon[3];
     inventory[0] = new Weapon("Dagger", 2);
     inventory[1] = new MagicSword("Elven sword", 7, 3);
     inventory[2] = new ExpensiveWeapon("Golden pitchfork", 3);
-    // inventory[3] is not intialized here and therefore null
 
-And thanks to rules 2 and 3, you can write methods that work for different types of weapons:
+You can write methods that work for different types of weapons:
 
 .. code-block:: java
 
     int getPriceOfInventory(Weapon[] inventory) {
         int sum = 0;
         for(Weapon weapon : inventory) {
-            if(weapon!=null) {  // ignore unused elements in the inventory
-                sum += weapon.getPrice();
-            }
+            sum += weapon.getPrice();
         }
         return sum;
     }
 
-Object
-------
+Although the above method "getPriceOfInventory" looks like it only works for objects of class "Weapon", it also works for all subclasses of "Weapon". This is called *Subtype Polymorphism*. If you have for example an object of class "ExpensiveWeapon" in the array, rule 3 will guarantee that :code:`sum += weapon.getPrice()` will call the method defined in "ExpensiveWeapon".
+
+The conclusion is that there is a difference between what you see in the source code and what actually happens when the program is executed. When the compiler sees a method call in your source code it only checks whether the method exists in the declared type of the variables. But during program execution, what is important is which object is actually referenced by the variable! We say that **type checking by the compiler is static**, but **method calls by the JVM are dynamic**.
+
+
+The class hierarchy
+===================
 
 If we take all the different weapon classes that we created in the previous examples, we get a so-called class hierarchy that shows the subclass-superclass relationship between them:
 
 .. image:: _static/images/part1/classhierarchy.svg
-   :width: 40%                                 
+   :width: 35%                                 
 
-The class "Object" that is above our "Weapon" class was not defined by us. It is automatically created by Java and is the superclass of *all* non-primitive types, even of arrays and strings! A variable of type "Object" therefore can refer to any object:
+The class "Object" that is above our "Weapon" class was not defined by us. It is automatically created by Java and is the superclass of *all* non-primitive types in Java, even of arrays and strings! A variable of type "Object" therefore can refer to any object:
 
 .. code-block:: java
 
     Object o;
-    o = "Hello";
-    o = new int[]{1,2,3};
-    o = new MagicSword("Elven sword", 7, 3);
+    o = "Hello";                                // okay
+    o = new int[]{1,2,3};                       // okay, too
+    o = new MagicSword("Elven sword", 7, 3);    // still okay!
 
-The class "Object" defines several interesting methods that can be used on all objects. One of them is the "toString" method. This method is important because it is called by methods like :code:`String.valueOf` and :code:`System.out.println` when you call them with an object as parameter. Therefore, if we override this method in our own class, we will get a nice output:
+The documentation of "Object" can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Object.html>`_.
+The class defines several interesting methods that can be used on all objects.
+One of them is the "toString" method. This method is very useful because it is called by methods like :code:`String.valueOf` and :code:`System.out.println` when you call them with an object as parameter. Therefore, if we override this method in our own class, we will get a nice output:
 
 .. code-block:: java
 
@@ -1414,16 +1423,19 @@ The class "Object" defines several interesting methods that can be used on all o
     public class Main {   
         public static void main(String[] args) {
             Player peter = new Player("Peter");
-            System.out.println(peter);
+            System.out.println(peter);   // this will call toString() of Player
         }
     }
 
 The method "toString" is declared as "public" in the class "Object" and, therefore, when we override it we have to declare it as public, too. We will talk about the meaning of "public" later.
 
-ArrayList and boxing
---------------------
+ArrayList
+=========
 
-Using the class "Object" can be useful in situation when we want to write methods that work with all types of objects. For example, we have seen before that a disadvantage of arrays in Java over lists in Python is that arrays cannot change their size. In the package :code:`java.util`, there is a class "ArrayList" that can do that:
+Boxing
+------
+
+Using the class "Object" can be useful in situations where we want to write methods that work with all types of objects. For example, we have seen before that a disadvantage of arrays in Java over lists in Python is that arrays cannot change their size. In the package :code:`java.util`, there is a class "ArrayList" that can do that:
 
 .. code-block:: java
 
@@ -1440,7 +1452,7 @@ Using the class "Object" can be useful in situation when we want to write method
         }
     }
 
-As you can see in the above example, the method "add" of "ArrayList" accepts any object as argument.  Internally, "ArrayList" uses an array of type :code:`Object[]` to store the elements.
+As you can see in the above example, the method "add" of "ArrayList" accepts any object as argument. You can imagine that it is defined as :code:`void add(Object obj)`. Indeed, internally, "ArrayList" uses an array of type :code:`Object[]` to store the added elements.
 
 Unfortunately, primitive types are not subclasses of "Object". Therefore, we cannot simple add an int value to  an ArrayList, at least not without the help of the compiler:
 
@@ -1448,30 +1460,40 @@ Unfortunately, primitive types are not subclasses of "Object". Therefore, we can
 
     list.add(3);  // does that work?
         
-However, we can do that if we create an object of the class :code:`Integer` from the int value. 
+One way to solve this problem is to write a new class with the only purpose to store int values in objects:
 
 .. code-block:: java
 
+    class IntObject {
+        int value;
+        
+        IntObject(value) {
+            this.value = value;
+        }
+    }
+    
+Now we can write:
+
+.. code-block:: java
+
+    IntObject obj = new IntObject(3);
+    list.add(obj);
+
+This trick is called *boxing* because we put the int value 3 in a small "box" (the IntObject object). We actually don't have to write our own class "IntObject", because the :code:`java.lang` package already contains a class that does exactly that:
+
+.. code-block:: java
+
+    // Integer is a class defined in the java.lang package
     Integer value = Integer.valueOf(3);
     list.add(value);
 
-This is called *boxing* because we put the int value 3 in a small box (the Integer object). The "Integer" class is really simple and basically only exists for the above reason. You can imagine its implementation like this:
+The :code:`java.lang` package also contains equivalent classes "Long", "Float", etc. for the other primitive types.
 
-.. code-block:: java
-
-    class Integer {     // defined in the package java.lang
-        int value;
-    }
-    
-As already said, there are also equivalent classes "Long", "Float", etc. for the other primitive types.
-
-In fact, the Java compiler does the boxing for you. You can just write:
+Boxing is ugly and it only exists in Java because primitive types are not subclasses of "Object". Fortunately, we get a little help from the compiler. In fact, the Java compiler does the boxing for you. You can just write:
 
 .. code-block:: java
 
     list.add(3);  // this automatically calls "Integer.valueOf(3)"
-
-If you plan to use Java in your studies for a scientific project with a lot of data, you should know that boxing is very inefficient because instead of storing a primitive-type value you store the reference to an object that contains the value. Using :code:`int[]` instead of :code:`Integer[]` is always better in terms of speed and memory consumption.
 
 
 Switch/case
