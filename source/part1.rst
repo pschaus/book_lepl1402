@@ -1510,8 +1510,11 @@ By the way, what happens if we call the "equals" method with a :code:`null` para
 This actually works because an instanceof-test with :code:`null` always fails, i.e., the result is always false. In some sense, :code:`null` is a very strange "thing". It can be assigned to any variable, e.g., :code:`Person person = null`, but it does not belong to any class.
 
 
-Boxing and ArrayList
+ArrayList and Boxing 
 ====================
+
+ArrayList
+---------
 
 Using the class "Object" can be useful in situations where we want to write methods that work with all types of objects. For example, we have seen before that a disadvantage of arrays in Java over lists in Python is that arrays cannot change their size. In the package :code:`java.util`, there is a class "ArrayList" that can do that:
 
@@ -1529,6 +1532,9 @@ Using the class "Object" can be useful in situations where we want to write meth
             System.out.println(list.size());
         }
     }
+
+Boxing and unboxing
+-------------------
 
 As you can see in the above example, the method "add" of "ArrayList" accepts any object as argument. You can imagine that it is defined as :code:`void add(Object obj)`. Indeed, internally, "ArrayList" uses an array of type :code:`Object[]` to store the added elements.
 
@@ -1572,6 +1578,21 @@ Boxing is ugly and it is only needed in Java because primitive types are not sub
 .. code-block:: java
 
     list.add(3);  // this automatically calls "Integer.valueOf(3)"
+
+Autoboxing is not limited to the "ArrayList" class. It works for all situations where you assign a primitive-type value to a variable that has a matching class type (i.e., Integer for int). The opposite direction, unboxing, is also done automatically by the compiler:
+
+
+.. code-block:: java
+
+    // autoboxing
+    // this is identical to:
+    //      Integer value = Integer.valueOf(3);
+    Integer value = 3;  
+    
+    // auto-unboxing
+    // this is identical to:
+    //      int i = value.intValue();
+    int i = value;
 
 
 Method overloading
