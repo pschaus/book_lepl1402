@@ -226,7 +226,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'lepl1402', u'Concepts of Programming with Javan',
+    ('index', 'lepl1402', u'Concepts of Programming with Java',
      [u'Concepts of Programming with Java'], 1)
 ]
 
@@ -240,7 +240,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'mini-cp', u'Concepts of Programming with Java',
+  ('index', 'cpj', u'Concepts of Programming with Java',
    u'Concepts of Programming with Java', 'lepl1402', 'Concepts of Programming with Java',
    'Miscellaneous'),
 ]
