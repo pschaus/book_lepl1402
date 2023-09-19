@@ -444,7 +444,15 @@ There is a convenient way to create and initialize an array in one step:
 
 ..  code-block:: java
 
-    int[] a = new int[]{ 2, 5, 6, -3 };  // an array with four elements
+    int[] a = { 2, 5, 6, -3 };  // an array with four elements
+
+But note that this short form is only allowed when you initialize a newly declared array variable. If you want to create a new array and assign it to an existing array variable, you have to use a different syntax:
+
+..  code-block:: java
+
+    int[] a;  
+    a = new int[]{ 2, 5, 6, -3 };
+
 
 Multi-dimensional arrays
 ------------------------
@@ -474,16 +482,17 @@ Again, there is a convenient way to create and initialize multi-dimensional arra
 
 ..  code-block:: java
 
-    int[][] a = new int[][] {   // 3x3 unit matrix
+    // 3x3 Identity matrix from the Algebra course
+    int[][] a = {       
         { 1, 0, 0 },
         { 0, 1, 0 },
         { 0, 0, 1 }
     };
     
-Incompletely initialized arrays
+Partially initialized arrays
 -------------------------------
 
-It is possible to create an "incompletely initialized" two-dimensional array in Java:
+It is possible to create a "partially initialized" two-dimensional array in Java:
    
 ..  code-block:: java
    
@@ -496,8 +505,8 @@ Again, this is an array of arrays. However, because we have only specified the s
     int[][] a = new int[3][];
     a[0] = new int[5];
     a[1] = new int[5];
-    a[2] = new int[2]; // this is allowed!
-    System.out.println(a[0][3]);  // Okay. The element a[0][3] exists.
+    a[2] = new int[2];            // A different size. This is allowed!
+    System.out.println(a[0][3]);  // Okay. The element a[0][3] exists
     System.out.println(a[2][3]);  // Error! The element a[2][3] does not exist
     
 As shown in the above example, the elements of a multi-dimensional array are all arrays, but they do not need to have the same size.
@@ -610,7 +619,7 @@ In this example, we have done two new things. We have used :code:`myArray.length
 Stopping a loop and skipping iterations
 ---------------------------------------
 
-Like in Python, you can leave a loop with the :code:`break` statement:
+Like in Python, you can leave a while loop or for loop with the :code:`break` statement:
 
 ..  code-block:: java
 
@@ -645,7 +654,6 @@ But you should only use :code:`break` and :code:`continue` if they make your pro
     }
 
 
-
 Conditional Statements
 ======================
 
@@ -678,7 +686,7 @@ As with loops, be careful not to forget to use curly braces :code:`{...}` if the
 Comparison and logical operators
 --------------------------------
 
-Boolean expressions are expressions that are evaluated to :code:`true` or :code:`false`. They are quite similar to the ones you know from Python. 
+The if statement requires a boolean expression, i.e., an expression that evaluates to :code:`true` or :code:`false`. There are several operators for boolean values that are quite similar to the ones you know from Python.
 
 .. code-block:: java
 
@@ -686,6 +694,82 @@ Boolean expressions are expressions that are evaluated to :code:`true` or :code:
     boolean b2 = !b1;       // "not" in Python
     boolean b3 = b1 && b2;  // "and" in Python
     boolean b4 = b1 || b2;  // "or" in Python
+
+Switch statement
+----------------
+
+Imagine a program where you test a variable for different values:
+
+..  code-block:: java
+
+    // two int variables that represent our position on a map
+    int x=0, y=0;
+    
+    // the directions in which we want to go
+    char[] directions=new char[]{'N', 'S', 'S', 'E', 'E', 'W'};
+    
+    // let's go!
+    for(char c : directions) {
+        if(c=='N') {
+            y++;            // we go north
+        }
+        else if(c=='S') {
+            y--;            // we go south
+        }
+        else if(c=='W') {
+            x--;            // we go west
+        }
+        else if(c=='E') {
+            x++;            // we go east
+        }
+        else {
+            System.out.println("Unknown direction");
+        }
+        System.out.println("The new position is " + x + " , " + y);
+    }
+
+Java has a switch statement that allows you to write the above program in a clearer way:
+
+.. code-block:: java
+
+    // two int variables that represent our position on a map
+    int x=0, y=0;
+    
+    // the directions in which we want to go
+    char[] directions=new char[]{'N', 'S', 'S', 'E', 'E', 'W'};
+
+    // let's go!
+    for(char c : directions) {
+        switch(c) {
+            case 'N' -> { y++; }     // we go north
+            case 'S' -> { y--; }     // we go south
+            case 'W' -> { x--; }     // we go west
+            case 'E' -> { x++; }     // we go east
+            default -> System.out.println("Error! Unknown direction");
+        }
+        System.out.println("The new position is "+x+" , "+y);
+    }
+
+Note that the above code only works with Java version 14 or newer. In older Java versions, the switch statement is much uglier and more difficult to use:
+
+.. code-block:: java
+
+    switch(c) {
+        case 'N':
+            y++;
+            break;  // if you forget the "break", very bad things will happen!
+        case 'S':
+            y--;
+            break;
+        case 'W':
+            x--;
+            break;
+        case 'E':
+            x++;
+            break; 
+        default:
+            System.out.println("Error! Unknown direction");        
+    }
 
  
 Strings
@@ -1454,6 +1538,7 @@ Another interesting method defined by "Object" is "equals". We have already lear
                 return otherPlayer.name.equals(this.name) && otherPlayer.birthYear==this.birthYear;
             }
             else {
+                // "obj" is not a Person
                 return false;
             }
         }
@@ -1468,12 +1553,7 @@ Another interesting method defined by "Object" is "equals". We have already lear
         }
     }
 
-What's happening in the above code? One difficulty with "equals" is that it can be called with any object as parameter, even with objects that are not instances of the class "Player". We are doing that in the "main" method:
-
-.. code-block:: java
-
-    System.out.println( peter1.equals("Hello") );
-
+What's happening in the above code? One difficulty with "equals" is that it can be called with any object as parameter, even with objects that are not instances of the class "Player". You can see an example in the "main" method: :code:`peter1.equals("Hello")`.
 So, before we can compare the name and the birth year of a Player object with another object, we first have to check whether the other object actually is a Player object! In the implementation of "equals", this happens in this line:
 
 .. code-block:: java
@@ -1501,13 +1581,13 @@ Starting from Java version 17, the :code:`instanceof` test and the typecast can 
         }
     } 
 
-By the way, what happens if we call the "equals" method with a :code:`null` parameter, like this:
+What happens if we call the "equals" method with a :code:`null` parameter? For example, like this:
 
 .. code-block:: java
 
     System.out.println( peter1.equals(null) );
     
-This actually works because an instanceof-test with :code:`null` always fails, i.e., the result is always false. In some sense, :code:`null` is a very strange "thing". It can be assigned to any variable, e.g., :code:`Person person = null`, but it does not belong to any class.
+This actually works because an instanceof-test with :code:`null` always gives false. In some sense, :code:`null` is a very strange "thing". It can be assigned to any variable, e.g., :code:`Person person = null`, but it does not belong to any class.
 
 
 ArrayList and Boxing 
@@ -1526,17 +1606,38 @@ Using the class "Object" can be useful in situations where we want to write meth
         public static void main(String[] args) {
             ArrayList list = new ArrayList();
 
+            // add two elements to the end of the list
             list.add("Hello");
             list.add(new int[]{1,2,3});
 
-            System.out.println(list.size());
+            System.out.println( list.size() );    // number of elements
+            System.out.println( list.get(0) );    // first element    
         }
     }
 
+As you can see in the above example, the method "add" of "ArrayList" accepts any reference (including to arrays and strings) as argument. You can imagine that the methods "add" and "get" are defined as :code:`void add(Object obj)` and :code:`Object get(int position)`. Indeed, internally, "ArrayList" uses an array of type :code:`Object[]` to store the added elements.
+
+For loops are also allowed with "ArrayList":
+
+.. code-block:: java
+
+    ArrayList list = new ArrayList();
+    list.add("Hello");
+    list.add("World");
+    
+    // simple for loop
+    for(Object obj : list) {
+        System.out.println(obj);
+    }
+
+    // complex for loop
+    for(int i=0; i<list.size(); i++) {
+        System.out.println( list.get(i) );
+    }
+
+
 Boxing and unboxing
 -------------------
-
-As you can see in the above example, the method "add" of "ArrayList" accepts any object as argument. You can imagine that it is defined as :code:`void add(Object obj)`. Indeed, internally, "ArrayList" uses an array of type :code:`Object[]` to store the added elements.
 
 Unfortunately, primitive types are not subclasses of "Object". Therefore, we cannot simple add an int value to  an ArrayList, at least not without the help of the compiler:
 
@@ -1593,6 +1694,8 @@ Autoboxing is not limited to the "ArrayList" class. It works for all situations 
     // this is identical to:
     //      int i = value.intValue();
     int i = value;
+
+
 
 
 Method overloading
@@ -1672,11 +1775,16 @@ However, you have to be careful when you write overloaded methods where the para
 
 What will :code:`System.out.println(player.magic)` print after we gave a Mighty Sword to the player?
 
-Surprisingly, it will print "0". The method :code:`void giveWeapon(MightySword weapon)` is **not** called although we called "giveWeapon" with a MightySword object! The explanation for this is that the Java compiler only looks at the type of the variable as declared in the source code when deciding which method to call. In our example, the type of the variable "weapon" is "Weapon", therefore the method :code:`void giveWeapon(Weapon weapon)` is called. For the compiler, it is not important that the variable contains a reference to a MightySword object.
+Surprisingly, it will print "0". The method :code:`void giveWeapon(MightySword weapon)` is **not** called although we called "giveWeapon" with a MightySword object! The explanation for this is that the Java compiler only looks at the type of the variable as declared in the source code when deciding which method to call. In our example, the type of the variable "weapon" is "Weapon", therefore the method :code:`void giveWeapon(Weapon weapon)` is called. The compiler ignores that the variable contains a reference to a MightySword object.
 
-Lesson learned: **Method calls in Java are only dynamic for the object on which the method is called (rule 3!). They are not dynamic for the parameters of the method.**
+Lesson learned: **Method calls in Java are only dynamically decided for the object on which the method is called (rule 3!). They are not dynamic for the parameters of the method.**
 
+The correct way to call the "giveWeapon" method for Mighty Swords is:
 
+.. code-block:: java
+
+    MightySword weapon = new MightySword();
+    player.giveWeapon(weapon);
 
 
 Generics
