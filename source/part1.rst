@@ -78,7 +78,7 @@ And here is how an equivalent Python program would look like:
 
 Why does the Java code look more complicated than the Python code? First of all, unlike Python, Java doesn't allow to write a statement like :code:`print('Hello world!')` directly in a source code file. In Java, all statements MUST be inside a method and all methods MUST be inside a class. In our example, the statement :code:`System.out.println("Hello world!")` is in the method "main" and this method is in the class "Main". Of course, a class in Java can have more than one method, and a Java program can contain more than one class.
 
-You probably have already learned about classes and methods in Python and you might remember that classes are used to describe objects and methods are used to work with those objects. In our simple Java example, we don't need objects and all the complicated things that come with them (constructors, inheritance, etc.). The word :code:`static` in the line :code:`public static void main(String[] args)` indicates that the method "main" behaves more like a traditional function in Python and not like a method for objects. In fact, no object is needed to execute a static method like "main". We will learn more about this later.
+You probably have already learned about classes and methods in Python and you might remember that classes are used to describe objects and methods are used to work with those objects. In our simple Java example, we don't need objects and all the complicated things that come with them (constructors, inheritance, etc.). The word :code:`static` in the line :code:`public static void main(String[] args)` indicates that the method :code:`main` behaves more like a traditional function in Python and not like a method for objects. In fact, no object is needed to execute a static method like :code:`main`. We will learn more about this later.
 
 The second thing you might have noticed is the word :code:`public` appearing twice in the first two lines of the code:
 
@@ -87,9 +87,9 @@ The second thing you might have noticed is the word :code:`public` appearing twi
     public class Main {
         public static void main(String[] args) {
         
-The word :code:`public` in the first line indicates that the class "Main" can be used by others. It is not strictly necessary for this simple program and, in fact, our program will still work if you remove it (try it!). However, there is something important you have to know about public classes: If a class is marked as public, the source file that contains the class must have the same name as the class. That's the reason why the file is called "Main.java" and the public class in the file is called "Main" (Try to change the name of the class and see what happens!). Apart from that, the name "Main" for a class doesn't have any special meaning in Java. Our program would still work if we renamed the class to "Catweazle" or "Cinderella", as long as we don't forget to rename the file as well. But note that **all class names in Java (public or not) start with an uppercase letter**.
+The word :code:`public` in the first line indicates that the class :code:`Main` can be used by others. It is not strictly necessary for this simple program and, in fact, our program will still work if you remove it (try it!). However, there is something important you have to know about public classes: If a class is marked as public, the source file that contains the class must have the same name as the class. That's the reason why the file is called "Main.java" and the public class in the file is called "Main" (Try to change the name of the class and see what happens!). Apart from that, the name "Main" for a class doesn't have any special meaning in Java. Our program would still work if we renamed the class to "Catweazle" or "Cinderella", as long as we don't forget to rename the file as well. But note that **all class names in Java (public or not) start with an uppercase letter**.
 
-The :code:`public` in the second line is much more important for our example. A Java program can only be executed if it contains a method "main" that is :code:`public` and :code:`static`. Remove the :code:`public` or :code:`static` from the second line and see what happens when you try to run the program.
+The :code:`public` in the second line is much more important for our example. A Java program can only be executed if it contains a method :code:`main` that is :code:`public` and :code:`static`. Remove the :code:`public` or :code:`static` from the second line and see what happens when you try to run the program.
 In general, **a Java program always starts at the public static main method**. If your program contains multiple classes with a main method, you have tell IntelliJ which one you want to start.
 
 With this knowledge, can you guess what the following program prints?
@@ -186,10 +186,10 @@ And here is the equivalent Java program:
 
 Let's see what's going on with the types in the Java code:
 
-- The line :code:`int calculateArea(int side)` indicates that the method "calculateArea" has a parameter "side" of type :code:`int`. Furthermore, the :code:`int` at the beginning of :code:`int calculateArea(...` specifies that this method can only return a value of type :code:`int`. This is called the *return type* of the method.
-- The line :code:`void printArea(String message, int side)` defines that the method "printArea" has a parameter "message" of type :code:`String` and a parameter "side" of type :code:`int`. The method does not return anything, therefore it has the special return type :code:`void`.
-- Inside the method "printArea", we can see in the line :code:`int area = calculateArea(side)` that the variable "area" has the type :code:`int`.
-- (Exercise for you: look at the types that you can see in the "main" method. We will explain later why the "main" method always has a parameter named "args")
+- The line :code:`int calculateArea(int side)` indicates that the method :code:`calculateArea` has a parameter :code:`side` of type :code:`int`. Furthermore, the :code:`int` at the beginning of :code:`int calculateArea(...` specifies that this method can only return a value of type :code:`int`. This is called the *return type* of the method.
+- The line :code:`void printArea(String message, int side)` defines that the method :code:`printArea` has a parameter :code:`message` of type :code:`String` and a parameter :code:`side` of type :code:`int`. The method does not return anything, therefore it has the special return type :code:`void`.
+- Inside the method :code:`printArea`, we can see in the line :code:`int area = calculateArea(side)` that the variable :code:`area` has the type :code:`int`.
+- (Exercise for you: look at the types that you can see in the :code:`main` method. We will explain later why that method always has a parameter :code:`args`)
 
 IntelliJ uses a special tool called the *Java compiler* that carefully verifies that there are no *type errors*  in your program, i.e., that you have not made any mistakes in the types of the variables, method parameters, and return types in your program. Unlike Python, this *type checking* is done *before* your program is executed. You cannot even start a Java program that contains type errors!
 
@@ -229,7 +229,8 @@ IntelliJ runs the Java compiler and starts the JVM for you when you press the gr
 
 ..  code-block:: bash
 
-    > javac Main.java   # javac is the compiler and part of the JDK. It will generate the file Main.class
+    > javac Main.java   # javac is the compiler and part of the JDK.
+                        # It will generate the file Main.class
     
     > java Main         # this command starts the JVM with your Main class
 
@@ -256,7 +257,7 @@ char     :math:`0 .. 2^{16}-1`                                     :code:`char a
 boolean  true, false                                               :code:`boolean a = true;`
 ======== ========================================================= ========================
 
-As you can see, each primitive type has a limited range of values it can represent. For example, a variable of type :code:`int` can be only used for integer numbers between :math:`-2^{31}` and :math:`2^{31}-1`. If you don't respect the range of a type, very strange things will happen in your program! Try this code in IntelliJ (copy it into the "main" method of your program):
+As you can see, each primitive type has a limited range of values it can represent. For example, a variable of type :code:`int` can be only used for integer numbers between :math:`-2^{31}` and :math:`2^{31}-1`. If you don't respect the range of a type, very strange things will happen in your program! Try this code in IntelliJ (copy it into the :code:`main` method of your program):
 
 ..  code-block:: java
 
@@ -292,7 +293,7 @@ Java performs automatic conversions between values of different types if the des
 
 ..  code-block:: java
 
-    float a = 34;             // the int value 34 is automatically casted to float 34.0f
+    float a = 34;             // the int value 34 is casted to float 34.0f
     float b = 6 * 4.5f;       // int multiplied by float gives float
     
 But this is not allowed:
@@ -306,10 +307,10 @@ You can force the conversion by doing a *manual type cast*, but the result will 
 
 ..  code-block:: java
 
-    int a = (int)4.5f;             // this will give 4 
-    float b = (float)(4.5f * 6.7); // the result is correct because the values are small
+    int a = (int) 4.5f;             // this will give 4 
+    float b = (float) (4.5f * 6.7);
 
-The Java class "Math" provides a large set of methods to work with numbers of different types. It also defines useful constants like :code:`Math.PI`. Here is an example:
+The Java class :code:`Math` provides a large set of methods to work with numbers of different types. It also defines useful constants like :code:`Math.PI`. Here is an example:
 
 ..  code-block:: java
 
@@ -319,7 +320,7 @@ The Java class "Math" provides a large set of methods to work with numbers of di
     System.out.println("Area of disk: " + area);
     System.out.println("Radius of disk: " + radius);
 
-The complete documentation of the "Math" class can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Math.html>`_.
+The complete documentation of the :code:`Math` class can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Math.html>`_.
  
 What is a variable? A mental model
 ----------------------------------
@@ -363,7 +364,7 @@ The same also happens with the parameters of methods; when you call a method wit
         }
     }
 
-The above program will print "3" because when you call the method "f", the content of the variable "i" will be copied into the parameter variable "x" of the method. Even if the method changes the value of "x" with :code:`x = x + 1`, the variable "i" will keep its value 3.
+The above program will print "3" because when you call the method :code:`f`, the content of the variable :code:`i` will be copied into the parameter variable :code:`x` of the method. Even if the method changes the value of :code:`x` with :code:`x = x + 1`, the variable :code:`i` will keep its value 3.
 
 
 
@@ -433,7 +434,7 @@ Be careful when you have class variables and parameter or local variables with t
         static int a = 3;
 
         static void increment(int a) {
-            a += 5;                    //  oops, this is the parameter variable
+            a += 5;     // this is the parameter variable
         }
 
         public static void main(String[] args) {
@@ -442,7 +443,7 @@ Be careful when you have class variables and parameter or local variables with t
         }
     }
   
-In the method "increment", the statement :code:`a += 5` will change the value of the parameter variable "a", **not** of the class variable. We say that the parameter variable *shadows* the class variable because they have the same name. Inside the method "increment", the parameter variable "a" has priority over the class variable "a". We say that the method is the *scope* of the parameter variable.
+In the method "increment", the statement :code:`a += 5` will change the value of the parameter variable :code:`a`, **not** of the class variable. We say that the parameter variable *shadows* the class variable because they have the same name. Inside the method :code:`increment`, the parameter variable :code:`a` has priority over the class variable :code:`a`. We say that the method is the *scope* of the parameter variable.
 
 In general, you should try to avoid shadowing because it is easy to make mistakes, but if you really need to do it for some reason, you should know that it is still possible to access the class variable from inside the scope of the parameter variable:
 
@@ -453,7 +454,7 @@ In general, you should try to avoid shadowing because it is easy to make mistake
         static int a = 3;
 
         static void increment(int a) {
-            Main.a += 5;                 // we want the class variable!
+            Main.a += 5;   // we want the class variable!
         }
 
         public static void main(String[] args) {
@@ -477,19 +478,21 @@ If you need a certain number of variables of the same primitive type, it can be 
 
     int[] a = new int[4];  // an array of integers with 4 elements
     
-Once the array has been created, you can access its elements :code:`a[0]`, :code:`a[1]`, :code:`a[2]`, :code:`a[3]`. The elements of an array of integers (type :code:`int[]`) are automatically initialized to 0 when the array is created:
+Once the array has been created, you can access its elements :code:`a[0]`, :code:`a[1]`, :code:`a[2]`, :code:`a[3]`. Like class variables, the elements of an array are automatically initialized when the array is created:
 
 ..  code-block:: java
 
+    int[] a = new int[4];   // all elements of the array are initialized to 0
     a[2] = 5;
-    int b = a[1] + a[2];   // gives 5 because a[1] is automatically initialized to 0
+    int b = a[1] + a[2];   
+    System.out.println(b);  // prints "5" because a[1] is 0
 
 Note that the size of an array is fixed. Once you have created it, you cannot change the number of elements in it. Unlike Python lists, arrays in Java do not have slice() or append() methods to add or remove elements. However, we will see later the more flexible :code:`ArrayList` class.
 
 Mental model for arrays
 -----------------------
 
-There is an important difference between array variables and primitive-type variables. An array variable does not directly represent the array elements. Instead, an array variable can be seen as a "reference" to the content of the array. You can imagine it like this:
+There is an important difference between array variables and primitive-type variables. An array variable does not directly represent the array elements. Instead, an array variable can be seen as a *reference* to the content of the array. You can imagine it like this:
 
 +-----------------------+------------------------------------------------------------+
 | Java code             | In memory during execution                                 |
@@ -510,19 +513,37 @@ This difference becomes important when you assign an array variable to another a
 |  int[] b = a;         |                                                            |
 +-----------------------+------------------------------------------------------------+
 
-In that case, **only the reference to the array is copied, not the array itself**. This means that both variables "a" and "b" are now referencing the same array. This can be shown with the following example:
+In that case, **only the reference to the array is copied, not the array itself**. This means that both variables :code:`a` and :code:`b` are now referencing the same array. This can be shown with the following example:
 
 ..  code-block:: java
 
     int[] a = new int[4];
-    int[] b = a;                // a and b are now references to the same array
+    int[] b = a;              // a and b are now references to the same array
     b[2] = 5;
-    System.out.println(a[2]);   // a[2] and b[2] are the same element
+    System.out.println(a[2]); // prints "5"
+
+This also works when you give an array as an argument to a method:
+
+..  code-block:: java
+
+    public class Main {
+
+        static void five(int[] x) {
+            x[2] = 5;
+        }
+
+        public static void main(String[] args) {
+            int[] a = new int[4];
+            five(a);
+            System.out.println(a[2]);  // prints "5"
+        }
+    }
+
 
 Initializing an array
 ---------------------
 
-There is a convenient way to create and initialize an array in one step:
+There is a convenient way to create and initialize an array in one single step:
 
 ..  code-block:: java
 
@@ -532,14 +553,14 @@ But note that this short form is only allowed when you initialize a newly declar
 
 ..  code-block:: java
 
-    int[] a;  
-    a = new int[]{ 2, 5, 6, -3 };
+    int[] a = { 2, 5, 6, -3 }  
+    a = new int[]{ 1, 9, 3, 4 };
 
 
 Multi-dimensional arrays
 ------------------------
 
-Arrays can have more than one dimension. For example two-dimensional arrays are often used to represent matrices:
+Arrays can have more than one dimension. For example, two-dimensional arrays are often used to represent matrices in mathematical calculations:
 
 ..  code-block:: java
 
@@ -556,7 +577,7 @@ An :code:`int[3][5]` is therefore an array of three arrays containing five eleme
 ..  code-block:: java
 
     int[][] a = new int[3][5];
-    int b[] = a[0];  // b is now a reference to the first element of a. This is an int[5] array
+    int b[] = a[0];  // b is now a reference to an int array with 5 elements
     b[3] = 7;
     System.out.println(a[0][3]);  // b[3] and a[0][3] are the same element
 
@@ -585,18 +606,16 @@ Again, this is an array of arrays. However, because we have only specified the s
 ..  code-block:: java
    
     int[][] a = new int[3][];
-    a[0] = new int[5];
-    a[1] = new int[5];
-    a[2] = new int[2];            // A different size. This is allowed!
-    System.out.println(a[0][3]);  // Okay. The element a[0][3] exists
-    System.out.println(a[2][3]);  // Error! The element a[2][3] does not exist
+    a[0] = new int[5];            // 5 elements
+    a[1] = new int[5];            // 5 elements
+    a[2] = new int[2];            // 2 elements. That's allowed!
     
 As shown in the above example, the elements of a multi-dimensional array are all arrays, but they do not need to have the same size.
 
 Arrays and class variables
 --------------------------
 
-Array variables can be class variables (with the :code:`static` keyword), too. If you don't provide an initial value, the variable will be initialized with the value :code:`null`:
+Array variables can be class variables (with the :code:`static` keyword), too. If you don't provide an initial value, the array variable will be initialized with the value :code:`null`:
 
 ..  code-block:: java
 
@@ -611,6 +630,9 @@ Array variables can be class variables (with the :code:`static` keyword), too. I
     }
   }
 
+You can think of the value :code:`null` as representing an invalid reference.
+
+
 Loops
 =====
 
@@ -619,26 +641,26 @@ The two most common loop constructs in Java are the :code:`while` loop and the :
 While loops
 -----------
 
-The while loop in Java is very similar to its namesake in Python. It repeats one or more statements (we call them the *body* of the loop) as long a condition is met. Here is an example calculating the sum of the numbers from 0 to 9 (again, the surrounding "main" method is not shown):
+The :code:`while` loop in Java is very similar to its namesake in Python. It repeats one or more statements (we call them the *body* of the loop) as long a condition is met. Here is an example calculating the sum of the numbers from 0 to 9 (again, the surrounding :code:`main` method is not shown):
 
 ..  code-block:: java
 
     int sum = 0;
     int i = 0;
-    while(i<10) {
+    while (i<10) {
         sum += i;    // this is equivalent to sum = sum + i
         System.out.println("Nearly there");
         i++;         // this is equivalent to i = i + 1
     }
     System.out.println("The sum is " + sum);
 
-**Warning:** The two statements inside the while loop must be put in curly braces :code:`{...}`. If you forget the braces, only the *first* statement will be executed by the loop, independently of how the line is indented:
+**Warning:** The two statements inside the :code:`while` loop must be put in curly braces :code:`{...}`. If you forget the braces, only the *first* statement will be executed by the loop, independently of how the line is indented:
 
 ..  code-block:: java
 
     int sum = 0;
     int i = 0;
-    while(i<10)                              // oops, we forgot to put a brace '{' here!
+    while (i<10)                             // oops, we forgot to put a brace '{' here!
         sum += i;                            // this statement is INSIDE the loop
         System.out.println("Nearly there");  // this statement is OUTSIDE the loop!!!
         i++;                                 // this statement is OUTSIDE the loop!!!
@@ -652,63 +674,63 @@ This is also true for other types of loops and for if/else statements.
 Simple For loops
 ----------------
 
-There are two different ways how for loops can be used. The simple for loop is often used to do something with each element of an array or list (We will learn more about lists later):
+There are two different ways how :code:`for` loops can be used. The simple :code:`for` loop is often used to do something with each element of an array or list (We will learn more about lists later):
 
 ..  code-block:: java
 
     int[] myArray = new int[]{ 2, 5, 6, -3 };
     int sum = 0;
-    for(int elem : myArray) {
+    for (int elem : myArray) {
         sum += elem;
     }
     System.out.println("The sum is " + sum);
 
-The for loop will do as many iterations as number of elements in the array, with the variable "elem" successively taking the values of the elements. 
+The :code:`for` loop will do as many iterations as number of elements in the array, with the variable :code:`elem` successively taking the values of the elements. 
 
 Complex For loops
 -----------------
 
-There is also a more complex version of the for loop. Here is again our example calculating the sum of the numbers from 0 to 9, this time with a for loop:
+There is also a more complex version of the :code:`for` loop. Here is again our example calculating the sum of the numbers from 0 to 9, this time with a :code:`for` loop:
 
 ..  code-block:: java
 
     int sum = 0;
-    for( int i = 0; i<10; i++ ) {
+    for (int i = 0; i<10; i++) {
         sum += i;
         System.out.println("Nearly there");
     }
     System.out.println("The sum is " + sum);
 
-The first line of the loop consists of three components:
+The first line of the :code:`for` loop consists of three components:
 
 1. a statement that is executed when the loop starts. In our example: :code:`int i = 0`.
 2. an expression evaluated *before* each iteration of the loop. If the expression is :code:`false`, the loop stops. Here: :code:`i<10`.
 3. a statement that is executed *after* each iteration of the loop. Here: :code:`i++`.
 
-The complex for loop is more flexible than the simple version because it gives you full control over what is happening in each iteration. Here is an example where we calculate the sum of every second element of an array:
+The complex :code:`for` loop is more flexible than the simple version because it gives you full control over what is happening in each iteration. Here is an example where we calculate the sum of every second element of an array:
 
 ..  code-block:: java
 
         int[] myArray = new int[]{ 2, 5, 6, -3, 4, 1 };
         int sum = 0;
-        for( int i = 0; i<myArray.length; i += 2 ) {
+        for (int i = 0; i<myArray.length; i += 2) {
             sum += myArray[i];
         }
         System.out.println("The sum is " + sum);
 
-In this example, we have done two new things. We have used :code:`myArray.length` to get the size of the array "myArray". And we have used the statement :code:`i+=2` to increase :code:`i` by 2 after each iteration.
+In this example, we have done two new things. We have used :code:`myArray.length` to get the size of the array :code:`myArray`. And we have used the statement :code:`i+=2` to increase :code:`i` by 2 after each iteration.
 
 Stopping a loop and skipping iterations
 ---------------------------------------
 
-Like in Python, you can leave a while loop or for loop with the :code:`break` statement:
+Like in Python, you can leave any loop with the :code:`break` statement:
 
 ..  code-block:: java
 
     int sum = 0;
-    for( int i = 0; i<10; i++ ) {
+    for (int i = 0; i<10; i++) {
         sum += i;
-        if(sum>5) {
+        if (sum>5) {
             break;
         }
     }
@@ -718,19 +740,19 @@ And we can immediately go to the next iteration with the :code:`continue` statem
 ..  code-block:: java
 
     int sum = 0;
-    for( int i = 0; i<10; i++ ) {
-        if(i==5) {
+    for (int i = 0; i<10; i++) {
+        if (i==5) {
             continue;
         }
         sum += i;
     }
     
-But you should only use :code:`break` and :code:`continue` if they make your program clearer. Our above example was actually not a good example :( The program would be easier to understand if we just wrote:
+But you should only use :code:`break` and :code:`continue` if they make your program easier to read. In fact, our above example was not a good example because you could just write:
 
 ..  code-block:: java
 
-    for( int i = 0; i<10; i++ ) {
-        if(i!=5) {
+    for (int i = 0; i<10; i++) {
+        if (i!=5) {     // easier to understand than using "continue"
             sum += i;
         }
     }
@@ -742,7 +764,7 @@ Conditional Statements
 If/Else statements
 ------------------
 
-As you have seen in the examples for :code:`break` and :code:`continue`, Java has an if statement that is very similar to the one in Python. Here is an example that counts the number of negative and positive values in an array:
+As you have seen in some of the examples above, Java has an :code:`if` statement that is very similar to the one in Python. Here is an example that counts the number of negative and positive values in an array:
 
 ..  code-block:: java
 
@@ -768,7 +790,7 @@ As with loops, be careful not to forget to use curly braces :code:`{...}` if the
 Comparison and logical operators
 --------------------------------
 
-The if statement requires a boolean expression, i.e., an expression that evaluates to :code:`true` or :code:`false`. There are several operators for boolean values that are quite similar to the ones you know from Python.
+The :code:`if` statement requires a boolean expression, i.e., an expression that evaluates to :code:`true` or :code:`false`. There are several operators for boolean values that are quite similar to the ones you know from Python.
 
 .. code-block:: java
 
@@ -785,13 +807,13 @@ Imagine a program where you test a variable for different values:
 ..  code-block:: java
 
     // two int variables that represent our position on a map
-    int x=0, y=0;
+    int x = 0, y = 0;
     
     // the directions in which we want to go
-    char[] directions=new char[]{'N', 'S', 'S', 'E', 'E', 'W'};
+    char[] directions = new char[]{'N', 'S', 'S', 'E', 'E', 'W'};
     
     // let's go!
-    for(char c : directions) {
+    for (char c : directions) {
         if(c=='N') {
             y++;            // we go north
         }
@@ -810,33 +832,30 @@ Imagine a program where you test a variable for different values:
         System.out.println("The new position is " + x + " , " + y);
     }
 
-Java has a switch statement that allows you to write the above program in a clearer way:
+Java has a :code:`switch` statement that allows you to write the above program in a clearer way:
 
 .. code-block:: java
 
-    // two int variables that represent our position on a map
-    int x=0, y=0;
+    int x = 0, y = 0;
     
-    // the directions in which we want to go
-    char[] directions=new char[]{'N', 'S', 'S', 'E', 'E', 'W'};
+    char[] directions = new char[]{'N', 'S', 'S', 'E', 'E', 'W'};
 
-    // let's go!
-    for(char c : directions) {
-        switch(c) {
+    for (char c : directions) {
+        switch (c) {
             case 'N' -> { y++; }     // we go north
             case 'S' -> { y--; }     // we go south
             case 'W' -> { x--; }     // we go west
             case 'E' -> { x++; }     // we go east
-            default -> System.out.println("Error! Unknown direction");
+            default -> { System.out.println("Error! Unknown direction"); }
         }
-        System.out.println("The new position is "+x+" , "+y);
+        System.out.println("The new position is " + x + " , " + y);
     }
 
-Note that the above code only works with Java version 14 or newer. In older Java versions, the switch statement is much uglier and more difficult to use:
+Note that the above code only works with Java version 14 or newer. In older Java versions, the :code:`switch` statement is much more difficult to use:
 
 .. code-block:: java
 
-    switch(c) {
+    switch (c) {
         case 'N':
             y++;
             break;  // if you forget the "break", very bad things will happen!
@@ -853,6 +872,8 @@ Note that the above code only works with Java version 14 or newer. In older Java
             System.out.println("Error! Unknown direction");        
     }
 
+Since Java 8 is still widely used, you should familiarize yourself with both versions of the :code:`switch` statement.
+
  
 Strings
 =======
@@ -860,7 +881,7 @@ Strings
 Working with strings
 --------------------
 
-Variables holding string values have the type :code:`String`. Strings (and also primitive types) can be concatenated with the + operator.
+Variables holding string values have the type :code:`String`. Strings can be concatenated to other strings with the + operator. This also works for primitive types:
 
 .. code-block:: java
 
@@ -926,7 +947,7 @@ Primitive-type values can be tested for equality with the :code:`==` operator:
         System.out.println("They are the same!");
     }
 
-However, this will not work for array and strings. Since array and string variables only contain references, the :code:`==` operator will compare the *references*, not the *content* of the arrays or strings! The following example shows the difference:
+However, this will not work for arrays or strings. Since array and string variables only contain references, the :code:`==` operator will compare the *references*, not the *content* of the arrays or strings! The following example shows the difference:
 
 .. code-block:: java
     
@@ -970,7 +991,7 @@ There is also an :code:`equals` method to compare the content of two arrays, but
 
 The :code:`Arrays` class contains many useful methods to work with classes, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Arrays.html>`_.
 
-You might wonder why we didn't need to write import statements for the classes :code:`Math`, :code:`Integer` or :code:`String` in the other examples. That's because those classes are in the package :code:`java.lang`, which is the only class that is automatically imported by the Java compiler.
+You might wonder why we need the line :code:`import java.util.Arrays` but we didn't need to import the classes :code:`Math`, :code:`Integer` or :code:`String` in our other examples. That's because those classes are in the package :code:`java.lang`, which is the only class that is automatically imported by the Java compiler.
 
 
 Classes and Objects
