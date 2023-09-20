@@ -23,7 +23,7 @@ The second thing you will need for Java programming is a *Java Development Kit* 
 Fortunately, IntelliJ can automatically download the JDK for you when you create a new project, so you don't have to worry about the JDK now. But if one day you want to write a Java application on a computer without IntelliJ, you have to manually download the JDK from `<https://openjdk.org/>`_ and install it.
 
 Creating a new project
-----------------------
+-----------------------
 
 Start IntelliJ. A window will open where you can create a new project. Click on the corresponding button and you should see a window like this one:
 
