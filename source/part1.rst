@@ -1010,7 +1010,7 @@ For example, imagine a program to manage employees in a company. We can describe
         int salary;     // the salary of the employee     
     }
     
-Classes allow us to create new *objects* from them. In our example, each object of the class "Employee" represents an employee, which makes it easy to organize our data:
+Classes allow us to create new *objects* from them. In our example, each object of the class :code:`Employee` represents an employee, which makes it easy to organize our data:
 
 .. code-block:: java
 
@@ -1034,12 +1034,12 @@ Classes allow us to create new *objects* from them. In our example, each object 
         }
     }
 
-The two objects that we created and put into the local variables "person1" and "person2" are called *instances* of the class "Employee", and the two variables "name" and "age" are called *instance variables* of the class "Employee". Since they are not static, they belong to the instances, and each instance has its own "name" and "age".
+The two objects that we created and put into the local variables :code:`person1` and :code:`person2` are called *instances* of the class :code:`Employee`, and the two variables :code:`name` and :code:`age` are called *instance variables* of the class :code:`Employee`. Since they are not static, they belong to the instances, and each instance has its own :code:`name` and :code:`age`.
 
 Initializing objects
 --------------------
 
-In the above example, we first created the object, and then initialized its instance variables:
+In the above example, we first created the object, and then set the values of its instance variables:
 
 .. code-block:: java
 
@@ -1047,7 +1047,7 @@ In the above example, we first created the object, and then initialized its inst
     person1.name = "Peter";
     person1.salary = 42000;
 
-Like static variables, instance variables are automatically initialized with the value 0 (for number variables), with :code:`false` (for boolean variables), or with :code:`null` (for all other variables). In our example, this is dangerous because we could forget to specify the salary of the employee:
+Like static variables, instance variables are automatically initialized with the value 0 (for number variables), with :code:`false` (for boolean variables), or with :code:`null` (for all other types). In our example, this is dangerous because we could forget to specify the salary of the employee:
 
 .. code-block:: java
 
@@ -1064,7 +1064,7 @@ There are several ways to avoid this kind of mistake. One way is to initialize t
         int salary = 10000;
     }
     
-Of course, this only works if you want that all employees start with a salary of 10000. The other way is to define a *constructor* in your class. The constructor is a special method that has the same name as the class. It can have parameters but it has no return type:
+Of course, this is only useful if you want that all employees start with a salary of 10000. The other way is to define a *constructor* in your class. The constructor is a special method that has the same name as the class. It can have parameters but it has no return type:
 
 .. code-block:: java
 
@@ -1090,13 +1090,13 @@ If you provide a constructor for your class, the Java compiler will verify that 
     
     Employee person2 = new Employee();   // not allowed. You must use the constructor!
 
-In our example, the constructor took two parameters "n" and "s" and used them to initialize the instance variables "name" and "salary" of a new "Employee" object. But how does the constructor know which object to initialize? Do we have to tell the constructor that the new object is in the variable "person1"? Fortunately, it's easier than that. The constructor can always access the object being constructed by using the keyword :code:`this`. The line
+In our example, the constructor took two parameters :code:`n` and :code:`s` and used them to initialize the instance variables :code:`name` and :code:`salary` of a new :code:`Employee:code:` object. But how does the constructor know which object to initialize? Do we have to tell the constructor that the new object is in the variable :code:`person1`? Fortunately, it's easier than that. The constructor can always access the object being constructed by using the keyword :code:`this`. Therefore, the line
 
 .. code-block:: java
 
     this.name = n;
 
-means that the value of the parameter "n" will be used to initialize the instance variable "name" of the new object. We could even use the same names for the parameter variables and for the instance variables:
+means that the instance variable :code:`name` of the new object will be initialized to the value of the parameter variable :code:`n`. We could even use the same names for the parameter variables and for the instance variables:
 
 .. code-block:: java
 
@@ -1110,18 +1110,26 @@ means that the value of the parameter "n" will be used to initialize the instanc
         }
     }
 
-When the Java compiler sees a parameter (or local variable) and an instance variable with the same name, it will always assume that you mean the parameter (or local variable) when you just write the variable name without :code:`this.` in front of it. This happens for example in this line:
+Like for class variables, we have to be careful with shadowing. Without :code:`this.` in front of the variable name, the Java compiler will assume that you mean the parameter variable. It's a common mistake to write something like:
 
 .. code-block:: java
 
-   // "name" is the parameter
-   // "this.name" is the instance variable
-   this.name = name;  
+    class Employee {
+        String name;
+        int salary;
+
+        Employee(String name, int salary) {
+            name = name;       //  oops, this.name is not changed here!
+            salary = salary;
+        }
+    }
+
+
 
 Mental model
 ============
 
-Like array variables and String variables, object variables contain a reference to the object in your computer's main memory. The object itself contains the instance variables. Note that an instance variable can be again a reference. For our employee "Peter" we get the following structure:
+Like array variables and String variables, object variables contain a reference to the object in your computer's main memory. The object itself contains the instance variables. Note that an instance variable can be again a reference. For our employee "Peter", we get the following structure:
 
 +------------------------------------------+-------------------------------------------------+
 | Java code                                | In memory during execution                      |
@@ -1139,10 +1147,10 @@ Because of this, what we have already said about array variables and String vari
 
     Employee person1 = new Employee("Peter", 42000);
     Employee person2 = new Employee("Peter", 42000);
-    System.out.println( person1==person2 );         // false. Two different objects.
+    System.out.println( person1==person2 );      // false. Two different objects.
     
     Employee person3 = person1;
-    System.out.println( person1==person3 );         // true. Same object.
+    System.out.println( person1==person3 );      // true. Same object.
 
 Working with objects
 ====================
@@ -1160,7 +1168,7 @@ Many things that you can do with primitive types and strings, you can also do th
     System.out.println(myTeam[2].name);       // Error! myTeam[2] is null
     
 
-You can also have class variables and instance variables that are object variables. Again, they will be automatically initialized to :code:`null`, if you don't provide an initial value. In the following example, we have extended our "Employee" class by a new instance variable "boss":
+You can also have class variables and instance variables that are object variables. Again, they will be automatically initialized to :code:`null`, if you don't provide an initial value. In the following example, we have added a new instance variable :code:`boss` to our :code:`Employee`:
 
 .. code-block:: java
 
@@ -1186,14 +1194,14 @@ You can also have class variables and instance variables that are object variabl
         }
     }
     
-Exercise for you: Take a sheet of paper and draw the mental model image for the object of Peter.
+Exercise for you: Take a sheet of paper and draw the mental model graph for the object representing Peter.
 
-Question: In the above example, what value do we give to the "boss" instance variable of an employee who has no boss?
+Question: In the above example, what value do we give to the :code:`boss:code:` instance variable of an employee who has no boss?
 
 Methods
 =======
 
-In the following example, we define a static method to increase the salary of an employee:
+In the following example, we define a static method :code:`increaseSalary` to increase the salary of an employee:
 
 .. code-block:: java
 
@@ -1210,7 +1218,7 @@ In the following example, we define a static method to increase the salary of an
     public class Main {
         static void increaseSalary(Employee employee, int raise) {
             // we only raise the salary if the raise is less than 10000
-            if(raise<10000) {
+            if (raise<10000) {
                 employee.salary += raise;
             }
         }
@@ -1228,7 +1236,7 @@ In the following example, we define a static method to increase the salary of an
         }
     }
 
-The above code works. But in Object-Oriented Programming (OOP) languages like Java, we generally prefer that all methods that modify instance variables of an object should be put into the class of the object. In large program, this makes it easier to understand who is doing what with an object. To implement this, we replace the static method "increaseSalary" of the "Main" class by a non-static method in the "Employee" class:
+The above code works. But in Object-Oriented Programming (OOP) languages like Java, we generally prefer that all methods that modify instance variables of an object should be put inside the class definition. In large program, this makes it easier to understand who is doing what with an object. To implement this, we replace the static method :code:`increaseSalary` of the :code:`Main` class by a non-static method in the :code:`Employee` class:
 
 .. code-block:: java
 
@@ -1242,7 +1250,7 @@ The above code works. But in Object-Oriented Programming (OOP) languages like Ja
         }
         
         void increaseSalary(int raise) {
-            if(raise<10000) {
+            if (raise<10000) {
                 this.salary += raise;
             }
         }
@@ -1262,20 +1270,20 @@ The above code works. But in Object-Oriented Programming (OOP) languages like Ja
         }
     }
 
-Because "increaseSalary" is now a non-static method of "Employee", we can directly call it on the Employee object. Inside a method (or constructor), the :code:`this` keyword stands for the object for which the method has been called. Therefore, when we call the method with :code:`anna.increaseSalary(10000)`, the method will change the salary instance variable of the Anna object.
+Because :code:`increaseSalary` is now a non-static method of :code:`Employee`, we can directly call it on an Employee object. No parameter :code:`employee` is needed because, inside the method, the :code:`this` keyword is a reference to the object on which the method has been called. Therefore, we just write :code:`anna.increaseSalary(2000)` to change the salary of Anna.
 
 Restricting access
 ------------------
 
-The nice thing about our "increaseSalary" method is that we can make sure that raises are limited to 10000 Euro :) However, nobody stops the programmer to use our Employee class and manually change the salary:
+The nice thing about our :code:`increaseSalary` method is that we can make sure that raises are limited to 10000 Euro :) However, nobody stops the programmer to ignore that method and manually change the salary:
 
 .. code-block:: java
 
     Employee anna = new Employee("Anna", 45000, null);
-    anna.salary += 150000;   // ha!
+    anna.salary += 1500000;   // ha!
 
 This kind of mistake can quickly happen in a large program with hundreds of classes.    
-We can prevent this by declaring the instance variable "salary" as :code:`private`:
+We can prevent this by declaring the instance variable :code:`salary` as :code:`private`:
 
 .. code-block:: java
 
@@ -1289,15 +1297,15 @@ We can prevent this by declaring the instance variable "salary" as :code:`privat
         }
         
         void increaseSalary(int raise) {
-            if(raise<10000) {
+            if (raise<10000) {
                 this.salary += raise;
             }
         }
     }
 
-A private instance variable is only accessible *inside* the class. So the access :code:`anna.salary += 50000` in the "Main" class doesn't work anymore.
+A private instance variable is only accessible *inside* the class. So the access :code:`anna.salary += 150000` in the :code:`Main:code:` class doesn't work anymore. Mission accomplished...
 
-Of course, that's a bit annoying because it also means that we cannot access anymore Anna's salary in :code:`System.out.println("New salary of Anna is "+anna.salary)`. To fix this, we can add a method "getSalary" whose only purpose is to give us the value of the private salary variable. Here is the new version of the code:
+Unfortunately, that's a bit annoying because it also means that we cannot access anymore Anna's salary in :code:`System.out.println("New salary of Anna is "+anna.salary)`. To fix this, we can add a method :code:`getSalary:code:` whose only purpose is to give us the value of the private :code:`salary` variable. Here is the new version of the code:
 
 .. code-block:: java
 
@@ -1311,7 +1319,7 @@ Of course, that's a bit annoying because it also means that we cannot access any
         }
         
         void increaseSalary(int raise) {
-            if(raise<10000) {
+            if (raise<10000) {
                 this.salary += raise;
             }
         }
@@ -1337,7 +1345,7 @@ Inheritance
 Creating subclasses
 -------------------
 
-Let's say we are writing a computer game, for example an RPG. We implement weapons as objects of the class "Weapon". The damage that a weapon can deal depends on its "level". The price of a weapon also depends on its level.
+Let's say we are writing a computer game, for example an RPG. We implement weapons as objects of the class :code:`Weapon`. The damage that a weapon can deal depends on its level. The price of a weapon also depends on its level. The code could look like this:
 
 .. code-block:: java
 
@@ -1390,7 +1398,7 @@ In our game, there is also a special weapon type, the *Mighty Swords*. These swo
         }
     } 
  
-According to the first line of this code, the class "MightySword" *extends* the class "Weapon". We say that "MightySword" is *a subclass* (or *subtype*) of "Weapon" or we can say that "Weapon" is a *superclass* of "MightySword". In practice, this means that everything we can do with objects of the class "Weapon" we can also do with objects of the class "MightySword":
+According to the first line of this code, the class :code:`MightySword` *extends* the class :code:`Weapon`. We say that :code:`MightySword` is *a subclass* (or *subtype*) of :code:`Weapon`, or we can say that :code:`Weapon` is a *superclass* of :code:`MightySword`. In practice, this means that everything we can do with objects of the class :code:`Weapon` we can also do with objects of the class :code:`MightySword`:
 
 .. code-block:: java
 
@@ -1409,11 +1417,11 @@ At first glance, there seems to be a mistake in the above "main" method. Why is 
 
     weapon = new MightySword("Magic sword", 3);
     
-not a type error? On the left, we have the variable "weapon" of type "Weapon" and on the right we have a new object of "MightySword". But this is acceptable for the compiler because, Java has the following rule:
+not a type error? On the left, we have the variable :code:`weapon` of type :code:`Weapon` and on the right we have a new object of :code:`MightySword`. But this is acceptable for the compiler because, Java has the following rule:
 
 **Rule 1: A variable of type X can hold a reference to an object of class X or to an object of a subclass of X**.
 
-Because of rule 1, the compiler is perfectly happy with putting a reference to a MightySword object in a variable declared as type "Weapon". For Java, MightySword objects are just special Weapon objects.
+Because of rule 1, the compiler is perfectly happy with putting a reference to a :code:`MightySword` object in a variable declared as type :code:`Weapon`. For Java, MightySword instances are just special Weapon instances.
 
 The next line of the "main" method looks strange, too:
 
@@ -1421,7 +1429,7 @@ The next line of the "main" method looks strange, too:
 
     System.out.println("Price is " + weapon.getPrice());
 
-Our class "MightySword" has not defined a method "getPrice" so why can we call :code:`weapon.getPrice()`? This is another rule in Java:
+Our class :code:`MightySword` has not defined a method :code:`getPrice` so why can we call :code:`weapon.getPrice()`? This is another rule in Java:
 
 **Rule 2: The subclass inherits the methods of its superclass. Methods defined in a class X can be also used on objects of a subclass of X.**
 
@@ -1431,19 +1439,19 @@ Let's look at the next line. It is:
 
     System.out.println("Simple damage is " + weapon.getSimpleDamage());
     
-Just by looking at this line, you might expect that :code:`weapon.getSimpleDamage()` calls the "getSimpleDamage" method of the "Weapon" class because the variable "weapon" has been declared as :code:`Weapon weapon`. However, if you check the output of the program, you will see that the method "getSimpleDamage" of the class "MightySword" is called. Why? Because we have put an object of the class "MightySword" into the variable "weapon". The rule is:
+Just by looking at this line and the line :code:`Weapon weapon` at the beginning of the :code:`main` method, you might expect that :code:`weapon.getSimpleDamage()` calls the :code:`getSimpleDamage` method of the :code:`Weapon` class. However, if you check the output of the program, you will see that the method :code:`getSimpleDamage` of the class :code:`MightySword` is called. Why? Because :code:`weapon` contains a reference to a :code:`MightySword` object. The rule is:
 
-**Rule 3: Let x be a variable declared as "X x" (where X is a class) and let's assign an object of class Y (where Y is a subclass of X) to x. When you call a method on x and the method is defined in X and in Y, the JVM will execute the method defined in Y.**
+**Rule 3: Let x be a variable of type X (where X is a class) and let's assign an object of class Y (where Y is a subclass of X) to x. When you call a method on x and the method is defined in X and in Y, the JVM will execute the method defined in Y.**
 
-For objects of the class "MightySword", calling "getSimpleDamage" will always execute the method as defined in "MightySword". We say that the method "getSimpleDamage" in "MightySword" *overrides* the method definition in the class "Weapon".
+For instances of the class :code:`MightySword`, calling :code:`getSimpleDamage:code:` will always execute the method defined in that class. We say that the method :code:`getSimpleDamage` in :code:`MightySword`  *overrides* the method definition in the class "Weapon".
 
-With the above three rules, can you now guess what happens in the next line?
+With the above three rules, can you guess what happens in the next line?
 
 .. code-block:: java
 
     System.out.println("Double damage is " + weapon.getDoubleDamage());
 
-According to rule 2, the class "MightySword" inherits the method "getDoubleDamage" of the class "Weapon". So, let's check how that method was defined in the class "Weapon":
+According to rule 2, the class :code:`MightySword` inherits the method :code:`getDoubleDamage` of the class :code:`Weapon`. So, let's check how that method was defined in the class :code:`Weapon`:
 
 .. code-block:: java
 
@@ -1451,12 +1459,12 @@ According to rule 2, the class "MightySword" inherits the method "getDoubleDamag
         return this.getSimpleDamage() * 2;
     }
     
-The method calls :code:`this.getSimpleDamage()`. Which method "getSimpleDamage" will be called? The one defined in "Weapon" or the one in "MightySword"? To answer this question, you have to remember rule 3! The :code:`this` in :code:`this.getSimpleDamage()` refers to the object on which the method was called. Since our method is an object of the class "MightySword", the method "getSimpleDamage" of "MightySword" will be called. The fact that "getDoubleDamage" is defined in the class "Weapon" does not change rule 3.
+The method calls :code:`this.getSimpleDamage()`. Which method :code:`getSimpleDamage` will be called? The one defined in :code:`Weapon` or the one in :code:`MightySword`? To answer this question, you have to remember rule 3! The :code:`this` in :code:`this.getSimpleDamage()` refers to the object on which the method was called. Since our method is an object of the class :code:`MightySword`, the method :code:`getSimpleDamage` of :code:`MightySword` will be called. The fact that "getDoubleDamage" is defined in the class :code:`Weapon` does not change rule 3.
 
 Super
 -----
 
-There is one thing left in our Mighty Sword example that we have not yet explained. It's the constructor:
+There is one thing left in our :code:`MightySword` class that we have not yet explained. It's the constructor:
 
 .. code-block:: java
 
@@ -1469,9 +1477,9 @@ There is one thing left in our Mighty Sword example that we have not yet explain
         ...
      }
      
-In the constructor, the keyword :code:`super` stands for the constructor of the superclass of "MightySword", that is "Weapon". Therefore, the line :code:`super(name,level)` simply calls the constructor as defined in "Weapon".
+In the constructor, the keyword :code:`super` stands for the constructor of the superclass of :code:`MightySword`, that is :code:`Weapon`. Therefore, the line :code:`super(name,level)` simply calls the constructor as defined in :code:`Weapon`.
 
-:code:`super` can be also used in methods. Imagine we want to define a new weapon type "ExpensiveWeapon" that costs exactly 100 more than a normal weapon. We can implement it as follows:
+:code:`super` can be also used in methods. Imagine we want to define a new weapon type *Expensive Weapon* that costs exactly 100 more than a normal weapon. We can implement it as follows:
 
 .. code-block:: java
 
@@ -1486,12 +1494,12 @@ In the constructor, the keyword :code:`super` stands for the constructor of the 
         }
     } 
 
-The expression :code:`super.getPrice()` calls the method "getPrice" as defined in the superclass "Weapon". That means that the keyword :code:`super` can be used to call methods of the superclass, which would normally not be possible because of rule 3.
+The expression :code:`super.getPrice()` calls the method :code:`getPrice` as defined in the superclass :code:`Weapon`. That means that the keyword :code:`super` can be used to call methods of the superclass, which would normally not be possible for overridden methods because of rule 3.
 
 Extending, extending,...
 ------------------------
 
-A subclass cannot only override methods of its superclass, it can also add new instance variables and new methods. For example, we can define a new type of Mighty Swords that can do magic:
+A subclass cannot only override methods of its superclass, it can also add new instance variables and new methods. For example, we can define a new type of Mighty Swords that can do magic damage:
 
 .. code-block:: java
 
@@ -1508,45 +1516,51 @@ A subclass cannot only override methods of its superclass, it can also add new i
         }
     } 
 
-As you can see, you can create subclasses of subclasses. Note that the constructor calls the constructor of the superclass and then initializes the new instance variable "magicLevel".
+As you can see, you can create subclasses of subclasses. Note that the constructor uses again :code:`super` to first call the constructor of the superclass and then initializes the new instance variable :code:`magicLevel`.
 
-How can we call the method "getMagicDamage"? Can we do this:
+How can we call the method :code:`getMagicDamage:code:`? Can we do this:
 
 .. code-block:: java
 
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(weapon.getMagicDamage());
     
-The answer is no! Rule 3 is only applied to methods that are defined in a class *and* in the superclass. This is not the case for "getMagicDamage" because it only exists in "MagicSword".
-In this situation, the Java compiler will not accept the call :code:`weapon.getMagicDamage()` because it cannot be sure that the object in the variable "weapon" really has a method "getMagicDamage". The compiler is stupid and will not read the entire source code to analyze what you might have done with the "weapon" variable. To be able to call the method, you have to convince the compiler that the variable contains a reference to a Magic Sword object. For example, you could change the type of the variable "weapon":
+The answer is no! Rule 3 is only applied to methods that are defined in the subclass *and* in the superclass. This is not the case for :code:`getMagicDamage`.
+In this situation, the Java compiler will not accept the call :code:`weapon.getMagicDamage()` because, just by looking at the variable declaration :code:`Weapon weapon`, it cannot tell that the object referenced by the variable :code:`weapon` really has a method :code:`getMagicDamage`. You might think that the compiler is a bit stupid here, but remember that the code could try to do some strange things that are difficult to see for the compiler:
+
+.. code-block:: java
+
+    Weapon weapon = new MagicSword("Elven sword", 7, 3);
+    weapon = new Weapon("Dagger", 1);    
+    System.out.println(weapon.getMagicDamage());
+
+To be able to call :code:`getMagicDamage`, you have to convince the compiler that the variable contains a reference to a Magic Sword object. For example, you could change the type of the variable:
 
 .. code-block:: java
 
     MagicSword weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(weapon.getMagicDamage());
 
-In this way, it's 100% clear for the compiler that the variable "weapon" will always refer to a "MagicSword" object (or to an object of a subclass of "MagicSword", remember rule 1). Therefore, it's guaranteed that the method "getMagicDamage" can be executed.
+In this way, it's 100% clear for the compiler that the variable definitely refers to a :code:`MagicSword` object (or to an object of a subclass of :code:`MagicSword`, remember rule 1).
 
 Alternatively, you can do a type cast:
 
 .. code-block:: java
 
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
-    System.out.println(((MagicSword)weapon).getMagicDamage());
+    System.out.println(((MagicSword) weapon).getMagicDamage());
 
-However, be careful with such type casts. The compiler will trust you and if you do an invalid typecast, you will get an error during program execution:
+However, be careful with such type casts. The compiler will accept it but if you do a mistake, you will get an error during program execution:
 
 .. code-block:: java
 
-    Weapon weapon = new Weapon("Dagger", 7);
-    
-    MagicSword sword = (MagicSword)weapon;       // oh oh... Runtime error!
-    System.out.println(sword.getMagicDamage());
+    Weapon weapon = new Weapon("Dagger", 1);   
+    System.out.println(((MagicSword) weapon).getMagicDamage());  // oh oh...
 
 Polymorphism
-------------
+============
 
-The three rules make it possible to write code that can be used with objects of different classes. Thanks to rule 1, you can define an array that contains different types of weapons:
+The three rules make it possible to write code and data structures that can be used with objects of different classes. For example, thanks to rule 1, you can define an array that contains different types of weapons:
 
 .. code-block:: java
 
@@ -1555,21 +1569,21 @@ The three rules make it possible to write code that can be used with objects of 
     inventory[1] = new MagicSword("Elven sword", 7, 3);
     inventory[2] = new ExpensiveWeapon("Golden pitchfork", 3);
 
-You can write methods that work for different types of weapons:
+And thanks to rule 2 and 3, you can write methods that work for different types of weapons:
 
 .. code-block:: java
 
     int getPriceOfInventory(Weapon[] inventory) {
         int sum = 0;
-        for(Weapon weapon : inventory) {
+        for (Weapon weapon : inventory) {
             sum += weapon.getPrice();
         }
         return sum;
     }
 
-Although the above method "getPriceOfInventory" looks like it only works for objects of class "Weapon", it also works for all subclasses of "Weapon". This is called *Subtype Polymorphism*. If you have for example an object of class "ExpensiveWeapon" in the array, rule 3 will guarantee that :code:`sum += weapon.getPrice()` will call the method defined in "ExpensiveWeapon".
+Although the above method :code:`getPriceOfInventory` looks like it is only meant for objects of class :code:`Weapon`, it also works for all subclasses of :code:`Weapon`. This is called *Subtype Polymorphism*. If you have for example an object of class :code:`ExpensiveWeapon` in the array, rule 3 will guarantee that :code:`weapon.getPrice()` will call the method defined in :code:`ExpensiveWeapon`.
 
-The conclusion is that there is a difference between what you see in the source code and what actually happens when the program is executed. When the compiler sees a method call in your source code it only checks whether the method exists in the declared type of the variables. But during program execution, what is important is which object is actually referenced by the variable! We say that **type checking by the compiler is static**, but **method calls by the JVM are dynamic**.
+The conclusion is that there is a difference between what the compiler sees in the source code and what actually happens when the program is executed. When the compiler sees a method call like :code:`weapon.getPrice()` in your source code it only checks whether the method exists in the declared type of the variable. But during program execution, what is important is which object is actually referenced by the variable. We say that **type checking by the compiler is static**, but **method calls by the JVM are dynamic**.
 
 
 The class hierarchy
@@ -1580,7 +1594,7 @@ If we take all the different weapon classes that we created in the previous exam
 .. image:: _static/images/part1/classhierarchy.svg
    :width: 35%                                 
 
-The class "Object" that is above our "Weapon" class was not defined by us. It is automatically created by Java and is the superclass of *all* non-primitive types in Java, even of arrays and strings! A variable of type "Object" therefore can refer to any object:
+The class :code:`Object` that is above our :code:`Weapon` class was not defined by us. It is automatically created by Java and is the superclass of *all* non-primitive types in Java, even of arrays and strings! A variable of type :code:`Object` therefore can refer to any non-primitive value:
 
 .. code-block:: java
 
@@ -1589,9 +1603,9 @@ The class "Object" that is above our "Weapon" class was not defined by us. It is
     o = new int[]{1,2,3};                       // okay, too
     o = new MagicSword("Elven sword", 7, 3);    // still okay!
 
-The documentation of "Object" can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Object.html>`_.
+The documentation of :code:`Object` can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Object.html>`_.
 The class defines several interesting methods that can be used on all objects.
-One of them is the "toString" method. This method is very useful because it is called by methods like :code:`String.valueOf` and :code:`System.out.println` when you call them with an object as parameter. Therefore, if we override this method in our own class, we will get a nice output:
+One of them is the :code:`toString` method. This method is very useful because it is called by frequently used methods like :code:`String.valueOf` and :code:`System.out.println` when you call them with an object as parameter. Therefore, if we override this method in our own class, we will get a nice output:
 
 .. code-block:: java
 
@@ -1616,9 +1630,9 @@ One of them is the "toString" method. This method is very useful because it is c
         }
     }
 
-The method "toString" is declared as "public" in the class "Object" and, therefore, when we override it we have to declare it as public, too. We will talk about the meaning of "public" later.
+The method :code:`toString` is declared as :code:`public` in the class :code:`Object` and, therefore, when we override it we have to declare it as public, too. We will talk about the meaning of :code:`public` later.
 
-Another interesting method defined by "Object" is "equals". We have already learned that we have to use the method "equals" when we want to compare the content of two strings because the equality operator "==" only compares references. This is also recommended for your own objects. However, comparing objects is more difficult than comparing strings. For our class "Player" shown above, when are two players equal? The Java language cannot answer this question for us, so we have to provide our own implementation of "equals". For example, we could say that two Player objects are equal if they have the same name and the same birth year:
+Another interesting method defined by :code:`Object` is :code:`equals`. We have already learned that we have to use the method :code:`equals` when we want to compare the content of two strings because the equality operator :code:`==` only compares references. This is also recommended for your own objects. However, comparing objects is more difficult than comparing strings. For our class :code:`Player` shown above, when are two players equal? The Java language cannot answer this question for us, so we have to provide our own implementation of :code:`equals`. For example, we could say that two :code:`Player` objects are equal if they have the same name and the same birth year:
 
 .. code-block:: java
 
@@ -1636,13 +1650,18 @@ Another interesting method defined by "Object" is "equals". We have already lear
         }
         
         public boolean equals(Object obj) {
-            if(obj instanceof Player) {
-                Player otherPlayer = (Player)obj;
-                return otherPlayer.name.equals(this.name) && otherPlayer.birthYear==this.birthYear;
+            if (this==obj) {
+                return true;    // same object!
+            }
+            else if (obj==null) {
+                return false;   // null parameter
+            }
+            else if (this.getClass()!=obj.getClass()) {
+                return false;   // different types
             }
             else {
-                // "obj" is not a Person
-                return false;
+                Player p = (Player) obj;
+                return p.name.equals(this.name) && p.birthYear==this.birthYear;
             }
         }
     }
@@ -1653,44 +1672,20 @@ Another interesting method defined by "Object" is "equals". We have already lear
             Player peter2 = new Player("Peter", 1993);
             System.out.println( peter1.equals(peter2) );    // true
             System.out.println( peter1.equals("Hello") );   // false
+            System.out.println( peter1.equals(null) );      // false
         }
     }
 
-What's happening in the above code? One difficulty with "equals" is that it can be called with any object as parameter, even with objects that are not instances of the class "Player". You can see an example in the "main" method: :code:`peter1.equals("Hello")`.
-So, before we can compare the name and the birth year of a Player object with another object, we first have to check whether the other object actually is a Player object! In the implementation of "equals", this happens in this line:
+What's happening in the above code? One difficulty with :code:`equals` is that it can be called with a :code:`null` argument or with an object that is not an instance of :code:`Player`. 
+So, before we can compare the name and the birth year of a :code:`Player` object with another :code:`Player` object, we first have to do some tests. One of them is whether the object on which :code:`equals` was called (:code:`this`) and the other object (:code:`obj`) have the same type:
 
-.. code-block:: java
+.. code-block:: java 
 
-    if(obj instanceof Player) {
-
-If the result of :code:`instanceof` is true, we can be sure that the typecast in the next line never fails:
-
-.. code-block:: java
-
-    Player otherPlayer = (Player)obj;
-
-After that we can compare the name and birth year of :code:`this` player and the other Player object.
-
-Starting from Java version 17, the :code:`instanceof` test and the typecast can be written in just one line:
-
-.. code-block:: java
-
-    public boolean equals(Object obj) {
-        if(obj instanceof Player otherPlayer) {
-            return otherPlayer.name.equals(this.name) && otherPlayer.birthYear==this.birthYear;
-        }
-        else {
-            return false;
-        }
-    } 
-
-What happens if we call the "equals" method with a :code:`null` parameter? For example, like this:
-
-.. code-block:: java
-
-    System.out.println( peter1.equals(null) );
+    else if (this.getClass()!=obj.getClass()) {
     
-This actually works because an instanceof-test with :code:`null` always gives false. In some sense, :code:`null` is a very strange "thing". It can be assigned to any variable, e.g., :code:`Person person = null`, but it does not belong to any class.
+If all those tests pass we can finally compare the name and birth year of :code:`this` and the other Player object.
+
+Note that there are some other difficulties with :code:`equals` that we will not discuss here and that are related to the :code:`hashCode` method of :code:`Object`.
 
 
 ArrayList and Boxing 
@@ -1699,7 +1694,7 @@ ArrayList and Boxing
 ArrayList
 ---------
 
-Using the class "Object" can be useful in situations where we want to write methods that work with all types of objects. For example, we have seen before that a disadvantage of arrays in Java over lists in Python is that arrays cannot change their size. In the package :code:`java.util`, there is a class "ArrayList" that can do that:
+Using the class :code:`Object` can be useful in situations where we want to write methods that work with all types of objects. For example, we have seen before that a disadvantage of arrays in Java over lists in Python is that arrays cannot change their size. In the package :code:`java.util`, there is a class :code:`ArrayList` that can do that:
 
 .. code-block:: java
 
@@ -1718,9 +1713,29 @@ Using the class "Object" can be useful in situations where we want to write meth
         }
     }
 
-As you can see in the above example, the method "add" of "ArrayList" accepts any reference (including to arrays and strings) as argument. You can imagine that the methods "add" and "get" are defined as :code:`void add(Object obj)` and :code:`Object get(int position)`. Indeed, internally, "ArrayList" uses an array of type :code:`Object[]` to store the added elements.
+As you can see in the above example, the method :code:`add` of :code:`ArrayList` accepts any reference (including to arrays and strings) as argument. Very simplified, you can imagine that the :code:`ArrayList` class looks like this:
 
-For loops are also allowed with "ArrayList":
+.. code-block:: java
+
+    public class ArrayList {
+        // the added elements        
+        private Object[] elements;
+        
+        public void add(Object obj) {
+            // this method adds "obj" to the array
+            // ...
+        }
+    
+        public Object get(int position) {
+            // this method returns the object at "postion"
+            // ...
+        }
+    }
+
+For loops on ArrayList
+----------------------
+
+:code:`for` loops also work on "ArrayList":
 
 .. code-block:: java
 
@@ -1729,12 +1744,12 @@ For loops are also allowed with "ArrayList":
     list.add("World");
     
     // simple for loop
-    for(Object obj : list) {
+    for (Object obj : list) {
         System.out.println(obj);
     }
 
     // complex for loop
-    for(int i=0; i<list.size(); i++) {
+    for (int i=0; i<list.size(); i++) {
         System.out.println( list.get(i) );
     }
 
@@ -1742,13 +1757,13 @@ For loops are also allowed with "ArrayList":
 Boxing and unboxing
 -------------------
 
-Unfortunately, primitive types are not subclasses of "Object". Therefore, we cannot simple add an int value to  an ArrayList, at least not without the help of the compiler:
+Unfortunately, primitive types are not subclasses of :code:`Object`. Therefore, we cannot simple add an :code:`int` value to an ArrayList, at least not without the help of the compiler:
 
 .. code-block:: java
 
     list.add(3);  // does that work?
         
-One way to solve this problem is to write a new class with the only purpose to store int values in objects:
+One way to solve this problem is to write a new class with the only purpose to store the :code:`int` value in an object that we can then add to the list:
 
 .. code-block:: java
 
@@ -1760,14 +1775,15 @@ One way to solve this problem is to write a new class with the only purpose to s
         }
     }
     
-Now we can write:
-
-.. code-block:: java
-
-    IntObject obj = new IntObject(3);
-    list.add(obj);
-
-This trick is called *boxing* because we put the int value 3 in a small "box" (the IntObject object). We actually don't have to write our own class "IntObject", because the :code:`java.lang` package already contains a class that does exactly that:
+    public class Main {
+        public static void main(String[] args) {
+            ArrayList list = new ArrayList();
+            
+            list.add(new IntObject(3));
+        }
+    }
+    
+This trick is called *boxing* because we put the primitive-type value 3 in a small "box" (the :code: `IntObject` object). Fortunately, we actually don't have to write our own class :code:`IntObject`, because the :code:`java.lang` package already contains a class that does exactly that:
 
 .. code-block:: java
 
@@ -1775,27 +1791,27 @@ This trick is called *boxing* because we put the int value 3 in a small "box" (t
     Integer value = Integer.valueOf(3);
     list.add(value);
 
-The :code:`java.lang` package also contains equivalent classes "Long", "Float", etc. for the other primitive types.
+The :code:`java.lang` package also contains equivalent classes :code:`Long`, :code:`Float`, etc. for the other primitive types.
 
-Boxing is ugly and it is only needed in Java because primitive types are not subclasses of "Object". Fortunately, we get a little bit of help from the compiler. In fact, the Java compiler can do the boxing for you. This is called *autoboxing*. You can just write:
+Note that boxing is quite cumbersome and it is only needed in Java because primitive types are not subclasses of :code:`Object`. However, we get a little bit of help from the compiler. In fact, the compiler can do the boxing for you. This is called *autoboxing*. You can just write:
 
 .. code-block:: java
 
     list.add(3);  // this automatically calls "Integer.valueOf(3)"
 
-Autoboxing is not limited to the "ArrayList" class. It works for all situations where you assign a primitive-type value to a variable that has a matching class type (i.e., Integer for int). The opposite direction, unboxing, is also done automatically by the compiler:
+Autoboxing is not limited to the :code:`ArrayList` class. It works for all situations where you assign a primitive-type value to a variable that has a matching class type. The opposite direction, unboxing, is also done automatically by the compiler:
 
 
 .. code-block:: java
 
     // autoboxing
     // this is identical to:
-    //      Integer value = Integer.valueOf(3);
+    //    Integer value = Integer.valueOf(3);
     Integer value = 3;  
     
     // auto-unboxing
     // this is identical to:
-    //      int i = value.intValue();
+    //    int i = value.intValue();
     int i = value;
 
 
@@ -1803,6 +1819,9 @@ Autoboxing is not limited to the "ArrayList" class. It works for all situations 
 
 Method overloading
 ==================
+
+Overloading with different parameters
+-------------------------------------
 
 In Java, it is allowed to have two methods with the same name as long as they have different parameters. This is called *method overloading*. Here is an example:
 
@@ -1831,14 +1850,17 @@ In Java, it is allowed to have two methods with the same name as long as they ha
         }
     }
 
-If we call the "set" method, the Java compiler knows which of the two methods you wanted to call by looking at the parameters:
+If we call the :code:`set` method, the Java compiler knows which of the two methods you wanted to call by looking at the parameters:
 
 .. code-block:: java
 
     Person person = new Person("Peter", 1993);
     person.set("Pierre", 1993);     // this is the set method with parameters String and int
 
-However, you have to be careful when you write overloaded methods where the parameters are classes and subclasses. Here is minimal example of a Player class with such an overloaded method:
+Overloading with subclass parameters
+------------------------------------
+
+You have to be careful when you write overloaded methods where the parameters are classes and subclasses. Here is minimal example of a :code:`Player` class with such an overloaded method:
 
 .. code-block:: java
 
@@ -1852,16 +1874,16 @@ However, you have to be careful when you write overloaded methods where the para
 
     class Player {
         Weapon weapon;
-        int magic;
+        int power;
 
         void giveWeapon(Weapon weapon) {
             this.weapon = weapon;
-            this.magic = 0;
+            this.power = 0;
         }
 
         void giveWeapon(MightySword weapon) {
             this.weapon = weapon;
-            this.magic = 10;   // a Mighty Sword increases the magic power of the player
+            this.power = 10;   // a Mighty Sword increases the power of the player
         }
     }
 
@@ -1872,22 +1894,76 @@ However, you have to be careful when you write overloaded methods where the para
             Weapon weapon = new MightySword();
             player.giveWeapon(weapon);
             
-            System.out.println(player.magic);
+            System.out.println(player.power);
         }
     }
 
-What will :code:`System.out.println(player.magic)` print after we gave a Mighty Sword to the player?
+What will :code:`System.out.println(player.power)` print after we gave a Mighty Sword to the player?
 
-Surprisingly, it will print "0". The method :code:`void giveWeapon(MightySword weapon)` is **not** called although we called "giveWeapon" with a MightySword object! The explanation for this is that the Java compiler only looks at the type of the variable as declared in the source code when deciding which method to call. In our example, the type of the variable "weapon" is "Weapon", therefore the method :code:`void giveWeapon(Weapon weapon)` is called. The compiler ignores that the variable contains a reference to a MightySword object.
+Surprisingly, it will print "0". The method :code:`void giveWeapon(MightySword weapon)` is **not** called although we called :code:`giveWeapon` with a MightySword object! The explanation for this is that the Java compiler only looks at the type of the variable *as declared in the source code* when deciding which method to call. In our example, the type of the variable :code:`weapon` is :code:`Weapon`, therefore the method :code:`void giveWeapon(Weapon weapon)` is called. The compiler ignores that the variable will contain a reference to a MightySword object during program execution.
 
-Lesson learned: **Method calls in Java are only dynamically decided for the object on which the method is called (rule 3!). They are not dynamic for the parameters of the method.**
+Lesson learned: **Method calls in Java are only dynamically decided for the object on which the method is called (remember rule 3!). They are not dynamic for the arguments of the method.**
 
-The correct way to call the "giveWeapon" method for Mighty Swords is:
+The correct way to call :code:`giveWeapon` for Mighty Swords is:
 
 .. code-block:: java
 
     MightySword weapon = new MightySword();
     player.giveWeapon(weapon);
+    
+or just
+
+.. code-block:: java
+
+    player.giveWeapon(new MightySword());
+
+Overloading with best match
+---------------------------
+
+What happens if we call an overloaded method but there is no version of the method that exactly matches the type of the argument? Here is the same example as above, but with a third class :code:`MagicSword` that is a subclass of :code:`MagicSword`:
+
+.. code-block:: java
+
+    class Weapon {
+        // ...
+    }
+
+    class MightySword extends Weapon {
+        // ...
+    }
+
+    class MagicSword extends MightySword {
+        // ...
+    }
+
+    class Player {
+        Weapon weapon;
+        int power;
+
+        void giveWeapon(Weapon weapon) {
+            this.weapon = weapon;
+            this.power = 0;
+        }
+
+        void giveWeapon(MightySword weapon) {
+            this.weapon = weapon;
+            this.power = 10;
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Player player = new Player();
+
+            player.giveWeapon(new MagicSword());
+
+            System.out.println(player.power);
+        }
+    }
+
+Which one of the two :code:`giveWeapon` will be called if the argument is a :code:`MagicSword` object? In this situation, the compiler will choose the method with the closest type to :code:`MagicSword`, that is :code:`void giveWeapon(MightySword weapon)`.
+
+
 
 
 Generics
