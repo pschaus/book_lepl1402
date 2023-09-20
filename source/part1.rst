@@ -1373,12 +1373,12 @@ Let's say we are writing a computer game, for example an RPG. We implement weapo
     
     public class Main {   
         public static void main(String[] args) {
-            Weapon dagger;
+            Weapon weapon;
             
             weapon = new Weapon("Small dagger", 2);            
-            System.out.println("Price is " + dagger.getPrice());
-            System.out.println("Simple damage is " + dagger.getSimpleDamage());
-            System.out.println("Double damage is " + dagger.getDoubleDamage());
+            System.out.println("Price is " + weapon.getPrice());
+            System.out.println("Simple damage is " + weapon.getSimpleDamage());
+            System.out.println("Double damage is " + weapon.getDoubleDamage());
         }
     }
     
@@ -1393,6 +1393,7 @@ In our game, there is also a special weapon type, the *Mighty Swords*. These swo
             super(name,level);
         }
 
+        @Override
         int getSimpleDamage() {
             return 1000;
         }
@@ -1443,7 +1444,7 @@ Just by looking at this line and the line :code:`Weapon weapon` at the beginning
 
 **Rule 3: Let x be a variable of type X (where X is a class) and let's assign an object of class Y (where Y is a subclass of X) to x. When you call a method on x and the method is defined in X and in Y, the JVM will execute the method defined in Y.**
 
-For instances of the class :code:`MightySword`, calling :code:`getSimpleDamage:code:` will always execute the method defined in that class. We say that the method :code:`getSimpleDamage` in :code:`MightySword`  *overrides* the method definition in the class "Weapon".
+For instances of the class :code:`MightySword`, calling :code:`getSimpleDamage:code:` will always execute the method defined in that class. We say that the method :code:`getSimpleDamage` in :code:`MightySword`  *overrides* the method definition in the class "Weapon". For that reason, we have marked the method in :code:`MightySword` with the so-called :code:`@Override` annotation.
 
 With the above three rules, can you guess what happens in the next line?
 
@@ -1489,12 +1490,34 @@ In the constructor, the keyword :code:`super` stands for the constructor of the 
             super(name,level);
         }
 
+        @Override
         int getPrice() {
             return super.getPrice() + 100;
         }
     } 
 
 The expression :code:`super.getPrice()` calls the method :code:`getPrice` as defined in the superclass :code:`Weapon`. That means that the keyword :code:`super` can be used to call methods of the superclass, which would normally not be possible for overridden methods because of rule 3.
+
+The @Override annotation
+------------------------
+
+This :code:`@Override` annotation is not strictly necessary in Java (the compiler doesn't need it), but it helps you to avoid mistakes. For example, imagine you made a spelling error when you wrote the name of :code:`getSimpleDamage`:
+
+.. code-block:: java
+
+    class MightySword extends Weapon {
+        MightySword(String name, int level) {
+            super(name,level);
+        }
+
+        @Override
+        int getSimpleDamag() {  //  oops, we forgot the "e" in "getSimpleDamage"
+            return 1000;
+        }
+    } 
+
+Because of your spelling error, the above code actually does not override anything. It just introduces a new method :code:`getSimpleDamag`. But thanks to the :code:`@Override` annotation, IntelliJ can warn us that there is a problem.
+
 
 Extending, extending,...
 ------------------------
@@ -1518,7 +1541,7 @@ A subclass cannot only override methods of its superclass, it can also add new i
 
 As you can see, you can create subclasses of subclasses. Note that the constructor uses again :code:`super` to first call the constructor of the superclass and then initializes the new instance variable :code:`magicLevel`.
 
-How can we call the method :code:`getMagicDamage:code:`? Can we do this:
+How can we call the method :code:`getMagicDamage`? Can we do this:
 
 .. code-block:: java
 
@@ -1526,13 +1549,13 @@ How can we call the method :code:`getMagicDamage:code:`? Can we do this:
     System.out.println(weapon.getMagicDamage());
     
 The answer is no! Rule 3 is only applied to methods that are defined in the subclass *and* in the superclass. This is not the case for :code:`getMagicDamage`.
-In this situation, the Java compiler will not accept the call :code:`weapon.getMagicDamage()` because, just by looking at the variable declaration :code:`Weapon weapon`, it cannot tell that the object referenced by the variable :code:`weapon` really has a method :code:`getMagicDamage`. You might think that the compiler is a bit stupid here, but remember that the code could try to do some strange things that are difficult to see for the compiler:
+In this situation, the Java compiler will not accept the call :code:`weapon.getMagicDamage()` because, just by looking at the variable declaration :code:`Weapon weapon`, it cannot tell that the object referenced by the variable :code:`weapon` really has a method :code:`getMagicDamage`. You might think that the compiler is a bit stupid here, but remember that this is just a simple example and the programmer could try to do some strange things that are difficult to see for the compiler:
 
 .. code-block:: java
 
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
     weapon = new Weapon("Dagger", 1);    
-    System.out.println(weapon.getMagicDamage());
+    System.out.println(weapon.getMagicDamage());  // does not compile, fortunately!
 
 To be able to call :code:`getMagicDamage`, you have to convince the compiler that the variable contains a reference to a Magic Sword object. For example, you could change the type of the variable:
 
@@ -1541,7 +1564,7 @@ To be able to call :code:`getMagicDamage`, you have to convince the compiler tha
     MagicSword weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(weapon.getMagicDamage());
 
-In this way, it's 100% clear for the compiler that the variable definitely refers to a :code:`MagicSword` object (or to an object of a subclass of :code:`MagicSword`, remember rule 1).
+In this way, it's 100% clear for the compiler that the variable definitely refers to a :code:`MagicSword` object (or to an object of a subclass of :code:`MagicSword`; remember rule 1).
 
 Alternatively, you can do a type cast:
 
@@ -1550,7 +1573,7 @@ Alternatively, you can do a type cast:
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(((MagicSword) weapon).getMagicDamage());
 
-However, be careful with such type casts. The compiler will accept it but if you do a mistake, you will get an error during program execution:
+However, be careful with type casts. The compiler will accept them but if you do a mistake, you will get an error during program execution:
 
 .. code-block:: java
 
@@ -1618,6 +1641,7 @@ One of them is the :code:`toString` method. This method is very useful because i
             this.birthYear = birthYear;
         }
 
+        @Override
         public String toString() {
             return "Player " + this.name + " born in " + this.birthYear;
         }
@@ -1636,6 +1660,8 @@ Another interesting method defined by :code:`Object` is :code:`equals`. We have 
 
 .. code-block:: java
 
+    import java.util.Objects;
+    
     class Player {
         private String name;
         private int birthYear;
@@ -1644,11 +1670,8 @@ Another interesting method defined by :code:`Object` is :code:`equals`. We have 
             this.name = name;
             this.birthYear = birthYear;
         }
-
-        public String toString() {
-            return "Player " + this.name + " born in " + this.birthYear;
-        }
-        
+      
+        @Override
         public boolean equals(Object obj) {
             if (this==obj) {
                 return true;    // same object!
@@ -1663,6 +1686,11 @@ Another interesting method defined by :code:`Object` is :code:`equals`. We have 
                 Player p = (Player) obj;
                 return p.name.equals(this.name) && p.birthYear==this.birthYear;
             }
+        }
+        
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.name, this.birthYear);
         }
     }
 
@@ -1685,7 +1713,7 @@ So, before we can compare the name and the birth year of a :code:`Player` object
     
 If all those tests pass we can finally compare the name and birth year of :code:`this` and the other Player object.
 
-Note that there are some other difficulties with :code:`equals` that we will not discuss here and that are related to the :code:`hashCode` method of :code:`Object`.
+Note that there are some other difficulties with :code:`equals` that we will not discuss here. They are related to the :code:`hashCode` method that you have to always override together with :code:`equals`, as shown above.
 
 
 ArrayList and Boxing 
@@ -1726,8 +1754,8 @@ As you can see in the above example, the method :code:`add` of :code:`ArrayList`
             // ...
         }
     
-        public Object get(int position) {
-            // this method returns the object at "postion"
+        public Object get(int index) {
+            // this method returns the object at position "index"
             // ...
         }
     }
@@ -1801,7 +1829,6 @@ Note that boxing is quite cumbersome and it is only needed in Java because primi
 
 Autoboxing is not limited to the :code:`ArrayList` class. It works for all situations where you assign a primitive-type value to a variable that has a matching class type. The opposite direction, unboxing, is also done automatically by the compiler:
 
-
 .. code-block:: java
 
     // autoboxing
@@ -1814,7 +1841,58 @@ Autoboxing is not limited to the :code:`ArrayList` class. It works for all situa
     //    int i = value.intValue();
     int i = value;
 
+ArrayList and Generics
+----------------------
 
+The way :code:`ArrayList` uses :code:`Object` to be able to store all kinds of objects has a big disadvantage. Since the :code:`get` method has the return type :code:`Object`, we have to do a type cast if we want again the original type of the object that we added to the list:
+
+.. code-block:: java
+    
+    ArrayList list = new ArrayList();
+    
+    list.add("Hello");
+    list.add("World");
+    
+    int len = ((String) list.get(0)).length();
+    
+Although *we* know that the list only contains strings, the compiler needs the typecast before we can call the method :code:`length`. This is not only cumbersome, but can also lead to errors that only appear when the program is executed.
+
+Fortunately, Java has a feature called *Generics* that allows us to simplify the above code:
+
+.. code-block:: java
+
+    ArrayList<String> list = new ArrayList<String>();
+    
+    list.add("Hello");
+    list.add("World");
+    
+    int len = list.get(0).length();
+
+The form :code:`ArrayList<String>` tells the compiler that the :code:`add` method of our list will only accept strings as argument and the :code:`get` method will only return strings. In that way, the type cast is not needed anymore (actually, the type cast is still done but you don't see it because the compiler automatically adds it in the class file).
+
+You will see more examples of *Generics* later in this book. To give you a first taste, let's see what the :code:`ArrayList` class looks like in reality:
+
+.. code-block:: java
+
+    public class ArrayList<E> {    // type parameter E
+        private Object[] elements;
+        
+        public void add(E obj) {
+            // ...
+        }
+    
+        public E get(int index) {
+            // ...
+        }
+    }
+
+The :code:`E` that you can see in the first line and in the method definitions is a *type parameter*. It represents the type of the element that we want to store in the list. By creating our list with
+
+.. code-block:: java
+
+    ArrayList<String> list = new ArrayList<String>();
+
+we are telling the compiler that it should assume that :code:`E = String`, and accordingly the methods :code:`add` and :code:`get` will be understood as :code:`void add(String obj)` and :code:`String get(int index)`.
 
 
 Method overloading
@@ -1834,10 +1912,6 @@ In Java, it is allowed to have two methods with the same name as long as they ha
         Player(String name, int birthYear) {
             this.name = name;
             this.birthYear = birthYear;
-        }
-
-        public String toString() {
-            return "Player " + this.name + " born in " + this.birthYear;
         }
 
         public void set(String name) {
@@ -1860,7 +1934,7 @@ If we call the :code:`set` method, the Java compiler knows which of the two meth
 Overloading with subclass parameters
 ------------------------------------
 
-You have to be careful when you write overloaded methods where the parameters are classes and subclasses. Here is minimal example of a :code:`Player` class with such an overloaded method:
+You have to be careful when you write overloaded methods where the parameters are classes and subclasses. Here is a minimal example of a :code:`Player` class with such an overloaded method:
 
 .. code-block:: java
 
@@ -1917,10 +1991,10 @@ or just
 
     player.giveWeapon(new MightySword());
 
-Overloading with best match
----------------------------
+Overloading with closest match
+------------------------------
 
-What happens if we call an overloaded method but there is no version of the method that exactly matches the type of the argument? Here is the same example as above, but with a third class :code:`MagicSword` that is a subclass of :code:`MagicSword`:
+What happens if we call an overloaded method but there is no version of the method that exactly matches the type of the argument? Here is the same example as above, but with a third class :code:`MagicSword` that is a subclass of :code:`MightySword`:
 
 .. code-block:: java
 
@@ -1964,27 +2038,21 @@ What happens if we call an overloaded method but there is no version of the meth
 Which one of the two :code:`giveWeapon` will be called if the argument is a :code:`MagicSword` object? In this situation, the compiler will choose the method with the closest type to :code:`MagicSword`, that is :code:`void giveWeapon(MightySword weapon)`.
 
 
-
-
-Generics
-========
-
-Comparator
-==========
-
-
-Organizing Code: Packages
-==========================
-
-Visibility Modifiers
-====================
-
-Passing Arguments
-=================
-
-Exceptions
-==========
-
-IO
-===
+..
+    Generics
+    ========
+    Multiple inheritance (not supported in Java)
+    ====================
+    Comparator
+    ==========
+    Organizing Code: Packages
+    ==========================
+    Visibility Modifiers
+    ====================
+    Passing Arguments
+    =================
+    Exceptions
+    ==========
+    IO
+    ===
 
