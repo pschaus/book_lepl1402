@@ -15,7 +15,7 @@ In the course LINFO1101, you used the Thonny Integrated Development Environment 
 The second thing you will need is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools and libraries that you need to build and run Java programs. Fortunately, IntelliJ can download it for you when you create a new project, so you don't have to take care of that. (We just mention it here, so you know what to do when you want to run your Java application without IntelliJ. The JDK can be downloaded from `<https://openjdk.org/>`_)
 
 Creating a new project
-----------------------
+-----------------------
 
 Start IntelliJ. A window will open where you can create a new project. Click on the corresponding button and you should see a window like this one:
 
