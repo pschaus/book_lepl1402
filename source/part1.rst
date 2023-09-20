@@ -4,15 +4,23 @@
 Part 1: From Python to Java
 *****************************************************************
 
+Part 1 of this book is intended for students and hobbyists who are already familiar with the basics of Python programming, i.e., they know how to use variables, lists, functions, and plain data objects.
+A deeper knowledge of object-oriented programming is not required.
+
+The goal of the following sections is to make you quickly familiar with the important differences between Python and Java and with the basic object oriented mechanisms of Java. More advanced topics, such as interfaces, abstract classes, or lambda functions, will be seen in the other parts of the book.
+
+
 Your first Java program with IntelliJ
 =====================================
 
 Installing IntelliJ
 -------------------
 
-In the course LINFO1101, you used the Thonny Integrated Development Environment (IDE) to write your Python programs. In this course, we will do something similar to write Java programs: we will use the free "Community Edition" of Intellij IDEA (we will just call it "IntelliJ" in the following). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
+You might have already used an Integrated Development Environment (IDE) to write Python programs. In this course, we will do the same for programming in Java: we will use the free "Community Edition" of Intellij IDEA (we will just call it "IntelliJ" in the following). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
 
-The second thing you will need is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools and libraries that you need to build and run Java programs. Fortunately, IntelliJ can download it for you when you create a new project, so you don't have to take care of that. (We just mention it here, so you know what to do when you want to run your Java application without IntelliJ. The JDK can be downloaded from `<https://openjdk.org/>`_)
+The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/en/java/javase/20/docs/api/index.html>`_.
+
+Fortunately, IntelliJ can automatically download the JDK for you when you create a new project, so you don't have to worry about the JDK now. But if one day you want to write a Java application on a computer without IntelliJ, you have to manually download the JDK from `<https://openjdk.org/>`_ and install it.
 
 Creating a new project
 ----------------------
@@ -23,7 +31,7 @@ Start IntelliJ. A window will open where you can create a new project. Click on 
   :width: 90%
   :alt: Starting a new project
 
-To create a new project, you have to enter a project name (in the field "Name") and a location on your disk where you want to store the project (in the field "Location"). Keep the other fields "Language", "Build system", and "Add sample code" as shown in the above picture. But there is something to do in the field "JDK". As you can see in the picture, there was already JDK version 20 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose "Download JDK..." as shown in the picture below:
+To create a new project, you have to enter a project name (in the field "Name") and a location on your disk where you want to store the project (in the field "Location"). Keep the other fields "Language", "Build system", and "Add sample code" as shown in the above picture. But there is something to do for the field "JDK": As you can see in the picture, there was already JDK version 20 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose "Download JDK..." as shown in the picture below:
 
 .. image:: _static/images/part1/select_jdk_screenshot.png
   :width: 90%
@@ -34,7 +42,7 @@ A small window should appear where you can select which JDK version to download 
 .. image:: _static/images/part1/download_jdk_screenshot.png
   :alt: Downloading a JDK
 
-Select version 20 from the vendor "Oracle OpenJDK" (actually, any version newer than 12 is fine for this course). You can keep the location proposed by IntelliJ. Click the "Download" button and complete the JDK installation. Once everything is ready, you can finally create your first Java project. IntelliJ will normally automatically open the new project and show you the main window:
+Select version 20 from the vendor "Oracle OpenJDK" (actually, any version newer than 17 is fine for this book). You can keep the location proposed by IntelliJ. Click the "Download" button and complete the JDK installation. Once everything is ready, you can finally create your first Java project. IntelliJ will normally automatically open the new project and show you the main window:
 
 .. image:: _static/images/part1/first_project_screenshot.png
   :width: 90%
@@ -70,7 +78,7 @@ And here is how an equivalent Python program would look like:
 
 Why does the Java code look more complicated than the Python code? First of all, unlike Python, Java doesn't allow to write a statement like :code:`print('Hello world!')` directly in a source code file. In Java, all statements MUST be inside a method and all methods MUST be inside a class. In our example, the statement :code:`System.out.println("Hello world!")` is in the method "main" and this method is in the class "Main". Of course, a class in Java can have more than one method, and a Java program can contain more than one class.
 
-You have already learned about classes and methods in the course LINFO1101 and you might remember that classes are used to describe objects and methods are used to work with those objects. In our simple Java example, we don't need objects and all the complicated things that come with them (constructors, inheritance, etc.). The word :code:`static` in the line :code:`public static void main(String[] args)` indicates that the method "main" behaves more like a traditional function in Python and not like a method for objects. In fact, no object is needed to execute a static method like "main". We will learn more about this later.
+You probably have already learned about classes and methods in Python and you might remember that classes are used to describe objects and methods are used to work with those objects. In our simple Java example, we don't need objects and all the complicated things that come with them (constructors, inheritance, etc.). The word :code:`static` in the line :code:`public static void main(String[] args)` indicates that the method "main" behaves more like a traditional function in Python and not like a method for objects. In fact, no object is needed to execute a static method like "main". We will learn more about this later.
 
 The second thing you might have noticed is the word :code:`public` appearing twice in the first two lines of the code:
 
@@ -138,7 +146,7 @@ You might already know that Python is a *strongly typed* language. That means th
     >>> type(True)
     <class 'bool'>
 
-Java is a strongly typed language, too. However, there is a big difference to Python: Java is also a *statically typed* language. We will not discuss all the details here, but in Java that means that most of the time you (the programmer) must indicate for *every* variable in your program what type of "things" it can contain.
+Java is a strongly typed language, too. However, there is a big difference to Python: Java is also a *statically typed* language. We will not discuss all the details here, but in Java that means that most of the time you must indicate for *every* variable in your program what type of "things" it can contain.
 
 Here is a simple Python program to calculate and print the area of a square:
 
@@ -176,14 +184,14 @@ And here is the equivalent Java program:
         }
     }
 
-Let's see what's happening with the types in the Java code:
+Let's see what's going on with the types in the Java code:
 
-- The line :code:`int calculateArea(int side)` indicates that the method "calculateArea" has a parameter "side" of type :code:`int`. Furthermore, the :code:`int` at the beginning of :code:`int calculateArea(...` specifies that this method returns a value of type :code:`int`. This is called the *return type* of the method.
+- The line :code:`int calculateArea(int side)` indicates that the method "calculateArea" has a parameter "side" of type :code:`int`. Furthermore, the :code:`int` at the beginning of :code:`int calculateArea(...` specifies that this method can only return a value of type :code:`int`. This is called the *return type* of the method.
 - The line :code:`void printArea(String message, int side)` defines that the method "printArea" has a parameter "message" of type :code:`String` and a parameter "side" of type :code:`int`. The method does not return anything, therefore it has the special return type :code:`void`.
 - Inside the method "printArea", we can see in the line :code:`int area = calculateArea(side)` that the variable "area" has the type :code:`int`.
 - (Exercise for you: look at the types that you can see in the "main" method. We will explain later why the "main" method always has a parameter named "args")
 
-Whenever you want to execute a Java program, IntelliJ uses a special tool called the *Java compiler* that carefully verifies that there are no *type errors*  in your program, i.e., that you have not made any mistakes in the types of the variables, parameters, and methods in your program. Unlike Python, this *type checking* is done *before* your program is executed. You cannot even start a Java program that contains type errors!
+IntelliJ uses a special tool called the *Java compiler* that carefully verifies that there are no *type errors*  in your program, i.e., that you have not made any mistakes in the types of the variables, method parameters, and return types in your program. Unlike Python, this *type checking* is done *before* your program is executed. You cannot even start a Java program that contains type errors!
 
 Here are some examples that contain type errors. Can you find the mistakes?
 
@@ -195,9 +203,8 @@ Here are some examples that contain type errors. Can you find the mistakes?
 The Java compiler and class files
 =================================
 
-In the previous section, we mentioned that a special tool, the *Java compiler*, checks your program for type errors *before* it is executed. This check is part of another fundamental difference between Python and Java.
-
-Python is an *interpreted language*. That means that when you start a program written in Python in an IDE like Thonny or on the command line with
+In the previous section, we mentioned that a special tool, the *Java compiler*, checks your program for type errors. This check is part of another fundamental difference between Python and Java.
+Python is an *interpreted language*. That means that when you start a program written in Python in an IDE or on the command line with
 
 ..  code-block:: bash
 
@@ -205,7 +212,7 @@ Python is an *interpreted language*. That means that when you start a program wr
     
 the Python-Interpreter will do the following things:
 
-1. Load the file "myprogram.py" (and the modules you have imported in your program with the :code:`import` statement),
+1. Load the file "myprogram.py",
 2. Do some checks to verify that your program doesn't contain syntax errors such as :code:`print('Hello')))))`,
 3. Execute your program.
 
@@ -257,17 +264,23 @@ As you can see, each primitive type has a limited range of values it can represe
     int b = a * 100000;     // This is too large for the int type!
     System.out.println(b);  // What will you get here?
 
-For most calculations that we do in this book, it will be sufficient to use :code:`int` (for integer numbers) and :code:`float` (for real numbers). The types :code:`long` and :code:`double` provide a wider value range and more precision, but they are slower and your program will consume more memory when running.
+For most examples in this book, it will be sufficient to use :code:`int` (for integer numbers) and :code:`float` (for real numbers). The types :code:`long` and :code:`double` provide a wider value range and more precision, but they are slower and your program will consume more memory when running.
 
-Java supports the usual arithmetic operations with number types, that is :code:`+` (addition), :code:`-` (subtraction), :code:`*` (multiplication), :code:`/` (division), and :code:`%` (modulo). There is also a group of operators that can be used to manipulate integer values on bit level (for example, :code:`<<` (left shift) and `&` (bitwise and), but we will not discuss them further here).
+Java supports the usual arithmetic operations with number types, that is :code:`+` (addition), :code:`-` (subtraction), :code:`*` (multiplication), :code:`/` (division), and :code:`%` (modulo). There is also a group of operators that can be used to manipulate integer values on bit level (for example, left shift :code:`<<`  and bitwise and :code:`&`), but we will not discuss them further here.
 
-You might wonder why the :code:`char` type is shown in the above table as a type with values between 0 and 65535, although it is used for variables containing single characters, like 'a' or 'X'. This is because Java represents characters by numbers following a standard called *Unicode*. Consequently, you can do calculations with characters:
+The :code:`char` type is used to work with individual characters (letters, digits,...):
+
+..  code-block:: java
+
+    char c = 'a';
+
+You might wonder why this type is shown in the above table as a type with values between 0 and 65535. This is because Java represents characters by numbers following a standard called *Unicode*. Consequently, you can do certain simple arithmetic operations with characters:
 
 .. code-block:: java
 
     char c = 'a';
-    c = c + 1;
-    System.out.println(c);
+    c++;
+    System.out.println(c);  // prints 'b'
 
 You can find more information about Unicode on `<https://en.wikipedia.org/wiki/Unicode>`_.
 
@@ -275,7 +288,7 @@ You can find more information about Unicode on `<https://en.wikipedia.org/wiki/U
 Type casting
 ------------
 
-Java performs automatic conversions between values of different types if the destination type is wide enough to hold the result. This is called a *type cast*. For example, these two statements are allowed:
+Java performs automatic conversions between values of different types if the destination type is "big" enough to hold the result. This is called *automatic type casting*. For this reason, these two statements are allowed:
 
 ..  code-block:: java
 
@@ -289,7 +302,7 @@ But this is not allowed:
     int a = 4.5f;             // Error! float is not automatically casted to int
     float b = 4.5f * 6.7;     // Error! float * double gives double
 
-You can force the conversion by doing a *manual* type cast, but the result will be less precise or even wrong:
+You can force the conversion by doing a *manual type cast*, but the result will be less precise or, in some situations, even wrong:
 
 ..  code-block:: java
 
@@ -334,54 +347,123 @@ When you assign the content of a variable to another variable, the value is copi
 |                       |                                                 |
 +-----------------------+-------------------------------------------------+
 
-The same also happens with the parameters of methods; when you call a method with arguments, for example :code:`calculateArea(side)`, the argument values are copied into the parameter variables of the called method.
+The same also happens with the parameters of methods; when you call a method with arguments, for example :code:`calculateArea(side)`, the argument values are copied into the parameter variables of the called method. Look at the following program and try to understand what it does:
+
+..  code-block:: java
+
+    public class Main {
+        static void f(int x) {
+            x = x + 1;
+        }
+
+        public static void main(String[] args) {
+            int i = 3;
+            f(i);
+            System.out.println(i);
+        }
+    }
+
+The above program will print "3" because when you call the method "f", the content of the variable "i" will be copied into the parameter variable "x" of the method. Even if the method changes the value of "x" with :code:`x = x + 1`, the variable "i" will keep its value 3.
+
+
 
 Note that it is illegal to use a local variable, i.e., a variable declared inside a method, before you have assigned a value to it:
 
 ..  code-block:: java
 
     public static void main(String[] args) {
-        int a;
+        int a = 2;
         int b;
+        int c;
+           
+        int d = a * 3;    // This is okay
+        
         b = 3;
-        int c = b * 3;    // This is okay. b has a value.
-        int d = a * 3;    // Error! a has not been initialized.
+        int e = b * 3;    // This is okay
+        
+        int f = c * 3;    // Error! "c" has not been initialized.
     }
 
 Class variables
 ----------------
 
 In our examples so far, all variables were either parameter variables or local variables of a method. Such variables are only "alive" when the program is inside the method during execution. 
-However, you can also have variables that "live" outside a method. These variables are called *class variables* because they belong to a class, not to a specific method. Similar to static methods, we mark them with the keyword :code:`static`:
+However, you can also have variables that "live" outside a method. These variables are called *class variables* because they belong to a class, not to a method. Similar to static methods, we mark them with the keyword :code:`static`:
 
 ..  code-block:: java
 
-  public class Main {
+    public class Main {
 
-    static int a = 3;   // this is a class variable
+        static int a = 3;   // this is a class variable
 
-    static void increment() {
-        a += 5;  // this is equivalent to  a = a + 5
+        static void increment() {
+            a += 5;         // this is equivalent to  a = a + 5
+        }
+
+        public static void main(String[] args) {
+            increment();
+            System.out.println(a);
+        }
     }
-
-    public static void main(String[] args) {
-        increment();
-        System.out.println(a);
-    }
-  }
   
-In contrast to local variables, class variables do not need to be manually initialized. They are automatically initialized to 0 (for number types) or :code:`false` (for the boolean type). This code is accepted by the compiler:
+In contrast to local variables, class variables do not need to be manually initialized. They are automatically initialized to 0 (for number types) or :code:`false` (for the boolean type). Therefore, this code is accepted by the compiler:
 
 ..  code-block:: java
 
-  public class Main {
+    public class Main {
 
-    static int a;   //  is equivalent to  a = 0
+        static int a;   //  is equivalent to  a = 0
 
-    public static void main(String[] args) {
-        System.out.println(a);
+        static void increment() {
+            a += 5;
+        }
+
+        public static void main(String[] args) {
+            increment();
+            System.out.println(a);
+        }
     }
-  }
+      
+Be careful when you have class variables and parameter or local variables with the same name:
+
+..  code-block:: java
+
+    public class Main {
+
+        static int a = 3;
+
+        static void increment(int a) {
+            a += 5;                    //  oops, this is the parameter variable
+        }
+
+        public static void main(String[] args) {
+            increment(10);
+            System.out.println(a);
+        }
+    }
+  
+In the method "increment", the statement :code:`a += 5` will change the value of the parameter variable "a", **not** of the class variable. We say that the parameter variable *shadows* the class variable because they have the same name. Inside the method "increment", the parameter variable "a" has priority over the class variable "a". We say that the method is the *scope* of the parameter variable.
+
+In general, you should try to avoid shadowing because it is easy to make mistakes, but if you really need to do it for some reason, you should know that it is still possible to access the class variable from inside the scope of the parameter variable:
+
+..  code-block:: java
+
+    public class Main {
+
+        static int a = 3;
+
+        static void increment(int a) {
+            Main.a += 5;                 // we want the class variable!
+        }
+
+        public static void main(String[] args) {
+            increment(10);
+            System.out.println(a);
+        }
+    }
+
+
+  
 
 Arrays (*fr.* tableaux)
 =======================
