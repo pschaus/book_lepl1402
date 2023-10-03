@@ -462,8 +462,6 @@ In general, you should try to avoid shadowing because it is easy to make mistake
             System.out.println(a);
         }
     }
-
-
   
 
 Arrays (*fr.* tableaux)
@@ -2037,18 +2035,346 @@ What happens if we call an overloaded method but there is no version of the meth
 
 Which one of the two :code:`giveWeapon` will be called if the argument is a :code:`MagicSword` object? In this situation, the compiler will choose the method with the closest type to :code:`MagicSword`, that is :code:`void giveWeapon(MightySword weapon)`.
 
+Multiple Inheritance
+====================
+
+If we look back at our examples with the Weapon subclasses :code:`ExpensiveWeapon` and :code:`MightySword`, we might be tempted to create a new class :code:`ExpensiveMightySword` that inherits from both subclasses:
+
+.. image:: _static/images/part1/multi_inheritance.svg
+   :width: 35%  
+
+Unfortunately, inheriting from two (or more) classes is **not allowed** in Java. The reason for this is the *diamond problem* that occurs when a class inherits from two classes that are subclasses of the same class (the problem is named after the diamond shape of the resulting class hierarchy). The following illegal Java program illustrates the problem:
+
+.. code-block:: java
+
+    class Weapon {
+        int level;
+    
+        int getPrice() {
+            return 100;
+        }
+    }
+
+    class ExpensiveWeapon extends Weapon {
+        @Override
+        int getPrice() {
+            return 1000;
+        }
+    }
+
+    class MightySword extends Weapon {
+        @Override
+        int getPrice() {
+            return 500 * level;
+        }
+    }
+
+    // Not allowed in Java!
+    // You cannot extend TWO classes.
+    class ExpensiveMightySword extends ExpensiveWeapon, MightySword {
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Weapon weapon = new ExpensiveMightySword();
+            System.out.println(weapon.getPrice());        // ???
+        }
+    }
+
+Which :code:`getPrice` implementation should be called in the :code:`println` statement? The one from :code:`ExpensiveWeapon` or the one from :code:`MightySword`? Because it is not clear in this situation what the programmer wanted, multiple inheritance is forbidden in Java. Other programming languages allow multiple inheritance under specific circumstances, or have additional rules to decide which method to call. For example, the C# language would require for our example that the :code:`ExpensiveMightySword` class overrides the :code:`getPrice` method. In Python, the :code:`getPrice` method of the :code:`ExpensiveWeapon` class would be called because that class appears first in the line
+
+.. code-block:: java
+
+    class ExpensiveMightySword extends ExpensiveWeapon, MightySword {
+
+If you want to know more about how other programming languages handle multiple inheritance and the diamond problem, you can check `<https://en.wikipedia.org/wiki/Multiple_inheritance>`_.
+
+However, Java has another concept, the :code:`interface`, which can be used as a substitute for multiple inheritance in many situations. You will learn more about interfaces later.
+
+
+The final keyword
+=================
+
+Like the :code:`private` keyword, the :code:`final` keyword does not change the behavior of your program. Its job is to prevent you from making mistakes in your code (you will later see other situations where the :code:`final` keyword is important).
+
+Its meaning depends on where you use it.
+
+Final parameter variables
+-------------------------
+
+If you declare a parameter variable as final, its value cannot be changed inside the method. This prevents accidents like the following:
+
+.. code-block:: java
+
+    // calculate the sum of the numbers 1 to n
+    int calculateSum(final int n) {   // <--- did you see the "final" ?
+        int sum = 0;
+        for (int i=1; i<n; i++) {
+            n += i;      // oops, I wanted to write sum += i
+        }
+        return sum;
+    }
+
+In the above example, the statement :code:`n+=i` will not be accepted by the compiler because the parameter :code:`n` was declared as final.
+
+Note that if a variable contains a reference to an array or an object, declaring it as final does not prevent the contents of the array or object from being changed. This is also true for the other usages of final explained in the next sections. Here is an example:
+
+.. code-block:: java
+
+    void increment(final int[] a) {
+        a[0]++;         // this still works
+        
+        // this would not work because "a" is final:
+        //    a = new int[]{1,2,3};
+    }
+
+Final local variables
+---------------------
+
+Local variables declared as final, cannot change their value after they have been initialized. The following code will not be accepted by the compiler:
+
+.. code-block:: java
+
+    // calculate the sum of the numbers 1 to n*n
+    int calculateSumSquare(int n) {
+        final int n2 = n * n;       // <--- did you see the "final" ?
+        int sum = 0;
+        for (int i=1; i<n2; i++) {
+            n2 += i;      // oops, I wanted to write sum += i
+        }
+        return sum;
+    }
+
+Final methods
+-------------
+
+Methods declared as final cannot be overridden in a subclass. Declaring a method is useful in situations where you think that the method contains important code and you fear that a subclass could break the class by overriding it. The following code will not be accepted by the compiler:
+
+.. code-block:: java
+
+    class Person {
+        String name, firstname;
+
+        final String getFullName() {
+            return firstname + " " + name;
+        }
+    }
+
+    class Employee extends Person {
+        @Override
+        String getFullName() {      // not allowed. Method is "final" in "Person" class
+            return "Wolverine";
+        }
+    }
+
+However, you should think carefully about whether you should declare a method as final, as this would drastically limit the flexibility of the subclasses.
+
+Final classes
+-------------
+
+Classes declared as final cannot be subclassed. The motivation to do this is similar to final methods.
+For example, the :code:`String` class is final because all Java programs rely on its specific behavior as described in the documentation. Creating a subclass of it would cause a lot of problems.
+
+Final class variables
+---------------------
+
+Like final local variables, class variables declared as final cannot be changed after initialization. A typical use case is the declaration of a constant. Here is an example:
+
+.. code-block:: java
+
+    class Physics {
+        static final double SPEED_OF_LIGHT = 299792458; //  meters per second
+    }
+
+The naming convention in Java recommends writing the names of constants in capital letters.
+
+Final instance variables
+------------------------
+
+Instance variables declared as final cannot be changed after initialization. However, unlike class variables, you will usually initialize them in the constructor. The following code demonstrates this:
+
+.. code-block:: java
+
+    class Person {
+        final String socialSecurityNumber;
+
+        Person(String ssn) {
+            this.socialSecurityNumber = ssn;
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Person person = new Person("123-456-789");
+            person.socialSecurityNumber = "12";        // error!
+        }
+    }
+
+An important reason to declare an instance variable as final is when it is part of the "identity" of an object, i.e., something that should never change once the object has been created. Note that in the above example, we could implement the unchangeable social security number also like this:
+
+.. code-block:: java
+
+    class Person {
+        private String socialSecurityNumber;
+
+        Person(String ssn) {
+            this.socialSecurityNumber = ssn;
+        }
+        
+        final String getSSN() {  // "final" prevents overriding
+            return this.socialSecurityNumber;
+        }
+    }
+
+
+Organizing your classes
+=======================
+
+Creating packages
+-----------------
+
+In all our small examples so far, we have put all classes in one single .java file. This is not very practical in larger projects consisting of dozens or hundreds of classes.
+
+**The general rule (or recommendation) in Java is that you should put each class in a separate .java file with the same name as the class.**
+
+In addition, Java allows you to group classes into *packages* by writing a package statement in the first line of your .java file. For example, the following two .java files define two classes that are in the package :code:`lepl402.week3`:
+
+.. code-block:: java
+
+    // **********************************
+    // ****     File Person.java     ****
+    // **********************************
+
+    package lepl1402.week3;
+
+    class Person {
+        final String socialSecurityNumber;
+
+        Person(String ssn) {
+            this.socialSecurityNumber = ssn;
+        }
+    }
+    
+    // **********************************
+    // ****      File Main.java      ****
+    // **********************************
+    
+    package lepl1402.week3;
+
+    public class Main {
+        public static void main(String[] args) {
+            Person person = new Person("123-456-789");
+        }
+    }
+
+
+If you put your classes into packages, the Java compiler expects that you organize the source code files in your project in a directory structure that corresponds to the package names. In our example with the package :code:`lepl402.week3`, the .java files **must** be put in a directory "week3" inside a directory "lepl402" in the "src" directory of your project. Here is what IntelliJ shows for the above project:
+
+.. image:: _static/images/part1/project_with_packages.png
+  :width: 40%
+
+And here is how the directory structure of the project looks like in the Windows Explorer:
+
+.. image:: _static/images/part1/package_directories.png
+  :width: 60%
+
+If you do not write a :code:`package` statement in your .java file (that's what we always did so far in our examples), the compiler puts your classes in the *unnamed package*. In that case, you don't need a special directory structure and you can put all your files directly into the "src" directory.
+
+How to use multiple packages
+----------------------------
+
+In Java, packages are independent of each other. Classes that are in the same package can be used together, as shown in the above example with the :code:`Person` class and the :code:`Main` class.
+
+However, classes that are in different packages do not "see" each other by default. For example, if we put the class :code:`Person` into the package :code:`lepl1402.week3.example` and we keep the class :code:`Main` in the package :code:`lepl402.week3`, we have to change our code:
+
+.. code-block:: java
+
+    // **********************************
+    // ****     File Person.java     ****
+    // **********************************
+
+    package lepl1402.week3.example;
+
+    public class Person {
+        final String socialSecurityNumber;
+
+        public Person(String ssn) {
+            this.socialSecurityNumber = ssn;
+        }
+    }
+    
+    // **********************************
+    // ****      File Main.java      ****
+    // **********************************
+    
+    package lepl1402.week3;
+    
+    import lepl1402.week3.example.Person;
+
+    public class Main {
+        public static void main(String[] args) {
+            Person person = new Person("123-456-789");
+        }
+    } 
+
+In our example, we have made three modifications:
+
+1. We have declared the class :code:`Person` as :code:`public`. Only classes that are public can be used by classes in other packages! If a class is not declared as public, it can only be used by classes of the same package.
+
+2. We have declared the constructor method of :code:`Person` as :code:`public`. Again, only public methods can be used by classes in other packages.
+
+3. We have added an :code:`import` statement to our file "Main.java" file. This statement tells the compiler (and the JVM) in which package the class :code:`Person` is located that the :code:`Main class` wants to use. The identifier :code:`lepl1402.week3.example.Person` is called the *fully qualified name* of the class :code:`Person`.
+
+As an alternative to the import statement, you could directly use the fully qualified name of the :code:`Person` class in the main method, but this makes the code a bit harder to read:
+
+.. code-block:: java
+
+    // **********************************
+    // ****      File Main.java      ****
+    // **********************************
+    
+    package lepl1402.week3;
+
+    public class Main {
+        public static void main(String[] args) {
+            lepl1402.week3.example.Person person
+                  = new lepl1402.week3.example.Person("123-456-789");
+        }
+    }
+
+Why are packages useful?
+------------------------
+
+Packages have two advantages. First of all, with the :code:`public` keyword, you can control for each class and each method in your package whether it can be used by classes in other packages. For example, we have already talked several times about the :code:`java.lang` package that contains useful classes such as :code:`String` or :code:`Integer`. Those classes are declared as public, so everybody can use them. However, the package also contains a class :code:`CharacterData0E` that is only used internally by the package and that is therefore *not* declared as public.
+
+The second advantage of packages is that they provide separate *namespaces*. This means that a package X and a package Y can both contain a class named ABC. By using the fully classified names (or an import statement), we can exactly tell the compiler whether we want to use class :code:`X.ABC` or class :code:`Y.ABC`. This becomes important when you write larger applications and you want to use packages written by other people. Thanks to the different packages, you don't have to worry about classes with identical names.
+
+Access control
+--------------
+
+First, let's summarize what we have learned about the visibility of classes in packages:
+
+1. Classes that are declared as :code:`public` are visible in all packages.
+
+2. Non-public classes are only visible inside their package.
+
+For class members (i.e., static and non-static methods, class variables, and instance variables), the rules are more complicated:
+
+1. Members that are declared as :code:`public` are accessible from all packages.
+
+2. Members that are declared as :code:`private` are only accessible inside their class.
+
+3. Members that are declared as :code:`protected` are only accessible inside their class and in subclasses of that class.
+
+4. Members that have no special declaration are accessible inside the class and by all classes in the same package.
+
+
 
 ..
     Generics
     ========
-    Multiple inheritance (not supported in Java)
-    ====================
     Comparator
     ==========
-    Organizing Code: Packages
-    ==========================
-    Visibility Modifiers
-    ====================
     Passing Arguments
     =================
     Exceptions
