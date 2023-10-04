@@ -2117,21 +2117,18 @@ If you declare a parameter variable as final, its value cannot be changed inside
 
 In the above example, the statement :code:`n+=i` will not be accepted by the compiler because the parameter :code:`n` was declared as final.
 
-Note that if a variable contains a reference to an array or an object, declaring it as final does not prevent the contents of the array or object from being changed. This is also true for the other usages of final explained in the next sections. Here is an example:
+Note that if a variable contains a reference to an array or an object, declaring it as final does not prevent the contents of the array or object from being changed. This is also true for the other usages of :code:`final` explained in the next sections. Here is an example:
 
 .. code-block:: java
 
     void increment(final int[] a) {
         a[0]++;         // this still works
-        
-        // this would not work because "a" is final:
-        //    a = new int[]{1,2,3};
     }
 
 Final local variables
 ---------------------
 
-Local variables declared as final, cannot change their value after they have been initialized. The following code will not be accepted by the compiler:
+Local variables declared as final cannot change their value after they have been initialized. The following code will not be accepted by the compiler:
 
 .. code-block:: java
 
@@ -2148,7 +2145,7 @@ Local variables declared as final, cannot change their value after they have bee
 Final methods
 -------------
 
-Methods declared as final cannot be overridden in a subclass. Declaring a method is useful in situations where you think that the method contains important code and you fear that a subclass could break the class by overriding it. The following code will not be accepted by the compiler:
+Methods declared as final cannot be overridden in a subclass. Declaring a method as final is useful in situations where you think that the method contains important code and you fear that a subclass could break the class by overriding it. The following code will not be accepted by the compiler:
 
 .. code-block:: java
 
@@ -2167,7 +2164,7 @@ Methods declared as final cannot be overridden in a subclass. Declaring a method
         }
     }
 
-However, you should think carefully about whether you should declare a method as final, as this would drastically limit the flexibility of the subclasses.
+However, you should think carefully about whether you should declare a method as final, as this would drastically limit the flexibility of subclasses.
 
 Final classes
 -------------
@@ -2210,7 +2207,9 @@ Instance variables declared as final cannot be changed after initialization. How
         }
     }
 
-An important reason to declare an instance variable as final is when it is part of the "identity" of an object, i.e., something that should never change once the object has been created. Note that in the above example, we could implement the unchangeable social security number also like this:
+An important reason to declare an instance variable as final is when it is part of the "identity" of an object, i.e., something that should never change once the object has been created.
+
+Note that a variable that cannot be modified after initialization can be also achieved without declaring it as final. In the above example, we could implement the immutable social security number also like this:
 
 .. code-block:: java
 
@@ -2283,9 +2282,9 @@ If you do not write a :code:`package` statement in your .java file (that's what 
 How to use multiple packages
 ----------------------------
 
-In Java, packages are independent of each other. Classes that are in the same package can be used together, as shown in the above example with the :code:`Person` class and the :code:`Main` class.
+In Java, packages are independent of each other. Classes that are in the same package can be used together, as shown in the example in the previous section with the :code:`Person` class and the :code:`Main` class.
 
-However, classes that are in different packages do not "see" each other by default. For example, if we put the class :code:`Person` into the package :code:`lepl1402.week3.example` and we keep the class :code:`Main` in the package :code:`lepl402.week3`, we have to change our code:
+However, classes that are in *different* packages do not "see" each other by default. For example, if we put the class :code:`Person` into the package :code:`lepl1402.week3.example` and we keep the class :code:`Main` in the package :code:`lepl402.week3`, we have to change our code:
 
 .. code-block:: java
 
@@ -2415,7 +2414,7 @@ When a method calls a method that can throw an exception, it can react to an exc
         }
     }
 
-When the :code:`setBoss` method throws an exception, the execution of the code will directly go to the statement(s) specified after the :code:`catch(Exception e) {` line. We say that the message is "caught". The variable :code:`e` contains a reference to the :code:`Exception` object used in the :code:`throw` statement.
+When the :code:`setBoss` method throws an exception, the execution of the code will directly go to the statement(s) specified inside the :code:`catch` block. We say that the message is "caught". The variable :code:`e` contains a reference to the :code:`Exception` object specified in the :code:`throw` statement.
 
 What makes exceptions interesting is that the caller method can decide to not catch the exception. In that case, the exception will be passed to the method that called the caller method and so on until the exception is caught. This is illustrated in the following example:
 
@@ -2424,7 +2423,7 @@ What makes exceptions interesting is that the caller method can decide to not ca
     public class Main {
         static void setBossOfTeam(Employee[] team, Employee boss) throws Exception {
             for(Employee employee : team) {
-                employee.setBoss(boss);    // this can throw an exception,
+                employee.setBoss(boss);    // setBoss(...) can throw an exception,
                                            // but we don't catch it here
             }
         }
@@ -2444,7 +2443,7 @@ What makes exceptions interesting is that the caller method can decide to not ca
         }
     }
 
-In the above example the :code:`main` method calls the :code:`setBossOfTeam` method which then calls the :code:`setBoss` method. The :code:`setBossOfTeam` method does not catch any exceptions. This means that if an exception is thrown by :code:`setBoss`, the exception will be passed to :code:`main` where it is caught, as shown below:
+In the above example, the :code:`main` method calls the :code:`setBossOfTeam` method which then calls the :code:`setBoss` method. The :code:`setBossOfTeam` method does not catch any exceptions. This means that if an exception is thrown in :code:`setBoss`, the exception will be passed to :code:`main` where it is caught, as shown below:
 
 .. image:: _static/images/part1/exception.svg
   :width: 30%
@@ -2519,12 +2518,32 @@ If we don't want to use separate :code:`catch` blocks for the different :code:`E
         }
     }
 
+And if we want to catch all exceptions (not only :code:`SelfBossException` and :code:`NoBossException`), we can still write: 
+
+.. code-block:: java
+
+    public static void main(String[] args) {
+        Employee peter = new Employee();
+        Employee anna = new Employee();
+
+        try {
+            peter.setBoss(anna);
+            peter.setBoss(null);  // this will throw a NoBossException
+        }
+        catch(Exception e) {
+            System.out.println("Some exception happened: " + e.getMessage());
+        }
+    }
+
+The above code works, because a statement like :code:`catch(XYZ e) { ... }` catches all exceptions of the class :code:`XYZ` **and  of any subclass** of :code:`XYZ` if the try-catch block has no other :code:`catch` statement for a specific subclass of :code:`XYZ`.
+
+
 Checked vs unchecked exceptions
 -------------------------------
 
-The exceptions that we threw in the above examples all are *checked exceptions*. This means that the compiler verifies that  exception are correctly declared in the :code:`throws` part of the method declaration if the method does not catch them.
+The exceptions that we threw in the above examples are all *checked exceptions*. This means that the compiler verifies that  the exceptions are correctly declared in the :code:`throws` part of the method declaration if the method does not catch them.
 
-However, there are some exceptions for which the compiler does not perform this verification. Such exceptions are called *unchecked*. A famous unchecked exception is the :code:`NullPointerException` that thrown by the JVM when a program tries to access a null reference:
+However, there are some exceptions for which the compiler does not perform this verification. Such exceptions are called *unchecked*. A famous unchecked exception is the :code:`NullPointerException` that is thrown by the JVM when a program tries to access a null reference:
 
 .. code-block:: java
 
@@ -2544,7 +2563,7 @@ As you can see in the above example, no :code:`throws` declaration or :code:`try
             Object obj = null;
 
             try {
-                String s=obj.toString();
+                String s = obj.toString();
             }
             catch(NullPointerException e) {
                 System.out.println("A null pointer exception happened!");
@@ -2552,24 +2571,175 @@ As you can see in the above example, no :code:`throws` declaration or :code:`try
         }
     }
 
-Unchecked exceptions are either instances of the class :code:`Error` or of the class :code:`RuntimeException` (or of a subclass of these classes). :code:`RuntimeException` is a subclass of :code:`Exception`, and :code:`Error` and :code:`Exception` and subclasses of the class :code:`Throwable`. All instances of :code:`Throwable` (or of a subclass of that class) can be thrown with a :code:`throw` statement. The class hierarchy for these classes is shown below:
+Unchecked exceptions are either instances of the class :code:`Error` or of the class :code:`RuntimeException` (or of a subclass of these classes). :code:`RuntimeException` is a subclass of :code:`Exception`, and :code:`Error` and :code:`Exception` are subclasses of the class :code:`Throwable`. All instances of :code:`Throwable` (or of a subclass of that class) can be thrown with a :code:`throw` statement. The class hierarchy for these classes is shown below:
 
 .. image:: _static/images/part1/exception_classes.svg
   :width: 30%
 
 
+Do we need exceptions?
+----------------------
 
+Strictly speaking, you *do not need* exceptions. For our example, our :code:`setBoss` method from above
 
+.. code-block:: java
 
+    class Employee {
+        Employee boss;
+        
+        // throws an exception if there is an error
+        void setBoss(Employee boss) throws Exception {
+            if(this==boss) {
+                throw new Exception("An employee cannot be their own boss");
+            }
+            else {
+                this.boss = boss;
+            }
+        }
+    }
 
+could be written without exceptions:
 
+.. code-block:: java
+
+    class Employee {
+        Employee boss;
+
+        // returns false if there is an error
+        void setBoss(Employee boss) throws Exception {
+            if(this==boss) {
+                return false;
+            }
+            else {
+                this.boss = boss;
+                return true;
+            }
+        }
+    }
+    
+Consequently, we would not need to catch the exception when we call the method:
+
+.. code-block:: java
+
+    public class Main {
+        public static void main(String[] args) {
+            Employee peter = new Employee();
+            Employee anna = new Employee();
+            
+            boolean success = peter.setBoss(anna);
+            if(success) {
+                success = peter.setBoss(peter);
+            }
+            if(!success) {
+                System.out.println("Something bad happened");
+            }
+        }
+    }
+
+As you can see above, the code becomes more complicated without exceptions since we have to check the result of every call of  :code:`setBoss`. However, we should also mention here that programs without exceptions are easier to understand. Look at these two lines of code in the version of the main method with exceptions:
+
+.. code-block:: java
+
+    peter.setBoss(anna);
+    peter.setBoss(null);
+
+Just by reading these two lines, it is not obvious that the second call to :code:`setBoss` is not executed if the first call detects a problem. In the version without exceptions this is immediately clear:
+
+.. code-block:: java
+
+    boolean success = peter.setBoss(anna);
+    if(success) {
+        success = peter.setBoss(peter);
+    }
+    
+For this reason, exceptions should only be used sparingly. Fortunately, in many program, you don't need to throw your own exceptions, and often the only place you need to catch an exception is when using the existing I/O classes of the JDK. We will show an example in the next section.
+
+Exceptions and I/O operations
+-----------------------------
+
+The JDK provides many classes that help you to work with files and communicate with other computers in the Internet. For example, the package :code:`java.io` contains classes to read data from files, to create new files, to delete files, etc. Many of the methods of these classes throw an instance of the :code:`IOException` class if they encounter a problem. 
+
+The below example reads two characters from a text file:
+
+.. code-block:: java
+
+    import java.io.FileReader;
+    import java.io.IOException;
+
+    public class Main {
+        public static void main(String[] args) {
+            try {
+                // open the file "somefile.txt"
+                FileReader reader = new FileReader("somefile.txt");
+                
+                // read two characters from the file
+                char c1 = (char) reader.read();
+                char c2 = (char) reader.read();
+                
+                // close the file
+                reader.close();
+            }
+            catch(IOException e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+The constructor of the :code:`FileReader` class throws a :code:`FileNotFoundException` if the specified file "somefile.txt" does not exist. The :code:`read` method throws an :code:`IOException` if there was a problem when reading the file, for example because the user was not allowed to read that file. Since :code:`FileNotFoundException` is a subclass of :code:`IOException`, we can catch both exceptions with a single :code:`catch(IOException e) {...}`.
+
+The above code has a weakness: If the :code:`read` method throws an exception, the line :code:`reader.close()` is not executed and the file is not closed. The following code solves this problem by using a :code:`finally` block:
+
+.. code-block:: java
+
+    import java.io.FileReader;
+    import java.io.IOException;
+
+    public class Main {
+        public static void main(String[] args) {
+            try {
+                // open the file "somefile.txt"
+                FileReader reader = new FileReader("somefile.txt");
+
+                try {
+                    // read two characters from the file
+                    char c1 = (char) reader.read();
+                    char c2 = (char) reader.read();
+                }
+                finally {
+                    // close the file
+                    reader.close();
+                }
+            }
+            catch(IOException e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+The JVM *always* executes the statements in a :code:`finally` block after the preceding :code:`try` block, even if an exception happened inside the :code:`try` block or the :code:`try` block contains a return statement. For this reason :code:`finally` blocks are often used in combination with try/catch blocks to "clean up" used resources (e.g., close a file).  
+
+The above situation (opening a file, using it, and then closing it) is very common in Java programs. For this reason, Java has a special compact form of the :code:`try` block that is equivalent to the above program. When we us this special form, the Java compiler automatically adds the :code:`finally` block and the :code:`reader.close()` statement to our program:
+
+.. code-block:: java
+
+    import java.io.FileReader;
+    import java.io.IOException;
+
+    public class Main {
+        public static void main(String[] args) {
+            try(FileReader reader = new FileReader("somefile.txt")) {
+                char c1 = (char) reader.read();
+                char c2 = (char) reader.read();
+            }
+            catch(IOException e) {
+                System.out.println(e);
+            }
+        }
+    }
 
 
 
 ..
-    Exceptions in practice
-    ----------------------
-
     Generics
     ========
     Comparator
