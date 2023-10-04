@@ -2345,7 +2345,7 @@ As an alternative to the import statement, you could directly use the fully qual
 Why are packages useful?
 ------------------------
 
-Packages have two advantages. First of all, with the :code:`public` keyword, you can control for each class and each method in your package whether it can be used by classes in other packages. For example, we have already talked several times about the :code:`java.lang` package that contains useful classes such as :code:`String` or :code:`Integer`. Those classes are declared as public, so everybody can use them. However, the package also contains a class :code:`CharacterData0E` that is only used internally by the package and that is therefore *not* declared as public.
+Packages have two advantages. First of all, with the :code:`public` keyword, you can control for each class and each method in your package whether it can be used by classes in other packages. For example, we have already talked several times about the :code:`java.lang` package that contains useful classes such as :code:`String` or :code:`Integer`. Those classes are declared as public, so everybody can use them. However, that package also contains classes like :code:`CharacterData0E` that are only used internally by some classes in :code:`java.lang` and that are therefore *not* declared as public.
 
 The second advantage of packages is that they provide separate *namespaces*. This means that a package X and a package Y can both contain a class named ABC. By using the fully classified names (or an import statement), we can exactly tell the compiler whether we want to use class :code:`X.ABC` or class :code:`Y.ABC`. This becomes important when you write larger applications and you want to use packages written by other people. Thanks to the different packages, you don't have to worry about classes with identical names.
 
@@ -2369,16 +2369,213 @@ For class members (i.e., static and non-static methods, class variables, and ins
 4. Members that have no special declaration are accessible inside the class and by all classes in the same package.
 
 
+Exceptions
+==========
+
+In Java, there are two ways to exit a method: by using the :code:`return` statement or by *throwing an exception*. You already know the :code:`return` statement, so in the following we explain how exceptions work.
+
+Throwing an exception
+---------------------
+
+Exceptions are a mechanism for stopping the execution of a method when an exceptional situation occurs that deviates from how the method is normally used. To do this, the :code:`throw` statement is used. Typically, you give the statement an instance of the class :code:`Exception` (or one of its subclasses) that contains information about why the exception was thrown:
+
+.. code-block:: java
+
+    class Employee {
+        Employee boss;
+
+        void setBoss(Employee boss) throws Exception {
+            if(this==boss) {
+                throw new Exception("An employee cannot be their own boss");
+            }
+            else {
+                this.boss = boss;
+            }
+        }
+    }
+
+In general, a method that can throw an exception must indicate this in the method declaration with the keyword :code:`throws` and the class of the thrown exception object.
+
+When a method calls a method that can throw an exception, it can react to an exception by catching it. To do this, it must put a :code:`try`-:code:`catch` block around the calls of the method.
+
+.. code-block:: java
+
+    public class Main {
+        public static void main(String[] args) {
+            Employee peter = new Employee();
+            Employee anna = new Employee();
+
+            try {
+                peter.setBoss(anna);    // this is okay
+                peter.setBoss(peter);   // this will throw an exception
+            }
+            catch(Exception e) {
+                System.out.println("An exception happened: " + e.getMessage());
+            }
+        }
+    }
+
+When the :code:`setBoss` method throws an exception, the execution of the code will directly go to the statement(s) specified after the :code:`catch(Exception e) {` line. We say that the message is "caught". The variable :code:`e` contains a reference to the :code:`Exception` object used in the :code:`throw` statement.
+
+What makes exceptions interesting is that the caller method can decide to not catch the exception. In that case, the exception will be passed to the method that called the caller method and so on until the exception is caught. This is illustrated in the following example:
+
+.. code-block:: java
+
+    public class Main {
+        static void setBossOfTeam(Employee[] team, Employee boss) throws Exception {
+            for(Employee employee : team) {
+                employee.setBoss(boss);    // this can throw an exception,
+                                           // but we don't catch it here
+            }
+        }
+
+        public static void main(String[] args) {
+            Employee peter = new Employee();
+            Employee anna = new Employee();
+
+            try {
+                // a team with two employees:
+                Employee team[] = { peter, anna };
+                setBossOfTeam(team, peter);  // this will throw an exception
+            }
+            catch(Exception e) {
+                System.out.println("An exception happened: " + e.getMessage());
+            }
+        }
+    }
+
+In the above example the :code:`main` method calls the :code:`setBossOfTeam` method which then calls the :code:`setBoss` method. The :code:`setBossOfTeam` method does not catch any exceptions. This means that if an exception is thrown by :code:`setBoss`, the exception will be passed to :code:`main` where it is caught, as shown below:
+
+.. image:: _static/images/part1/exception.svg
+  :width: 30%
+
+Using Exception subclasses
+--------------------------
+
+By creating subclasses of the :code:`Exception` class, we can help the method that catches the exception to understand why the exception happened:
+
+.. code-block:: java
+
+    class SelfBossException extends Exception {
+        SelfBossException(String message) {
+            super(message);
+        }
+    }
+
+    class NoBossException extends Exception {
+        NoBossException(String message) {
+            super(message);
+        }
+    }
+
+    class Employee {
+        Employee boss;
+
+        void setBoss(Employee boss) throws SelfBossException, NoBossException {
+            if(this==boss) {
+                throw new SelfBossException("An employee cannot be their own boss");
+            }
+            else if (boss==null) {
+                throw new NoBossException("You cannot take the boss away from an employee");
+            }
+            else {
+                this.boss=boss;
+            }
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Employee peter = new Employee();
+            Employee anna = new Employee();
+
+            try {
+                peter.setBoss(anna);
+                peter.setBoss(null);  // this will throw a NoBossException
+            }
+            catch(SelfBossException e) {
+                System.out.println("SelfBossException happened: " + e.getMessage());
+            }
+            catch(NoBossException e) {
+                System.out.println("NoBossException happened: " + e.getMessage());
+            }
+        }
+    }
+
+If we don't want to use separate :code:`catch` blocks for the different :code:`Exception` subclasses, we can write the catch statement also like this:
+
+.. code-block:: java
+
+    public static void main(String[] args) {
+        Employee peter = new Employee();
+        Employee anna = new Employee();
+
+        try {
+            peter.setBoss(anna);
+            peter.setBoss(null);  // this will throw a NoBossException
+        }
+        catch(SelfBossException | NoBossException e) {
+            System.out.println("Some exception happened: " + e.getMessage());
+        }
+    }
+
+Checked vs unchecked exceptions
+-------------------------------
+
+The exceptions that we threw in the above examples all are *checked exceptions*. This means that the compiler verifies that  exception are correctly declared in the :code:`throws` part of the method declaration if the method does not catch them.
+
+However, there are some exceptions for which the compiler does not perform this verification. Such exceptions are called *unchecked*. A famous unchecked exception is the :code:`NullPointerException` that thrown by the JVM when a program tries to access a null reference:
+
+.. code-block:: java
+
+    public class Main {
+        public static void main(String[] args) {
+            Object obj = null;
+            String s = obj.toString();   // this will throw a NullPointerException
+        }
+    }
+
+As you can see in the above example, no :code:`throws` declaration or :code:`try`-:code:`catch` block is required for an unchecked exception, but you can still catch it if you want:
+
+.. code-block:: java
+
+    public class Main {
+        public static void main(String[] args) {
+            Object obj = null;
+
+            try {
+                String s=obj.toString();
+            }
+            catch(NullPointerException e) {
+                System.out.println("A null pointer exception happened!");
+            }
+        }
+    }
+
+Unchecked exceptions are either instances of the class :code:`Error` or of the class :code:`RuntimeException` (or of a subclass of these classes). :code:`RuntimeException` is a subclass of :code:`Exception`, and :code:`Error` and :code:`Exception` and subclasses of the class :code:`Throwable`. All instances of :code:`Throwable` (or of a subclass of that class) can be thrown with a :code:`throw` statement. The class hierarchy for these classes is shown below:
+
+.. image:: _static/images/part1/exception_classes.svg
+  :width: 30%
+
+
+
+
+
+
+
+
+
 
 ..
+    Exceptions in practice
+    ----------------------
+
     Generics
     ========
     Comparator
     ==========
     Passing Arguments
     =================
-    Exceptions
-    ==========
     IO
     ===
 
