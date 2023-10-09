@@ -203,3 +203,93 @@ JaCoCo is a tool (and library) to perform coverage tests for Java programs: `<ht
 
 Similar tools also exist for other programming languages. They help to check whether you have enough test cases.
 
+
+Automated Unit Testing
+======================
+
+Writing tests as a program
+---------------------------
+
+Testing is a repetitive task. In unit testing, we have to test every new method we write. And we have to repeat the test every time we changed the code of a method. It is therefore an obvious question whether we cannot let the computer do the testing.
+
+As an example, consider again the :code:`min` method:
+
+..  code-block:: java
+
+    class Main {
+        static int min(int a, int b) {
+            ...
+        }
+    }
+    
+We can write a test program to call this method and verify that the result is correct. The combination of test input values and the expected result is called a *test case*. In the following test code, we have two test cases:
+
+..  code-block:: java
+
+    // test case 1
+    int result1 = min(3,5);
+    if (result1!=3) {
+        System.out.println("Test 1 failed: Minimum of 3 and 5 should be 3");
+    }
+    
+    // test case 2
+    int result2 = min(5,3);
+    if (result2!=3) {
+        System.out.println("Test 2 failed: Minimum of 5 and 3 should be 3");
+    }
+
+The advantage of having a test program is that we can run the test automatically every time we change something in our project. There are even people who say that it is better to write *first* the tests and then the actual program! This practice is called *Test Driven Development* (TDD).
+
+JUnit
+-----
+
+Fortunately there are already tools and libraries to write tests. For Java, the most famous one is JUnit. Similar tools also exist for other programming language.
+
+JUnit provides many useful classes and methods to write tests. To write a test you create a new class (for example, :code:`MainTest`) and write a method for each test case. Depending on which version of JUnit you use, your test code will look different. In JUnit version 4, our above two tests of the :code:`min` method can be written like this:
+
+..  code-block:: java
+
+    import static org.junit.Assert.*;
+    
+    public class MainTest {
+        @org.junit.Test
+        public void testFirstNumberLessThanSecondNumber() {
+            assertEquals("Minimum of 3 and 5 should be 3", 3, Main.min(3,5));
+        }
+        
+        @org.junit.Test
+        public void testFirstNumberGreaterThanSecondNumber() {
+            assertEquals("Minimum of 5 and 3 should be 3", 3, Main.min(5,3));
+        }
+    }
+
+In JUnit version 5, the two tests are written slightly differently:
+
+..  code-block:: java
+
+    import org.junit.jupiter.api.Assertions;
+    import org.junit.jupiter.api.Test;
+
+    public class MainTest {
+        @Test
+        public void testFirstNumberLessThanSecondNumber() {
+            Assertions.assertEquals(3, Main.min(3,5), "Minimum of 3 and 5 should be 3");
+        }
+
+        @Test
+        public void testFirstNumberGreaterThanSecondNumber() {
+            Assertions.assertEquals(3, Main.min(5,3), "Minimum of 5 and 3 should be 3");
+        }
+    }
+    
+The :code:`assertEquals` method of the class :code:`Assertions` takes three arguments: the expected value, the actual value produced by your implementation, and an (optional) message that is shown if the test fails.
+
+The "@Test" is called an *annotation* and helps JUnit to find the methods that it should call to perform the tests. IntelliJ also uses them to show you the small green triangles that you can click to run individual tests (or all tests):
+
+.. image:: _static/images/part1/intellij_test.png
+  :width: 25%
+
+The class :code:`Assertions` has many other methods to compare results, such as :code:`assertArrayEquals` for arrays, and :code:`assertNotEquals` to test for inequality. It is important to note that these methods use the :code:`equals` method when comparing objects. If you want to compare references, you have to use :code:`assertSame`. Check the documentation at <https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html>_.
+
+
+
