@@ -282,9 +282,9 @@ In JUnit version 5, the two tests are written slightly differently:
         }
     }
     
-The :code:`assertEquals` method of the class :code:`Assertions` takes three arguments: the expected value, the actual value produced by your implementation, and an (optional) message that is shown if the test fails.
+The method :code:`assertEquals` of the class :code:`Assertions` takes three arguments: the expected value, the actual value produced by your implementation, and an (optional) message that is shown if the test fails, i.e., if the actual value and the expected value are not equal.
 
-The "@Test" is called an *annotation* and helps JUnit to find the methods that it should call to perform the tests. IntelliJ also uses them to show you the small green triangles that you can click to run individual tests (or all tests):
+The :code:`@Test` written above the two test methods is called an *annotation* and helps JUnit to find the methods that it should call to perform the tests. IntelliJ also uses them to show you the small green triangles that you can click to run individual tests (or all tests):
 
 .. image:: _static/images/part1/intellij_test.png
   :width: 25%
@@ -292,4 +292,111 @@ The "@Test" is called an *annotation* and helps JUnit to find the methods that i
 The class :code:`Assertions` has many other methods to compare results, such as :code:`assertArrayEquals` for arrays, and :code:`assertNotEquals` to test for inequality. It is important to note that these methods use the :code:`equals` method when comparing objects. If you want to compare references, you have to use :code:`assertSame`. Check the documentation at <https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html>_.
 
 
+Practical aspects of unit testing
+---------------------------------
+
+The main idea behind unit testing is that your program is organized in small units that can be individually tested. As already said, in Java, methods can be seen as such units.
+However, if a method is very complex or does many different things, it becomes more difficult to test.
+As an example, consider the following (incomplete) code:
+
+.. code-block:: java
+
+    class DifficultToTest {
+        static int m(int v1) {
+            ...something complex using v1 to calculate v2...
+            int v2 = ...
+            ...something complex using v2 to calculate the result...
+            int result = ...
+            return result;
+        }
+    }
+
+As a developer, we would like to know whether the intermediate value :code:`v2` and the result are correctly calculated. To do this with a unit test, it would be better to split the method in two:
+
+.. code-block:: java
+
+    class EasierToTest {
+        static int m1(int v1) {
+            ...something using v1 to calculate v2...
+            int v2 = ...
+            return v2;
+        }
+        
+        static int m2(int v2) {
+            ...something using v2 to calculate the result...
+            int result = ...
+            return result;
+        }
+        
+        static int m(int v1) {
+            int v2 = m1(v1);
+            int result = m2(v2);
+            return result;
+        }
+    }
+    
+This new code is not only easier to read but also easier to test because you can provide your own values :code:`v1` and :code:`v2` to test the two parts of the calculation independently.
+
+Another practical problem is the testing of non-static methods or methods that need objects as parameters. Consider the following class:
+
+.. code-block:: java
+
+    class Employee {
+        private int salary;
+        
+        public Employee(int s) { salary = s; }
+        public void increaseSalary(int s) { salary += s; }
+        public int getSalary() { return salary; }
+    }
+
+When testing non-static methods like :code:`increaseSalary`, your test needs to "prepare" an object before the method can be called. In JUnit v5, the test code could look like this:
+
+.. code-block:: java
+
+    public class EmployeeTest {
+        @Test
+        void testSalaryIncrease() {
+            Employee employee = new Employee(1000);
+            employee.increaseSalary(500);
+            Assertions.assertEquals(1500, employee.getSalary());
+        }
+    }
+
+Although this test is correctly implemented, it's difficult to see where the bug is located if the test fails. Did :code:`increaseSalary` not work correctly? Or was the bug in the constructor or in the :code:`getSalary` method?
+
+There are different ways to address this problem. One is to add more test cases, for example for the construction of the object:
+
+.. code-block:: java
+
+    public class EmployeeTest {
+        @Test
+        void testConstruction() {
+            Employee employee = new Employee(1000);
+            Assertions.assertEquals(1000, employee.getSalary());
+        }
+    
+        @Test
+        void testSalaryIncrease() {
+            Employee employee = new Employee(1000);
+            employee.increaseSalary(500);
+            Assertions.assertEquals(1500, employee.getSalary());
+        }
+    }
+
+Alternative, we could do more tests inside one test case:
+
+.. code-block:: java
+
+    public class EmployeeTest {
+        @Test
+        void testSalaryIncrease() {
+            Employee employee = new Employee(1000);
+            Assertions.assertEquals(1000, employee.getSalary());
+            
+            employee.increaseSalary(500);
+            Assertions.assertEquals(1500, employee.getSalary());
+        }
+    }
+
+One can argue about what is the "right" way. Some developers prefer simple test methods, in which exactly one thing is tested. Others don't like too many small trivial tests. We don't want to get involved in this discussion and leave it to you to decide.
 
