@@ -190,7 +190,27 @@ To be sure that our program is correct, we would have to test all possible *path
 - For *n=2*, the program takes the path :math:`0 \to 1 \to 2 \to 1 \to 2 \to 1 \to 3` through the code. In this path, the bug becomes visible.
 - etc.
 
-In practice, 100% path coverage is not feasible if a program contains loops because there are too many possible paths. In practice, we are often satisfied with 100% node coverage or 100% edge coverage.
+In practice, 100% path coverage is not feasible if a program contains loops or recursion because there are too many possible paths. In practice, we are often satisfied with 100% node coverage or 100% edge coverage.
+
+"Hidden" paths
+--------------
+
+Be aware that code can sometimes contain execution paths that are not directly visible in the source code. For example, the following statement looks like a simple assignment:
+
+..  code-block:: java
+
+    int r = a/b;
+    
+However, we know that Java programs can throw exceptions, and in this case, the division will throw an exception if *b=0*. Therefore, the code can be better understood as:
+
+..  code-block:: java
+
+    if (b==0)
+        throw new ArithmeticException();
+    else
+        r = a/b;
+
+Thus, if your goal is a test with 100% coverage, you also have to consider the test case *b=0*.
 
 Coverage test tools
 -------------------
