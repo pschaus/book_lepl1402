@@ -765,61 +765,224 @@ This is because the time complexity of merge sort is determined by the number of
 
 
 
-
-
-
 Algorithm Correctness
 =========================
 
-A loop invariant is a condition or property that holds before and after each iteration of a loop. It's used as a technique for proving formally the correctness of an algorithm. The loop invariant must be true:
+A loop invariant is a condition or property that holds before and after each iteration of a loop. 
+It is used as a technique for proving formally the correctness of an iterative algorithm. 
+The loop invariant must be true:
 
 1. Before the loop begins (Initialization).
 2. Before each iteration (Maintenance).
 3. After the loop terminates (Termination). This often helps prove something important about the output.
 
 
-The code fragment :ref:`bubble_loop` illustrates a simple loop invariant for the Bubble Sort algorithm. 
-The loop invariant here is that after the i-th iteration of the outer loop, the largest i elements will be in their correct, final positions at the end of the array.
+The code fragment :ref:`max_invariant_while` illustrates a simple loop invariant for
+a method searching for the maximum of an array. 
 
 
 ..  code-block:: java
-    :caption: Bubble Sort with Loop Invariant
-    :name: bubble_loop
+    :caption: Maximum of an array with loop invariant 
+    :name: max_invariant_while
 
 
-	 public class Main {
-	    public static void main(String[] args) {
-	        int[] numbers = {5, 1, 12, -5, 16};
-	        bubbleSort(numbers);
-	        
-	        for (int i = 0; i < numbers.length; i++) {
-	            System.out.print(numbers[i] + " ");
-	        }
-	    }
-
-	    public static void bubbleSort(int[] array) {
-	        int n = array.length;
-	        for (int i = 0; i < n-1; i++) {
-	            for (int j = 0; j < n-i-1; j++) {
-	                if (array[j] > array[j+1]) {
-	                    // swap array[j] and array[j+1]
-	                    int temp = array[j];
-	                    array[j] = array[j+1];
-	                    array[j+1] = temp;
-	                }
-	            }
-	            // Here, the loop invariant is that the largest i elements 
-	            // are in their correct, final positions at the end of the array.
-	        }
-	    }
-	}
+    /**
+     * Finds the maximum value in the provided array.
+     *
+     * @param a The array of integers.
+     * @return The maximum integer value in the array using while loop
+     */
+    public static int max(int[] a) {
+        int m = a[0];
+        int i = 1;
+        // inv: m is equal to the maximum value on a[0..0]
+        while (i != a.length) {
+            // inv: m is equal to the maximum value on a[0..i-1]
+            
+            if (m < a[i]) {
+                m = a[i];
+            }
+            // m is qual to the maximum value on a[0..i]
+            i++;
+            // inv: m is equal to the maximum value on a[0..i-1]
+        } 
+        // m is equal to the maximum value in the entire array a[0..a.length-1]
+        return m;
+    }
 
 
-In this example, the loop invariant helps us understand why the Bubble Sort algorithm correctly sorts the array. 
-After each iteration of the outer loop, the largest element is "bubbled" up to its correct position, so by the time we've gone through all the elements, the array is sorted. 
-The loop invariant holds at the initialization (before the loop, no elements need to be in their final position), maintains at each iteration (after i-th iteration, the largest i elements are in their correct positions), and at termination (when the loop is finished, all elements are in their correct positions, so the array is sorted).
+The correctness of the `max` algorithm is a consequence of the correctness of the invariant.
+When for loops are used instead of while loops, one generally only expresses the invariant before each iteration as shown next. 
+
+..  code-block:: java
+    :caption: Maximum of an array with loop invariant using for loop 
+    :name: max_invariant_for
+
+    public static int max(int[] a) {
+        int m = a[0];
+        int i = 1;
+        // inv: m is equal to the maximum value on a[0..0]
+        for (int i = 1; i < a.length; i++) {
+            // inv: m is equal to the maximum value on a[0..i-1]
+            if (m < a[i]) {
+                m = a[i];
+            }
+            // m is qual to the maximum value on a[0..i]
+        } 
+        // m is equal to the maximum value in the entire array a[0..a.length-1]
+        return m;
+    }
+
+
+In order to be complete, we also need to prove that invariant itself is correctly maintained:
+
+* Initialization: When entering the loop, `i = 1`. The invariant is thus that
+ `m should contain the maximum of subarray with only the first element. Since the maximum of a single element is the element itself, the invariant
+holds when entering the loop.
+* Maintenance: If `m` is the maximum value in `a[0..i-1]` at the start of the loop, the current maximum either remains `m` or it becomes `a[i]` during the iteration, ensuring it is the maximum of `a[0..i]` by the end of the iteration. So, the invariant holds for the next iteration as well.
+* Termination: At the end of the loop, `i = a.length`, and based on our invariant, `m` holds the maximum value of `a[0..a.length-1]`, which means `m` is the maximum of the entire array, proving the correctness of our algorithm.
+
+
+
+Let us now rewrite the max algorithm in a recursive form.
+
+
+
+..  code-block:: java
+    :caption: Maximum of an array, recursive version
+    :name: max_invariant_recur
+
+
+    /**
+     * Finds the maximum value in the provided array.
+     *
+     * @param a The array of integers.
+     * @return The maximum integer value in the array using while loop
+     */
+    public static int max(int[] a) {
+        return maxRecur(a, a.length-1);
+    }
+
+    /**
+     * Finds the maximum value in the subarray.
+     *
+     * @param a The array of integers.
+     * @param i The index, a value in [0..a.length-1].
+     * @return The maximum value in the sub-array a[0..i]
+     */
+    private static int maxRecur(int[] a, int i) {
+        if (i == 0) 
+           return a[i];
+        else 
+           return Math.max(maxRecur(a,i-1),a[i]);
+    }    
+
+
+The correctenss of a recursive algorihtm is done by induction.
+We do it on the inductive parameter `i`.
+
+* Base case: proof that the algorithm is correct when the algorithm is not recursing (when `i == 0` here). When `i == 0` we have `max(a[0]) = a[0]`.
+
+* Induction: Assuming the algorithm is correct for :math:`i-1`, we prove that the algorithm is correct for :math:`i`. 
+  We have that max(a[0],…a[i-1],a[i]) = max(max(a[0],...,a[i-1]),max(a[i])) (by associativity of max operation).
+  Then we have max(max(a[0],…a[i-1]),max(a[i])) = max(max(a[0],...,a[i-1]),a[i]). 
+  Assuming the first part is correct (this is our induction hypothesis), this expression is precisely the one we compute.
+
+
+
+.. admonition:: Exercise
+   :class: note
+
+    Find an invariant for the loop of the bubble :ref:`maxsum` algorithm.
+    Prove that the invariant is correctly maintained.
+    Hint: your invariant should express a property on the variables `maxCurrent` and `maxGlobal` with respect to index `i`.
+    A good exercise is to write a recursive version of this algorithm and write the specification of it.
+
+
+    ..  code-block:: java
+        :caption: MaxSum Subarray 
+        :name: maxsum
+
+
+
+        public class MaxSubArray {
+
+            /**
+             * Computes the sum of the maximum contiguous subarray.
+             * Example:
+             *   int[] nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+             *   maxSubArray(nums);  // Returns 6, corresponding to the subarray [4, -1, 2, 1].
+             *
+             * @param nums An array of integers.
+             * @return The sum of the maximum subarray.
+             *
+             */
+            public static int maxSubArray(int[] nums) {
+                
+                int maxCurrent = nums[0];
+                int maxGlobal = nums[0];
+
+                for (int i = 1; i < nums.length; i++) {
+                    // invariant
+                    maxCurrent = Math.max(nums[i], maxCurrent + nums[i]);
+                    maxGlobal = Math.max(maxGlobal, maxCurrent);
+                }
+
+                return maxGlobal;
+            }
+
+            public static void main(String[] args) {
+                int[] nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+                System.out.println(maxSubArray(nums));  // Outputs 6
+            }
+        }
 
 
 
 
+.. admonition:: Exercise
+   :class: note
+
+
+    Find an invariant for the outer loop of the bubble :ref:`bubble_loop` sort algorithm.
+    Prove that the invariant is correctly maintained.
+    Hint: Your invariant should express a property on the array with respect to index `i`.
+          A subpart of the array is already sorted? What values are they?
+
+
+    .. // Loop invariant: 
+       //  - the largest i elements are in their correct, final positions at the end of the array.
+       //  - the array contains the same set of values as the input array
+
+
+    ..  code-block:: java
+        :caption: Bubble Sort with Loop Invariant
+        :name: bubble_loop
+
+
+    	 public class Main {
+    	    public static void main(String[] args) {
+    	        int[] numbers = {5, 1, 12, -5, 16};
+    	        bubbleSort(numbers);
+    	        
+    	        for (int i = 0; i < numbers.length; i++) {
+    	            System.out.print(numbers[i] + " ");
+    	        }
+    	    }
+
+    	    public static void bubbleSort(int[] array) {
+    	        int n = array.length;
+    	        for (int i = 0; i < n-1; i++) {
+                    // invariant
+    	            for (int j = 0; j < n-i-1; j++) {
+    	                if (array[j] > array[j+1]) {
+    	                    // swap array[j] and array[j+1]
+    	                    int temp = array[j];
+    	                    array[j] = array[j+1];
+    	                    array[j+1] = temp;
+    	                }
+    	            }
+    	        }
+    	    }
+    	}
 
