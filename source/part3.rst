@@ -911,7 +911,7 @@ We do it on the inductive parameter `i`.
              * Computes the sum of the maximum contiguous subarray.
              * Example:
              *   int[] nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
-             *   maxSubArray(nums);  // Returns 6, corresponding to the subarray [4, -1, 2, 1].
+             *   maxSubArray(nums);  // Returns 6, for subarray [4, -1, 2, 1].
              *
              * @param nums An array of integers.
              * @return The sum of the maximum subarray.

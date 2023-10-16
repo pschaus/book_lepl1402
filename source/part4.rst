@@ -556,7 +556,7 @@ No other operations are involved in the iterator's creation, and notably, there 
 	            if (expectedModCount != modCount) {
 	                throw new ConcurrentModificationException();
 	            }
-	            if (current == null) throw new IllegalStateException("No more items to iterate over");
+	            if (current == null) throw new IllegalStateException("No more items");
 	            
 	            T item = current.item;
 	            current = current.next;
@@ -634,7 +634,7 @@ The compareTo method, when implemented within the Book class, leverages the inhe
 	        books.add(new Book("Moby Dick", "Herman Melville", 1851));
 	        books.add(new Book("1984", "George Orwell", 1949));
 
-	        Collections.sort(books);  // Sorts the books by title due to the implemented Comparable
+	        Collections.sort(books);  // Sorts by title due to the implemented Comparable
 
 	        for (Book book : books) {
 	            System.out.println(book.getTitle());
@@ -914,8 +914,8 @@ The complete source code is given next.
 	        account.addObserver(observerGirl);
 	        account.addObserver(observerBoy);
 
-	        account.deposit(100); // we will see 4X "The account has changed. New Value: 100"
-	        account.deposit(50); // we will see 4X "The account has changed. New Value: 150"
+	        account.deposit(100); // prints 4X "The account has changed. New Value: 100"
+	        account.deposit(50);  // prints 4X "The account has changed. New Value: 150"
 	    }
 	}
 
