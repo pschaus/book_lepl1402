@@ -8,7 +8,7 @@ jobs:
       - uses: actions/setup-python@v3
       - name: Install TeX Live
         run: |
-          sudo apt-get update && sudo apt-get install -y texlive texlive-publishers texlive-science latexmk cm-super
+          sudo apt-get update && sudo apt-get install -y texlive texlive-publishers texlive-science latexmk cm-super dvipng
       - name: Sphinx build
         run: |
           ./build.sh
