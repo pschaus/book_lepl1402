@@ -586,7 +586,7 @@ The time complexity of this strategy is :math:`O(n!)` (factorial) because it nec
 
 When the number of cities exceeds 12, the brute-force method becomes increasingly impractical. 
 Even with high-speed modern computers, attempting to solve the TSP for, say, 20 cities using brute-force would involve evaluating 
-:math:`20!≈2.43×10^18` routes—a task that would take many years.
+:math:`20! \sim 2.43 * 10^18` routes—a task that would take many years.
 
 
 . tip::
