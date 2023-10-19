@@ -545,8 +545,8 @@ up to index `i` already included.
         	return true;
         } else {
         	// Check if sum can be obtained by excluding / including the next
-        	return isSubsetSumZero(arr, i + 1, sum) || 
-        	       isSubsetSumZero(arr, i + 1, sum + arr[i]);
+        	return isSubsetSum(arr, i + 1, sum) || 
+        	       isSubsetSum(arr, i + 1, sum + arr[i]);
         }
     }
 
@@ -569,6 +569,112 @@ Note that this algorithm has an exponential time complexity (so far the algorith
     But remember, this doesn't mean no efficient solution exists; we just haven't found one and it was also not yet proven that such an algorithm does not exist.
     This also doesn't mean that there are not faster algorithms for the subset sum problem that the one we have shown.
     For instance a *dynamic programming* algorithm (out of scope of this introduction to algorithms) for subset-sum could avoid redundant work but it still has a worst-case exponential time complexity.
+
+
+
+
+Visiting all cities in a country minimizing the distance 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+The Traveling Salesman Problem (TSP) is a classic NP-hard problem in the field of computer science and operations research. The problem is simple to state: given a list of cities and distances between them, find the shortest possible route that visits each city exactly once and returns to the starting city.
+
+
+This problem, as well as its decision version (i.e., does there exist a circuit with a total length shorter than a given value?), is proven to be NP-complete.
+We suggest a straightforward brute-force approach to address this challenge. This method involves enumerating all possible permutations of the cities and maintaining a record of the permutation that yields the shortest distance.
+The time complexity of this strategy is :math:`O(n!)` (factorial) because it necessitates generating all the permutations and computing the total length for each one.
+
+
+When the number of cities exceeds 12, the brute-force method becomes increasingly impractical. 
+Even with high-speed modern computers, attempting to solve the TSP for, say, 20 cities using brute-force would involve evaluating 
+:math:`20!≈2.43×10^18` routes—a task that would take many years.
+
+
+. tip::
+    In contrast, more sophisticated algorithms have been developed for the TSP. 
+    Techniques such as branch and bound can effectively solve TSP instances with thousands of cities, making them vastly more scalable than the brute-force approach.
+
+
+..  code-block:: java
+    :caption: Travelling Salesman Problem 
+    :name: TSP
+
+    public class TSPBruteForce {
+
+        public static void main(String[] args) {
+            int[][] distanceMatrix = {
+                    {0, 10, 15, 20},
+                    {10, 0, 35, 25},
+                    {15, 35, 0, 30},
+                    {20, 25, 30, 0}
+            };
+
+            Result bestTour = findBestTour(distanceMatrix);
+
+            System.out.println("Shortest Tour: " + bestTour.tour);
+            System.out.println("Distance: " + bestTour.distance);
+        }
+
+        /**
+         * Calculates the shortest tour that visits all cities.
+         * @param distanceMatrix the distance matrix
+         * @return the shortest tour
+         */
+        public static Result findBestTour(int [][] distanceMatrix) {
+            boolean[] visited = new boolean[distanceMatrix.length];
+            // already fix 0 as the starting city
+            visited[0] = true;
+            List<Integer> currentTour = new ArrayList<>();
+            currentTour.add(0);
+            Result bestTour = findBestTour(visited, currentTour, 0, distanceMatrix);
+
+            return bestTour;
+        }
+
+        private static Result findBestTour(boolean[] visited, List<Integer> currentTour, int currentLength, int[][] distanceMatrix) {
+            int lastCity = currentTour.get(currentTour.size() - 1);
+
+            if (currentTour.size() == visited.length - 1) {
+                currentLength += distanceMatrix[lastCity][0];  // return to city 0
+                return new Result(new ArrayList<>(currentTour), currentLength);
+            }
+
+            Result bestResult = new Result(null, Integer.MAX_VALUE);
+
+            for (int i = 1; i < visited.length; i++) {
+                if (!visited[i]) {
+                    visited[i] = true;
+                    currentTour.add(i);
+                    int newLength = currentLength + distanceMatrix[lastCity][i];
+                    Result currentResult = findBestTour(visited, currentTour, newLength, distanceMatrix);
+                    if (currentResult.distance < bestResult.distance) {
+                        bestResult = currentResult;
+                    }
+                    currentTour.remove(currentTour.size() - 1);
+                    visited[i] = false;
+                }
+            }
+
+            return bestResult;
+        }
+
+
+
+        static class Result {
+            List<Integer> tour;
+            int distance;
+
+            Result(List<Integer> tour, int distance) {
+                this.tour = tour;
+                this.distance = distance;
+            }
+        }
+
+    }
+
+
+
+
+
 
 
 .. admonition:: Exercise
