@@ -340,7 +340,7 @@ Merge Sort
 
 
 Merge sort is a *divide-and-conquer* algorithm for sorting lists or arrays of items using pair-wise comparisons. 
-It works by dividing the unsorted list into :math:`n sublists, each containing one element (a list of one element is considered sorted), and then repeatedly merging sublists to produce newly sorted sublists until there is only one sublist remaining.
+It works by dividing the unsorted list into :math:`n` sublists, each containing one element (a list of one element is considered sorted), and then repeatedly merging sublists to produce newly sorted sublists until there is only one sublist remaining.
 
 Here's the basic idea behind merge sort:
 
@@ -351,7 +351,7 @@ Here's the basic idea behind merge sort:
 Here is a simple implementation of Merge Sort in Java:
 
 
-.. _merge_sort_better:
+.. _merge_sort_implem:
 
 ..  code-block:: java
     :caption: Merge Sort Algorithm
@@ -675,8 +675,6 @@ Even with high-speed modern computers, attempting to solve the TSP for, say, 20 
 
 
 
-
-
 .. admonition:: Exercise
    :class: note
 
@@ -791,7 +789,7 @@ The call stack is show at the bottom left in IntelliJ and you can see what the l
 Improving the space complexity of merge sort
 """"""""""""""""""""""""""""""""""""""""""""""""
 
-In the :ref:`Merge Sort <merge_sort>` implementation, new arrays are created at each level of recursion.
+In the :ref:`merge_sort_implem` implementation, new arrays are created at each level of recursion.
 The overall space complexity is thus of :math:`\mathcal{O}(n \log n)`, where :math:`n` is the number of elements in the input array. 
 This is because, at each level of the recursion, new arrays are created, adding up to :math:`n` elements per level, and the recursion goes :math:`\log n` levels deep.
 
@@ -801,6 +799,10 @@ The time complexity required by our merge sort algorithm can be lowered to :math
 We can indeed create a single temporary array of size :math:`n` once and reusing it in every merge operation. 
 This temporary array requires :math:`n` units of space, which is independent of the depth of the recursion. 
 As such, the space complexity of this version of the merge sort algorithm is :math:`\mathcal{O}(n)`, which is an improvement over the original version.
+
+
+
+.. _merge_sort_better:
 
 
 ..  code-block:: java
@@ -942,9 +944,7 @@ When for loops are used instead of while loops, one generally only expresses the
 
 In order to be complete, we also need to prove that invariant itself is correctly maintained:
 
-* Initialization: When entering the loop, `i = 1`. The invariant is thus that
- `m should contain the maximum of subarray with only the first element. Since the maximum of a single element is the element itself, the invariant
-holds when entering the loop.
+* Initialization: When entering the loop, `i = 1`. The invariant is thus that `m` should contain the maximum of subarray with only the first element. Since the maximum of a single element is the element itself, the invariant holds when entering the loop.
 * Maintenance: If `m` is the maximum value in `a[0..i-1]` at the start of the loop, the current maximum either remains `m` or it becomes `a[i]` during the iteration, ensuring it is the maximum of `a[0..i]` by the end of the iteration. So, the invariant holds for the next iteration as well.
 * Termination: At the end of the loop, `i = a.length`, and based on our invariant, `m` holds the maximum value of `a[0..a.length-1]`, which means `m` is the maximum of the entire array, proving the correctness of our algorithm.
 
@@ -1053,12 +1053,7 @@ We do it on the inductive parameter `i`.
     Find an invariant for the outer loop of the bubble :ref:`bubble_loop` sort algorithm.
     Prove that the invariant is correctly maintained.
     Hint: Your invariant should express a property on the array with respect to index `i`.
-          A subpart of the array is already sorted? What values are they?
-
-
-    .. // Loop invariant: 
-       //  - the largest i elements are in their correct, final positions at the end of the array.
-       //  - the array contains the same set of values as the input array
+    A subpart of the array is already sorted? What values are they?
 
 
     ..  code-block:: java
@@ -1091,4 +1086,8 @@ We do it on the inductive parameter `i`.
     	        }
     	    }
     	}
+
+ .. // Loop invariant: 
+   //  - the largest i elements are in their correct, final positions at the end of the array.
+   //  - the array contains the same set of values as the input array       
 
