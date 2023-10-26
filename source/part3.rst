@@ -717,10 +717,13 @@ Space Complexity
 Aside from the time, the memory is also a scarce resource that is worse analyzing for an algorithm.
 The *space complexity* of an algorithm quantifies the amount of space or memory taken by an algorithm to run as a function of the length of the input. 
 Since this notion of space is subject to interpretation, let us separate it in two less ambiguous definitions.
+
+
 * The *auxiliary space* is the extra space or the temporary space used by the algorithm during its execution.
 * The *input space* is the space taken by the argument of the algorithm or the instance variables if any.
 
-The definition of space complexity includes both: space complexity = auxiliary space complexity + input space complexity.
+
+The definition of space complexity includes both: *space complexity* = *auxiliary space complexity* + *input space complexity*.
 
 
 
@@ -831,10 +834,12 @@ As such, the space complexity of this version of the merge sort algorithm is :ma
 	            }
 	            index++;
 	        }
-
-	        System.arraycopy(arr, left, temp, index, leftEnd - left + 1);
-	        System.arraycopy(arr, right, temp, index, rightEnd - right + 1);
-	        System.arraycopy(temp, leftStart, arr, leftStart, size);
+            // copy rest of left side
+            System.arraycopy(arr, left, temp, index, leftEnd - left + 1);
+            // copy rest of right side
+            System.arraycopy(arr, right, temp, index, rightEnd - right + 1);
+            // copy temp back to original array
+            System.arraycopy(temp, leftStart, arr, leftStart, size); 
 	    }
 
 	    public void sort(int[] arr) {
