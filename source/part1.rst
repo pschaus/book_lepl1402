@@ -933,6 +933,87 @@ Like array variables, string variables are references to the content of the stri
 +-----------------------+-------------------------------------------------+
 
 
+ 
+Enums
+=======
+
+Enums in Java are a type that represents a group of constants (unchangeable variables, like final variables). 
+They are a powerful mechanism for defining a set of named values, which you can use in a type-safe way. 
+Enums are a feature that enhances code readability and maintainability by allowing you to declare collections of constants with their own namespace.
+
+Using `switch` statement is very convenient for testing the value of an enum variable. 
+Alternatively, since they are constants and there's only one instance of each enum constant in the JVM, you can use `==` to compare them for equality.
+
+We revisit the direction intruction example but using an enum instead of `char` to encode the directions.
+Note that this code is safer since it is impossible to have a direction that is not in the list of the ones defined in the enum.
+Therefore we don't have to deal with the possibility of an unknown direction in the `switch` statement.
+
+
+.. code-block:: java
+
+
+
+    public class DirectionFollower {
+
+        public enum Direction {
+            NORTH, EAST, SOUTH, WEST;
+        }
+        
+        /**
+         * Computes the final coordinates after applying a series of movements to a starting position.
+         *
+         * @param start The starting coordinates as an array of size two, where start[0] is the x-coordinate and start[1] is the y-coordinate.
+         * @param directions An array of {@code Direction} enums that represent the sequence of movements to apply to the starting coordinates.
+         * @return A new array of size two representing the final coordinates.
+         * 
+         * Example:
+         * {@code
+         * int[] start = {0, 0};
+         * Direction[] directions = {Direction.NORTH, Direction.EAST, Direction.NORTH, Direction.WEST};
+         * int[] finalCoordinates = followDirections(start, directions);
+         * // This will yield final coordinates of [0, 2]
+         * }
+         */
+         public static int[] followDirections(int[] start, Direction[] directions) {
+            int[] result = new int[]{start[0], start[1]};
+            
+            for (Direction direction : directions) {
+                switch (direction) {
+                    case NORTH:
+                        result[1]++;
+                        break;
+                    case EAST:
+                        result[0]++;
+                        break;
+                    case SOUTH:
+                        result[1]--;
+                        break;
+                    case WEST:
+                        result[0]--;
+                        break;
+                }
+            }
+            return result;
+        }
+
+        public static void main(String[] args) {
+            int[] start = {0, 0};
+            Direction[] directions = {
+                    Direction.NORTH,
+                    Direction.EAST,
+                    Direction.EAST,
+                    Direction.SOUTH,
+                    Direction.WEST,
+                    Direction.NORTH,
+                    Direction.NORTH
+            };
+
+            int[] finalCoordinates = followDirections(start, directions);
+            System.out.println("The final coordinates are: [" + finalCoordinates[0] + ", " + finalCoordinates[1] + "]");
+        }
+    }
+
+
 Comparing things
 ================
 
