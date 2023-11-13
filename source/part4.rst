@@ -1,33 +1,217 @@
 .. _part4:
 
-*****************************************************************
-Part 4: Object Oriented Programming and Design Patterns
-*****************************************************************
+********************************************************************************
+Part 4: Object Oriented Programming: Data Structures and and Design Patterns
+********************************************************************************
 
 
 Interfaces and Abstract Classes
 ===============================
 
-TODO, or did Ramin already covered it ?
+An abstract class in Java is a class that cannot be instantiated on its own and is intended to be a parent class. 
+Abstract classes are used when you want to provide a common base for different subclasses but do not want this base class to be instantiated on its own. 
+They can contain both fully implemented (concrete) methods and abstract methods (methods without a body).
+
+
+Imagine we are designing a geometric drawing program that incorporates scientific computations, such as calculating the area of various shapes. 
+In this program, the formula for computing the area will be dependent on the specific shape, but there will also be common functionalities. 
+For instance, each shape should have the capability to print information about itself. 
+Additionally, the program is designed to allow users to define their own shapes.
+
+
+Our design objective is to adhere to the crucial "open/closed principle" of object-oriented programming. 
+This principle advocates that software entities (such as classes, modules, and functions) should be open for extension but closed for modification. 
+This approach ensures that our program can grow and adapt over time without necessitating alterations to the existing, stable parts of the code.
+
+
+Abstract classes become immensely valuable in this context. 
+We can encapsulate all the common functionalities into an abstract class, thereby avoiding code duplication. 
+This abstract class will define methods that are common across all shapes, such as a method to print shape information. 
+However, for specific functionalities that vary from one shape to another, such as the computation of area, we leave the method abstract.
+
+
+..  code-block:: java
+    :caption: Shape Abstract Class
+    :name: shape_abstract
+
+    public abstract class Shape {
+        protected String shapeName; // Instance variable to hold the name of the shape
+
+        public Shape(String name) {
+            this.shapeName = name;
+        }
+
+        // Abstract method to calculate the area of the shape
+        public abstract double calculateArea();
+
+        // A concrete method implemented in the abstract class
+        public void displayShapeInfo() {
+            System.out.println("The " + shapeName + " has an area of: " + calculateArea());
+        }
+    }
+
+
+
+With this design, introducing new shapes into the program is straightforward and does not require changes to the existing code structure. 
+We simply add new subclasses for the new shapes.
+
+..  code-block:: java
+    :caption: Shape Concrete
+    :name: shape_concrete
+
+    public class Circle extends Shape {
+        private double radius;
+
+        public Circle(double radius) {
+            super("Circle");
+            this.radius = radius;
+        }
+
+        @Override
+        public double calculateArea() {
+            return Math.PI * radius * radius;
+        }
+    }
+
+    public class Rectangle extends Shape {
+        private double length;
+        private double width;
+
+        public Rectangle(double length, double width) {
+            super("Rectangle");
+            this.length = length;
+            this.width = width;
+        }
+
+        @Override
+        public double calculateArea() {
+            return length * width;
+        }
+    }
+
+    public class Triangle extends Shape {
+        private double base;
+        private double height;
+
+        public Triangle(double base, double height) {
+            super("Triangle");
+            this.base = base;
+            this.height = height;
+        }
+
+        @Override
+        public double calculateArea() {
+            return 0.5 * base * height;
+        }
+    }
+
+
+
+To compute the total area of all shapes in an array, we can create a static method that takes an array of Shape objects as its parameter. 
+This method will iterate on it, invoking the `calculateArea()` method on each Shape object, and accumulate the total area.
+This static method remains valid even if you introduce later a new shape in your libary.
+
+..  code-block:: java
+    :caption: Shape Utils
+    :name: shapeutils
+
+    class ShapeUtils {
+
+        // Static method to compute the total area of an array of shapes
+        public static double calculateTotalArea(Shape[] shapes) {
+            double totalArea = 0.0;
+
+            for (Shape shape : shapes) {
+                totalArea += shape.calculateArea();
+            }
+
+            return totalArea;
+        }
+
+        public static void main(String[] args) {
+            Shape[] shapes = {new Circle(5), new Rectangle(4, 5), new Triangle(3, 4)};
+            double totalArea = calculateTotalArea(shapes);
+            System.out.println("Total Area: " + totalArea);
+        }
+    }
+
+
+
+An interface in Java is a completely abstract class that is used to group related methods with empty bodies. 
+Interfaces specify what a class must do, but not how it does it.
+
+One advantage of interfaces over abstract classes is the ability of a class to implement multiple interfaces. 
+Recall that this is not possible to extend multiple classes.
+
+Therefore interfaces promotes a higher degree of flexibility and modularity in design than abstract classes
+but they don't ofter the same facility in terms of factorization of the code.
+
+
+..  code-block:: java
+    :caption: Camera and MediaPlayer interfaces
+    :name: interface_camera_mediaplayer
+
+    public interface Camera {
+        void takePhoto();
+        void recordVideo();
+    }
+
+    public interface MediaPlayer {
+        void playAudio();
+        void playVideo();
+    }
+
+
+..  code-block:: java
+    :caption: Shape Utils
+    :name: shapeutils
+
+    public class Smartphone implements Camera, MediaPlayer {
+
+        @Override
+        public void takePhoto() {
+            System.out.println("Taking a photo");
+        }
+
+        @Override
+        public void recordVideo() {
+            System.out.println("Recording video");
+        }
+
+        @Override
+        public void playAudio() {
+            System.out.println("Playing audio");
+        }
+
+        @Override
+        public void playVideo() {
+            System.out.println("Playing video");
+        }
+    }
 
 
 Abstract Data Types (ADT)
-==============================
+==========================================
 
-In the context of data structures, an Abstract Data Type (ADT) is a high-level description of a collection of data and the operations that can be performed on this data. 
-It specifies what operations can be done on the data, without prescribing how these operations will be implemented. 
-In essence, an ADT provides a blueprint or an interface, and the actual implementation details are abstracted away.
+In the context of data collection, an Abstract Data Type (ADT) is a high-level description of a collection of data and the operations that can be performed on this data.
+An ADT can best be described by an interface in Java.
 
-The actual workings of the operations are hidden from the user, providing a layer of abstraction. This means that the underlying implementation of an ADT can change without affecting how users of the ADT interact with it.
+It specifies what operations can be done on the data, but without prescribing how these operations will be implemented. 
+Implementation details are abstracted away.
+
+It means that the underlying implementation of an ADT can change without affecting how users of the ADT interact with it.
+
 
 Abstract Data Types are present in the Java Collections Framework. 
 Let's consider the `List <https://docs.oracle.com/javase/8/docs/api/java/util/List.html>`_  interface.
-This is an Abstract Data Types.
+This is one of the most used Abstract Data Types.
 It defines an ordered collection of elements with duplicates allowed. 
-List is an ADT because it specifies a set of operations (add(E e),get(int index), remove(int index), size(), etc.) that you can perform on a list without specifying how these operations are implemented.
-To get a concrete implementation you must use one of the concrete classes that implement this interface, for instance `ArrayList <https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html>`_ or `LinkedList <https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html>`_  
-Whatever the one you choose the high level contract described at the interface level remain the same, although depending on the instanciation you might have different behaviors in terms of speed.
+List is an ADT because it specifies a set of operations (`add(E e)`,`get(int index)`, `remove(int index)`, `size()`, etc.) that you can perform on a list without specifying how these operations are implemented.
+To get a concrete implementation you must use one of the concrete classes that implement this interface, 
+for instance `ArrayList <https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html>`_ or `LinkedList <https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html>`_  
+Whatever the one you choose the high level contract described at the interface level remain the same, although depending on the instanciation you might have different behaviors in terms of speed for example.
 
+One example of the `List` ADT is given next.
 
 ..  code-block:: java
     :caption: Example of usage of a Java List
@@ -88,11 +272,11 @@ Generics enable you to write generalized algorithms and classed based on paramet
 
 
 Stack ADT
-----------
+------------
 
-Let us now study in depth an ADT called Stack.
+Let us now study in depth an ADT called Stack, also frequently used by programmers.
 A stack is a collection that operates on a Last-In-First-Out (LIFO) principle. 
-The primary operations are push, pop, and peek.
+The primary operations are `push`, `pop`, and `peek` as described in the next interface.
 
 ..  code-block:: java
     :caption: Stack ADT
@@ -114,15 +298,15 @@ The primary operations are push, pop, and peek.
     }
 
 
-
-
+Let us now see some possible concrete implementations of this interface.
 
 
 Implementing a Stack With Linked Structure
 """""""""""""""""""""""""""""""""""""""""""
 
-The LinkedStack is a stack implementation that uses a linked list structure to store its elements. Each element in the stack is stored in a node, and each node has a reference to the next node. The top of the stack is maintained as a reference to the first node (head) of the linked list. 
-
+The LinkedStack is a stack implementation that uses a linked list structure to store its elements. 
+Each element in the stack is stored in a node, and each node has a reference to the next node (like individual wagons are connected in a train). 
+The top of the stack is maintained as a reference to the first node (head) of the linked list.
 
 
 ..  code-block:: java
@@ -179,7 +363,6 @@ The LinkedStack is a stack implementation that uses a linked list structure to s
             return size;
         }
     }
-
 
 
 The state of the linked stack after pushing 1, 5 and 3 in this order is illustated on the next figure.
@@ -370,14 +553,12 @@ When a closing parenthesis `)` is encountered, it indicates the end of a fully p
 This invariant captures the essence of the algorithm's approach to the problem: it traverses the expression tree in a sort of depth-first manner, evaluating each subtree as it's fully identified by its closing parenthesis.
 
 
-
 This algorithm taking a String in input is a an example of an interpreter.
 Interpreted programming languages (like Python) do similarly but accept constructs that a slightly more complex that parenthetized arithmetic expressions.
 
 
-
 Iterators
-=========
+===========
 
 An iterator is an object that facilitates the traversal of a data structure, especially collections, in a systematic manner without exposing the underlying details of that structure. The primary purpose of an iterator is to allow a programmer to process each element of a collection, one at a time, without needing to understand the inner workings or specific layout of the collection.
 
@@ -732,8 +913,8 @@ Complete the code below.
 
 
 ..  code-block:: java
-    :caption: Book Comparators
-    :name: book_comparators
+    :caption: Printers
+    :name: printers
 
 
 	// The Printer interface
@@ -863,7 +1044,7 @@ This setup exemplifies the observer design pattern from the perspective of end u
 Let's now delve into how to implement this pattern for custom classes.
 
 Implementing the Observer pattern
-"""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""
 
 Imagine a scenario where there's a bank account that multiple people, say family members, can deposit into. Each family member possesses a smartphone and wishes to be alerted whenever a deposit occurs. For the sake of simplicity, these notifications will be printed to the console.
 The complete source code is given next.
