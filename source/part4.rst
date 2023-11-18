@@ -163,8 +163,8 @@ but they don't ofter the same facility in terms of factorization of the code.
 
 
 ..  code-block:: java
-    :caption: Shape Utils
-    :name: shapeutils
+    :caption: Smartphone
+    :name: smartphone
 
     public class Smartphone implements Camera, MediaPlayer {
 
@@ -295,6 +295,9 @@ The primary operations are `push`, `pop`, and `peek` as described in the next in
         
         // Returns true if this stack is empty.
         boolean isEmpty();
+
+        // Returns the number of items in this stack.
+        public int size();
     }
 
 
@@ -425,7 +428,7 @@ Although resizing (either increasing or decreasing the size) requires :math:`O(n
                 throw new RuntimeException("Stack is empty");
             }
             T item = array[top];
-            array[top--] = null; // to prevent loitering
+            array[top--] = null; // to prevent memory leak
 
             // shrink the size if necessary
             if (top > 0 && top == array.length / 4) {
@@ -510,7 +513,7 @@ The time complexity of the algorithm is clearly :math:`O(n)` where :math:`n` is 
 
 * Each token (whether it's a number, operator, or parenthesis) in the expression is read and processed exactly once.
 * Pushing and popping elements from a stack take constant time, :math:`O(1)`.
-* Arithmetic operations (addition, subtraction, multiplication, and division) are performed in constant time, :math:`O(1).
+* Arithmetic operations (addition, subtraction, multiplication, and division) are performed in constant time, :math:`O(1)`.
 
 
 
@@ -519,7 +522,7 @@ As can be seen, a fully parenthesized expression can be represented as a binary 
 
 
 .. figure:: _static/images/expression.png
-   :scale: 50 %
+   :scale: 100 %
    :alt: Arithmetic Expression
 
 
@@ -557,12 +560,410 @@ This algorithm taking a String in input is a an example of an interpreter.
 Interpreted programming languages (like Python) do similarly but accept constructs that a slightly more complex that parenthetized arithmetic expressions.
 
 
+
+. admonition:: Exercise
+   :class: note
+
+   Write an recursive algorithm for evaluation arithmetic expressions. 
+   This program will not use explicit stacks but rely on the call stack instead.
+
+
+
+
+Trees
+------------
+
+..  code-block:: java
+    :caption: LinkedBinaryTree
+    :name: linkedBinaryTree
+
+
+    public class LinkedBinaryTree {
+
+            private Node root;
+
+            class Node {
+                public int val;
+                public Node left;
+                public Node right;
+
+                public Node(int val) {
+                    this.val = val;
+                }
+
+                public boolean isLeaf() {
+                    return this.left == null && this.right == null;
+                }
+            }
+
+            public static LinkedBinaryTree leaf(int val) {
+                LinkedBinaryTree tree = new LinkedBinaryTree();
+                tree.root = tree.new Node(val);
+                return tree;
+            }
+
+            public static LinkedBinaryTree combine(int val, LinkedBinaryTree left, LinkedBinaryTree right) {
+                LinkedBinaryTree tree = new LinkedBinaryTree();
+                tree.root = tree.new Node(val);
+                tree.root.left = left.root;
+                tree.root.right = right.root;
+                return tree;
+            }
+    }
+
+
+.. _binary-tree:
+
+.. figure:: _static/images/binary_tree.png
+   :scale: 50 %
+   :alt: Binary Tree example
+
+   BinaryTree
+
+
+..  code-block:: java
+    :caption: LinkedBinaryTree Construction
+    :name: linkedBinaryTree_construction
+
+
+    public static void main(String[] args) {
+        LinkedBinaryTree tree = combine(5,
+                                   combine(8,
+                                           leaf(2),
+                                           combine(7,
+                                                   combine(6,
+                                                           leaf(5),
+                                                           leaf(7)),
+                                                   leaf(3))),
+                                   leaf(3));
+    }
+
+
+
+
+Tree Traversals
+"""""""""""""""""""""""""""""""""""""""""""""""
+
+
+Tree traversal strategies are methods used to visit all the nodes in a tree, such as a binary tree. 
+The three common traversal strategies are pre-order, in-order, and post-order. 
+Here's a brief explanation of each:
+
+* Pre-order traversal visits the current node, then traverse the left subtree, and finally, traverse the right subtree.
+* In-order traversal traverses the left subtree, visit the current node, and then traverse the right subtree.
+* Post-order Traversal traverses the left subtree, then the right subtree, and finally visit the current node.
+
+The code for each traversal is given next.
+
+..  code-block:: java
+    :caption: Tre Traversal
+    :name: tree_traversals
+
+
+        public void preOrderPrint() {
+            preOrderPrint(root);
+        }
+
+        private void preOrderPrint(Node current) {
+            if (current == null) {
+                return;
+            }
+            System.out.print(current.val + " ");
+            preOrderPrint(current.left);
+            preOrderPrint(current.right);
+        }
+
+        public void inOrderPrint() {
+            inOrderPrint(root);
+        }
+
+        private void inOrderPrint(Node current) {
+            if (current == null) {
+                return;
+            }
+            inOrderPrint(current.left);
+            System.out.print(current.val + " ");
+            inOrderPrint(current.right);
+        }
+
+        public void postOrderPrint() {
+            postOrderPrint(root);
+        }
+
+        private void postOrderPrint(Node current) {
+            if (current == null) {
+                return;
+            }
+            postOrderPrint(current.left);
+            postOrderPrint(current.right);
+            System.out.print(current.val + " ");
+        }
+
+
+Here is the output order obtained on the binary represented :ref:`binary-tree` for each traversals:
+
+* Pre-Order: 5, 8, 2, 7, 6, 5, 7, 3, 3
+* In-Order: 2, 8, 5, 6, 7, 7, 3, 5, 3
+* Post-Order: 2, 5, 7, 6, 3, 7, 8, 3, 5
+
+Visiting a binary tree with `n` nodes takes :math:`\Theta(n)` (assuming the visit of one node takes a constant time)
+since each node is visited exactly once.
+
+
+
+.. admonition:: Exercise
+   :class: note
+   
+   Write an iterative algoritm (not recursive) for implementing each of these traversal.
+   You will need to use an explicit stack.
+
+
+
+We show next two practical examples using binary trees data-structures.
+
+
+Representing an arithmetic Expression with Tree
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+The `BinaryExpressionTree` class in the provided code is an abstract representation of a binary expression tree, 
+a data structure commonly used in computer science for representing expressions with binary operators (like `+, -, *, /`).
+
+The set of expression methods (mul, div, plus, minus) allows to build easily expressions from other expressions.
+These methods return a new `OperatorExpressionTree` object, which is a subclass of `BinaryExpressionTree`. 
+Each method takes another `BinaryExpressionTree` as an operand to the right of the operator.
+The private inner class `OperatorExpressionTree` represents an operator node in the tree with left and right children, which are also BinaryExpressionTree instances.
+The private inner class `ValueExpressionTree`  represents a leaf node in the tree that contains a value.
+A convenience static method `value` allows creating a ValueExpressionTree with a given integer value.
+An example is provided in the main method for creating tree representation of the expression `(2 * ((5+7)-3)) / 3`.
+
+
+..  code-block:: java
+    :caption: BinaryExpressionTree
+    :name: expressionTree
+
+
+    public abstract class BinaryExpressionTree {
+
+
+        public BinaryExpressionTree mul(BinaryExpressionTree right) {
+            return new OperatorExpressionTree(this, right, '*');
+        }
+
+        public BinaryExpressionTree div(BinaryExpressionTree right) {
+            return new OperatorExpressionTree(this, right, '/');
+        }
+
+        public BinaryExpressionTree plus(BinaryExpressionTree right) {
+            return new OperatorExpressionTree(this, right, '+');
+        }
+
+        public BinaryExpressionTree minus(BinaryExpressionTree right) {
+            return new OperatorExpressionTree(this, right, '-');
+        }
+
+        private static class OperatorExpressionTree extends BinaryExpressionTree {
+            private final BinaryExpressionTree left;
+            private final BinaryExpressionTree right;
+            private final char operator;
+
+            public OperatorExpressionTree(BinaryExpressionTree left, BinaryExpressionTree right, char operator) {
+                this.left = left;
+                this.right = right;
+                this.operator = operator;
+            }
+
+        }
+
+        private static class ValueExpressionTree extends BinaryExpressionTree {
+
+            private final int value;
+
+            public ValueExpressionTree(int value) {
+                this.value = value;
+            }
+        }
+
+        public static BinaryExpressionTree value(int value) {
+            return new ValueExpressionTree(value);
+        }
+
+        public static void main(String[] args) {
+            BinaryExpressionTree expr = value(2).mul(value(5).plus(value(7)).minus(value(3)).div(value(3))); // (2 * ((5+7)-3)) / 3
+        }
+
+    }
+
+
+
+
+
+We now enrich this class with two functionalities:
+
+* evaluate(): is a method for evaluating the expression represented by the tree. This method performs a post-order traversal of the tree. The evaluation of the left sub-expression (left traversal) and the right subexpression (right traversal) must be first evaluated prior to applying the node operator (visit of the node).
+* prettyPrint(): is a method for printing the expression as full parenthesized representation. It corresponds to an infix traversal. The left subexpression is printed (left traversal) before printing the node operator (visit of the node) and then printing the right subexpression (right traversal).
+
+
+..  code-block:: java
+    :caption: BinaryExpressionTree (Continued)
+    :name: expressionTree_enriched
+
+
+    public abstract class BinaryExpressionTree {
+
+        // evaluate the expression
+        abstract int evaluate(); 
+
+        // print a fully parenthetized representation of the expression
+        abstract String prettyPrint();
+
+        // mul , div, plus, minus not represented
+
+
+        private static class OperatorExpressionTree extends BinaryExpressionTree {
+            private final BinaryExpressionTree left;
+            private final BinaryExpressionTree right;
+            private final char operator;
+
+            // constructor not represented
+
+            @Override
+            public String prettyPrint() {
+                return "(" + left.prettyPrint() + operator + right.prettyPrint() + ")";
+            }
+
+            @Override
+            int evaluate() {
+                int leftRes = left.evaluate();
+                int rightRes = right.evaluate();
+                switch (operator) {
+                    case '+':
+                        return leftRes + rightRes;
+                    case '-':
+                        return leftRes - rightRes;
+                    case '/':
+                        return leftRes / rightRes;
+                    case '*':
+                        return leftRes * rightRes;
+                    default:
+                        throw new IllegalArgumentException("unkown operator " + operator);
+                }
+            }
+        }
+
+        private static class ValueExpressionTree extends BinaryExpressionTree {
+
+            private final int value;
+
+            // constructgor not represented
+
+            @Override
+            public String prettyPrint() {
+                return value + "";
+            }
+
+            @Override
+            int evaluate() {
+                return value;
+            }
+        }
+    }
+
+
+
+.. admonition:: Exercise
+   :class: note
+   
+   Enrich the BinaryExpressionTree with a method `rpnPrint()`to print the expression in *reverse Polish notation*.
+   In reverse Polish notation, the operators follow their operands. For example, to add 3 and 4 together, the expression is `3 4 +` rather than `3 + 4`.
+   This notation doesn't need parenthesis: `(3 × 4) + (5 × 6)` becomes `3 4 × 5 6 × +` in reverse Polish notation.
+
+
+
+
+Representing a set with a tree
+"""""""""""""""""""""""""""""""""""""""""""""""
+
+
+..  code-block:: java
+    :caption: BinarySearchTree
+    :name: binary_search_tree
+
+
+    public class BinarySearchTree implements IntSet {
+
+        private Node root;
+
+        private class Node {
+            public int val;
+            public Node left;
+            public Node right;
+
+            public Node(int val) {
+                this.val = val;
+            }
+
+            public boolean isLeaf() {
+                return this.left == null && this.right == null;
+            }
+        }
+
+        // Method to add a value to the tree
+        public void add(int val) {
+            root = addRecursive(root, val);
+        }
+
+        private Node addRecursive(Node current, int val) {
+            if (current == null) {
+                return new Node(val);
+            }
+            if (val < current.val) {
+                current.left = addRecursive(current.left, val);
+            } else if (val > current.val) {
+                current.right = addRecursive(current.right, val);
+            } // if val equals current.val, the value already exists, do nothing
+
+            return current;
+        }
+
+        // Method to check if the tree contains a specific value
+        public boolean contains(int val) {
+            return containsRecursive(root, val);
+        }
+
+        private boolean containsRecursive(Node current, int val) {
+            if (current == null) {
+                return false;
+            }
+            if (val == current.val) {
+                return true;
+            }
+            return val < current.val
+                    ? containsRecursive(current.left, val)
+                    : containsRecursive(current.right, val);
+        }
+
+        // Main method for testing
+        public static void main(String[] args) {
+            BinarySearchTree bst = new BinarySearchTree();
+            bst.add(5);
+            bst.add(3);
+            bst.add(7);
+            bst.add(1);
+
+            System.out.println("Contains 3: " + bst.contains(3)); // true
+            System.out.println("Contains 6: " + bst.contains(6)); // false
+        }
+    }
+
+
+
+
 Iterators
 ===========
 
 An iterator is an object that facilitates the traversal of a data structure, especially collections, in a systematic manner without exposing the underlying details of that structure. The primary purpose of an iterator is to allow a programmer to process each element of a collection, one at a time, without needing to understand the inner workings or specific layout of the collection.
 
-Java provides an Iterator interface in the `java.util package, which is implemented by various collection classes. This allows objects of those classes to return iterator instances to traverse through the collection.
+Java provides an Iterator interface in the `java.util` package, which is implemented by various collection classes. This allows objects of those classes to return iterator instances to traverse through the collection.
 
 An iterator acts like a cursor pointing to some element within the collection. 
 The two important methods of an iterator are:
@@ -637,7 +1038,7 @@ In conclusion, while they are closely related and often used together, `Iterable
 
 
 Implementing your own iterators
-================================
+---------------------------------
 
 When implementing an iterator preperly, there are two possible strategies.
 
@@ -648,11 +1049,11 @@ When implementing an iterator preperly, there are two possible strategies.
 Fail-Safe iterator may be slower since one have to pay the cost of the clone at the creation of the iterator, even if we only end-up iterating on a few elements. Therefore we will rather focus on the Fail-Fast strategy that is also the one chosen most frequently in the impleentation of Java collections.
 
 
-To implement a fail-fast iterator for our `LinkedStack`, we can keep track of a "modification count" for the stack. 
+To implement a fail-fast iterator for our `LinkedStack`, we can keep track of a modification count for the stack. 
 This count will be incremented whenever there's a structural modification to the stack (like pushing or popping). 
 The iterator will then capture this count when it's created and compare its own captured count to the stack's modification count during iteration. 
-If they differ, the iterator will throw a `ConcurrentModificationException.
-The `LinkedStack` class has an inner `LinkedStackIterator`class that checks the modification count every time it's asked if there's a next item or when retrieving the next item.
+If they differ, the iterator will throw a `ConcurrentModificationException`.
+The `LinkedStack` class has an inner `LinkedStackIterator` class that checks the modification count every time it's asked if there's a next item or when retrieving the next item.
 It is important to understand that this is a non static inner classe. An inner class cannot be instantiated without first instantiating the outer class and it is tied to a specific instance of the outer class. This is why, the instance variables of the Iterator inner class can be intialized using the instance variables of the outer class.
 
 
@@ -879,8 +1280,8 @@ As next example shows, we can now sort by title, author or publication year by j
 
 
 ..  code-block:: java
-    :caption: Book Comparators
-    :name: book_comparators
+    :caption: Book Comparators Example
+    :name: book_comparators_example
 
 
 	import java.util.ArrayList;
@@ -900,70 +1301,73 @@ As next example shows, we can now sort by title, author or publication year by j
 	    }
 	}
 
-Exercise on Delegate pattern
-""""""""""""""""""""""""""""""
-
-You are developing a document management system. As part of the system, you have a Document class that contains content. 
-You want to provide a printing capability for the Document.
-
-Instead of embedding the printing logic directly within the Document class, you decide to use the delegate design principle. 
-This will allow the Document class to delegate the responsibility of printing to another class, thus adhering to the single responsibility principle.
-
-Complete the code below.
 
 
-..  code-block:: java
-    :caption: Printers
-    :name: printers
+.. admonition:: Exercise
+   :class: note
 
 
-	// The Printer interface
-	interface Printer {
-	    void print(String content);
-	}
+    You are developing a document management system. As part of the system, you have a Document class that contains content. 
+    You want to provide a printing capability for the Document.
 
-	// TODO: Implement the Printer interface for InkjetPrinter
-	class InkjetPrinter ... {
-	    ...
-	}
+    Instead of embedding the printing logic directly within the Document class, you decide to use the delegate design principle. 
+    This will allow the Document class to delegate the responsibility of printing to another class, thus adhering to the single responsibility principle.
 
-	// TODO: Implement the Printer interface for LaserPrinter
-	class LaserPrinter ... {
-	    ...
-	}
+    Complete the code below.
 
-	// Document class
-	class Document {
-	    private String content;
-	    private Printer printerDelegate;
 
-	    public Document(String content) {
-	        this.content = content;
-	    }
+    ..  code-block:: java
+        :caption: Printers
+        :name: printers
 
-	    // TODO: Set the printer delegate
-	    public void setPrinterDelegate(...) {
-	        ...
-	    }
 
-	    // TODO: Print the document using the delegate
-	    public void printDocument() {
-	        ...
-	    }
-	}
+    	// The Printer interface
+    	interface Printer {
+    	    void print(String content);
+    	}
 
-	// Demo
-	public class DelegateDemo {
-	    public static void main(String[] args) {
-	        Document doc = new Document("This is a sample document content.");
+    	// TODO: Implement the Printer interface for InkjetPrinter
+    	class InkjetPrinter ... {
+    	    ...
+    	}
 
-	        // TODO: Set the delegate to InkjetPrinter and print
-	        ...
+    	// TODO: Implement the Printer interface for LaserPrinter
+    	class LaserPrinter ... {
+    	    ...
+    	}
 
-	        // TODO: Set the delegate to LaserPrinter and print
-	        ...
-	    }
-	}
+    	// Document class
+    	class Document {
+    	    private String content;
+    	    private Printer printerDelegate;
+
+    	    public Document(String content) {
+    	        this.content = content;
+    	    }
+
+    	    // TODO: Set the printer delegate
+    	    public void setPrinterDelegate(...) {
+    	        ...
+    	    }
+
+    	    // TODO: Print the document using the delegate
+    	    public void printDocument() {
+    	        ...
+    	    }
+    	}
+
+    	// Demo
+    	public class DelegateDemo {
+    	    public static void main(String[] args) {
+    	        Document doc = new Document("This is a sample document content.");
+
+    	        // TODO: Set the delegate to InkjetPrinter and print
+    	        ...
+
+    	        // TODO: Set the delegate to LaserPrinter and print
+    	        ...
+    	    }
+    	}
 
 
 Observer
@@ -980,7 +1384,7 @@ First show how to use it in the context of GUI development (Graphical User Inter
 
 
 Observer pattern on GUI components
-""""""""""""""""""""""""""""""""""
+------------------------------------
 
 
 In Java, the `swing` and `awt` packages facilitate the creation of Graphical User Interfaces (GUIs). 
@@ -1044,7 +1448,7 @@ This setup exemplifies the observer design pattern from the perspective of end u
 Let's now delve into how to implement this pattern for custom classes.
 
 Implementing the Observer pattern
-"""""""""""""""""""""""""""""""""""""
+------------------------------------
 
 Imagine a scenario where there's a bank account that multiple people, say family members, can deposit into. Each family member possesses a smartphone and wishes to be alerted whenever a deposit occurs. For the sake of simplicity, these notifications will be printed to the console.
 The complete source code is given next.
@@ -1115,111 +1519,112 @@ It's important to note that the notification order is determined by the sequence
 
 
 
-Exercise
-"""""""""
-
-In this exercise, you will use the Observer pattern in conjunction with the Java Swing framework. 
-The application MessageApp provides a simple GUI where users can type a message and submit it. 
-This message, once submitted, goes through a spell checker and then is meant to be displayed to observers.
-
-Your task is to make it work as exected: when a message is submitted, it is corrected by the spell checker and it is appended in the text area of the app (use `textArea.append(String text)`).
-
-.. figure:: _static/images/gui_exercise.png
-   :scale: 100 %
-   :alt: GUI Exercise
+.. admonition:: Exercise
+   :class: note
 
 
-It's imperative that your design allows for seamless swapping of the spell checker without necessitating changes to the MessageApp class. Additionally, the MessageSubject class should remain decoupled from the MessageApp. 
-It must not depend on it and should not even be aware that it exists.
+    In this exercise, you will use the Observer pattern in conjunction with the Java Swing framework. 
+    The application MessageApp provides a simple GUI (Graphical User Interface) where users can type a message and submit it. 
+    This message, once submitted, goes through a spell checker and then is meant to be displayed to observers.
 
-Use the observer pattern in your design. You'll have to add instance variables and additional arguments to some existing constructors.
-When possible always prefer to depend on interfaces rather than on concrete classes when declaring your parameters.
-With the progress of deep-learning we anticipate that we will soon have to replace the existing StupidSpellChecker by a more advanced one.
-Make this planned change as simple as possible, without having to change your classes.
+    Your task is to make it work as exected: when a message is submitted, it is corrected by the spell checker and it is appended in the text area of the app (use `textArea.append(String text)`).
 
-
-..  code-block:: java
-    :caption: Implementation of the Observable Design Pattern for an Account
-    :name: listener_account
-
-	import javax.swing.*;
-	import java.awt.event.*;
-
-	import java.util.ArrayList;
-	import java.util.List;
+    .. figure:: _static/images/gui_exercise.png
+       :scale: 100 %
+       :alt: GUI Exercise
 
 
-	public class MessageApp {
-	    private JFrame frame;
-	    private JTextField textField;
-	    private JTextArea textArea;
-	    private JButton submitButton;
+    It's imperative that your design allows for seamless swapping of the spell checker without necessitating changes to the MessageApp class. Additionally, the MessageSubject class should remain decoupled from the MessageApp. 
+    It must not depend on it and should not even be aware that it exists.
 
-	    public MessageApp() {
-
-	        frame = new JFrame("Observer Pattern with Swing");
-	        textField = new JTextField(16);
-	        textArea = new JTextArea(5, 20);
-	        submitButton = new JButton("Submit");
-
-	        frame.setLayout(new java.awt.FlowLayout());
-
-	        frame.add(textField);
-	        frame.add(submitButton);
-	        frame.add(new JScrollPane(textArea));
-
-	        // Hint: add an actionListner to the submitButon
-	        // Hint: use textField.getText() to retrieve the text
-
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	        frame.pack();
-	        frame.setVisible(true);
-	    }
-
-	    public static void main(String[] args) {
-	        SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-	                new MessageApp();
-	            }
-	        });
-	    }
-	}
-
-	interface SpellChecker {
-    	String correct(String sentence);
-	}
-
-	class StupidSpellChecker implements SpellChecker {
-    	public String correct(String sentence) {
-        	return sentence;
-   	 	}
-	}
-
-	interface MessageObserver {
-	    void updateMessage(String message);
-	}
+    Use the observer pattern in your design. You'll have to add instance variables and additional arguments to some existing constructors.
+    When possible always prefer to depend on interfaces rather than on concrete classes when declaring your parameters.
+    With the progress of deep-learning we anticipate that we will soon have to replace the existing StupidSpellChecker by a more advanced one.
+    Make this planned change as simple as possible, without having to change your classes.
 
 
-	class MessageSubject {
+    ..  code-block:: java
+        :caption: Implementation of GUI MessageApp
+        :name: message_app
 
-	    private List<MessageObserver> observers = new ArrayList<>();
-	    private String message;
+    	import javax.swing.*;
+    	import java.awt.event.*;
 
-	    public void addObserver(MessageObserver observer) {
-	        observers.add(observer);
-	    }
+    	import java.util.ArrayList;
+    	import java.util.List;
 
-	    public void setMessage(String message) {
-	        this.message = message;
-	        notifyAllObservers();
-	    }
 
-	    private void notifyAllObservers() {
-	        for (MessageObserver observer : observers) {
-	            observer.updateMessage(message);
-	        }
-	    }
-	}
+    	public class MessageApp {
+    	    private JFrame frame;
+    	    private JTextField textField;
+    	    private JTextArea textArea;
+    	    private JButton submitButton;
+
+    	    public MessageApp() {
+
+    	        frame = new JFrame("Observer Pattern with Swing");
+    	        textField = new JTextField(16);
+    	        textArea = new JTextArea(5, 20);
+    	        submitButton = new JButton("Submit");
+
+    	        frame.setLayout(new java.awt.FlowLayout());
+
+    	        frame.add(textField);
+    	        frame.add(submitButton);
+    	        frame.add(new JScrollPane(textArea));
+
+    	        // Hint: add an actionListner to the submitButon
+    	        // Hint: use textField.getText() to retrieve the text
+
+    	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	        frame.pack();
+    	        frame.setVisible(true);
+    	    }
+
+    	    public static void main(String[] args) {
+    	        SwingUtilities.invokeLater(new Runnable() {
+    	            public void run() {
+    	                new MessageApp();
+    	            }
+    	        });
+    	    }
+    	}
+
+    	interface SpellChecker {
+        	String correct(String sentence);
+    	}
+
+    	class StupidSpellChecker implements SpellChecker {
+        	public String correct(String sentence) {
+            	return sentence;
+       	 	}
+    	}
+
+    	interface MessageObserver {
+    	    void updateMessage(String message);
+    	}
+
+
+    	class MessageSubject {
+
+    	    private List<MessageObserver> observers = new ArrayList<>();
+    	    private String message;
+
+    	    public void addObserver(MessageObserver observer) {
+    	        observers.add(observer);
+    	    }
+
+    	    public void setMessage(String message) {
+    	        this.message = message;
+    	        notifyAllObservers();
+    	    }
+
+    	    private void notifyAllObservers() {
+    	        for (MessageObserver observer : observers) {
+    	            observer.updateMessage(message);
+    	        }
+    	    }
+    	}
 
 
 
