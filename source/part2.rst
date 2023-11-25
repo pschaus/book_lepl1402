@@ -107,7 +107,7 @@ But if we have the source code of the program available, and that is the assumpt
 Control Flow Graph and node coverage
 ------------------------------------
 
-The following example shows an implementation of the :code:`min()` function that contains a bug:
+The following example shows an implementation of the :code:`min()` method that contains a bug:
 
 ..  code-block:: java
 
@@ -139,7 +139,7 @@ If we test the code with test values *a=3* and *b=5*, the program will go throug
 Edge coverage
 -------------
 
-While 100% node coverage is an important goal in testing, it does not necessarily mean that a program  contains no bugs. Consider the following faulty implementation of the the :code:`min()` function:
+While 100% node coverage is an important goal in testing, it does not necessarily mean that a program  contains no bugs. Consider the following faulty implementation of the the :code:`min()` method:
 
 ..  code-block:: java
 

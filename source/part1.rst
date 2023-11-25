@@ -1088,6 +1088,11 @@ The :code:`Arrays` class contains many useful methods to work with arrays, such 
 You might wonder why we need the line :code:`import java.util.Arrays` but we didn't need to import the classes :code:`Math`, :code:`Integer` or :code:`String` in our other examples. That's because those classes are in the package :code:`java.lang`, which is the only package that is automatically imported by the Java compiler.
 
 
+
+..
+    TODO - Create a new chapter entitled "Object-oriented programming" at this point?
+
+
 Classes and Objects
 ===================
 
