@@ -10,9 +10,9 @@ Software testing
 What is software testing?
 -------------------------
 
-According to the ANSI/IEEE standard 610.12-1990, *testing*  is *"the process of operating a system or component under specified conditions, observing or recording the results and making an evaluation of some aspect of the system or component"*. More informally, testing means verifying that software (or hardware) does what we expect it to do. 
+According to the ANSI/IEEE standard 610.12-1990, *testing*  is *"the process of operating a system or component under specified conditions, observing or recording the results and making an evaluation of some aspect of the system or component."* More informally, testing means verifying that software (or hardware) does what we expect it to do.
 
-As an example, let's assume we have written a method to calculate the quotient *a/b* of two natural numbers *a* and *b*:
+As an example, let's assume we have written a method to calculate the quotient ``a/b`` of two natural numbers ``a`` and ``b``:
 
 ..  code-block:: java
 
@@ -51,7 +51,7 @@ Requirements can come in all kinds of forms. In general, we can distinguish two 
 What can be tested?
 -------------------
 
-Tests can be performed at different levels. Our above test of the :code:`division` method is a *unit test* because methods are the smallest entities in Java that we can independently test. We could also test an entire class or package (this is called a *module test*), several packages (*integration test*), or an entire program (*system test*). In this book, we will only do unit tests.
+Tests can be performed at different levels. Our above test of the :code:`division()` method is a *unit test* because methods are the smallest entities in Java that we can independently test. We could also test an entire class or package (this is called a *module test*), several packages (*integration test*), or an entire program (*system test*). In this book, we will only do unit tests.
 
 In general, the larger and the more complex the program you are testing, the more complicated the tests will be, and, more importantly, the more time-consuming it will be to fix a bug. A unit test can be done as soon as we write the method, and if we find a bug we can change the implementation of the method relatively easily. Imagine if we first finished writing the whole program and then, after several months of development, found during a system test that the program violates the specification! In the worst case, this could mean rewriting the whole program.
 
@@ -61,11 +61,11 @@ For this reason, it makes sense to start testing as early as possible in the for
 How to plan a unit test
 -----------------------
 
-We test software because we want to verify that it produces the correct results (functional requirements) in the right way (non-functional requirements). In general, software like our above :code:`division` method takes one or more input values and produces one or more result values. Unfortunately, in many cases there are many possible input values and testing our software with all of them would take a lot of time.
+We test software because we want to verify that it produces the correct results (functional requirements) in the right way (non-functional requirements). In general, software like our above :code:`division()` method takes one or more input values and produces one or more result values. Unfortunately, in many cases there are many possible input values and testing our software with all of them would take a lot of time.
 
-In practice, we can only test our software on a few input values and hope that the software also works correctly for other input values. For example, when we call our :code:`division` method with the arguments 6 and 3 and we get the correct result, we assume that the method also works correctly with the arguments 12 and 6. On the other hand, if the result for 6 and 3 is not correct, we know that our software contains a bug that we have to fix.
+In practice, we can only test our software on a few input values and hope that the software also works correctly for other input values. For example, when we call our :code:`division()` method with the arguments 6 and 3 and we get the correct result, we assume that the method also works correctly with the arguments 12 and 6. On the other hand, if the result for 6 and 3 is not correct, we know that our software contains a bug that we have to fix.
 
-Does that mean that we should test our :code:`division` method with some random numbers? No, we can do something smarter than that:
+Does that mean that we should test our :code:`division()` method with some random numbers? No, we can do something smarter than that:
 
 1. First, we determine the *input domain* of the method, i.e., the set of possible input values. Because the method has two :code:`int` parameters, the input domain is :math:`\{-2^{31}..2^{31}-1\}\times \{-2^{31}..2^{31}-1\}`.
 
@@ -107,7 +107,7 @@ But if we have the source code of the program available, and that is the assumpt
 Control Flow Graph and node coverage
 ------------------------------------
 
-The following example shows an implementation of the :code:`min` function that contains a bug:
+The following example shows an implementation of the :code:`min()` function that contains a bug:
 
 ..  code-block:: java
 
@@ -139,7 +139,7 @@ If we test the code with test values *a=3* and *b=5*, the program will go throug
 Edge coverage
 -------------
 
-While 100% node coverage is an important goal in testing, it does not necessarily mean that a program  contains no bugs. Consider the following faulty implementation of the the :code:`min` function:
+While 100% node coverage is an important goal in testing, it does not necessarily mean that a program  contains no bugs. Consider the following faulty implementation of the the :code:`min()` function:
 
 ..  code-block:: java
 
@@ -232,7 +232,7 @@ Writing tests as a program
 
 Testing is a repetitive task. In unit testing, we have to test every new method we write. And we have to repeat the test every time we changed the code of a method. It is therefore an obvious question whether we cannot let the computer do the testing.
 
-As an example, consider again the :code:`min` method:
+As an example, consider again the :code:`min()` method:
 
 ..  code-block:: java
 
@@ -265,7 +265,7 @@ JUnit
 
 Fortunately there are already tools and libraries to write tests. For Java, the most famous one is JUnit. Similar tools also exist for other programming language.
 
-JUnit provides many useful classes and methods to write tests. To write a test you create a new class (for example, :code:`MainTest`) and write a method for each test case. Depending on which version of JUnit you use, your test code will look different. In JUnit version 4, our above two tests of the :code:`min` method can be written like this:
+JUnit provides many useful classes and methods to write tests. To write a test you create a new class (for example, :code:`MainTest`) and write a method for each test case. Depending on which version of JUnit you use, your test code will look different. In JUnit version 4, our above two tests of the :code:`min()` method can be written like this:
 
 ..  code-block:: java
 
@@ -302,14 +302,14 @@ In JUnit version 5, the two tests are written slightly differently:
         }
     }
     
-The method :code:`assertEquals` of the class :code:`Assertions` takes three arguments: the expected value, the actual value produced by your implementation, and an (optional) message that is shown if the test fails, i.e., if the actual value and the expected value are not equal.
+The method :code:`assertEquals()` of the class :code:`Assertions` takes three arguments: the expected value, the actual value produced by your implementation, and an (optional) message that is shown if the test fails, i.e., if the actual value and the expected value are not equal.
 
 The :code:`@Test` written above the two test methods is called an *annotation* and helps JUnit to find the methods that it should call to perform the tests. IntelliJ also uses them to show you the small green triangles that you can click to run individual tests (or all tests):
 
 .. image:: _static/images/part1/intellij_test.png
   :width: 25%
 
-The class :code:`Assertions` has many other methods to compare results, such as :code:`assertArrayEquals` for arrays, and :code:`assertNotEquals` to test for inequality. It is important to note that these methods use the :code:`equals` method when comparing objects. If you want to compare references, you have to use :code:`assertSame`. Check the documentation at <https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html>_.
+The class :code:`Assertions` has many other methods to compare results, such as :code:`assertArrayEquals()` for arrays, and :code:`assertNotEquals()` to test for inequality. It is important to note that these methods use the :code:`equals()` method when comparing objects. If you want to compare references, you have to use :code:`assertSame()`. Check the documentation at `<https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html>`_.
 
 
 Practical aspects of unit testing
@@ -369,7 +369,7 @@ Another practical problem is the testing of non-static methods or methods that n
         public int getSalary() { return salary; }
     }
 
-When testing non-static methods like :code:`increaseSalary`, your test needs to "prepare" an object before the method can be called. In JUnit v5, the test code could look like this:
+When testing non-static methods like :code:`increaseSalary()`, your test needs to "prepare" an object before the method can be called. In JUnit v5, the test code could look like this:
 
 .. code-block:: java
 
@@ -382,7 +382,7 @@ When testing non-static methods like :code:`increaseSalary`, your test needs to 
         }
     }
 
-Although this test is correctly implemented, it's difficult to see where the bug is located if the test fails. Did :code:`increaseSalary` not work correctly? Or was the bug in the constructor or in the :code:`getSalary` method?
+Although this test is correctly implemented, it's difficult to see where the bug is located if the test fails. Did :code:`increaseSalary()` not work correctly? Or was the bug in the constructor or in the :code:`getSalary()` method?
 
 There are different ways to address this problem. One is to add more test cases, for example for the construction of the object:
 
@@ -420,3 +420,9 @@ Alternative, we could do more tests inside one test case:
 
 One can argue about what is the "right" way. Some developers prefer simple test methods, in which exactly one thing is tested. Others don't like too many small trivial tests. We don't want to get involved in this discussion and leave it to you to decide.
 
+
+
+..
+    TODO : Explain exception testing with JUnit
+
+    Explain why we still talk about JUnit4
