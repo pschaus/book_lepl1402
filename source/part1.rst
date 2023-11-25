@@ -1940,6 +1940,8 @@ Autoboxing is not limited to the :code:`ArrayList` class. It works for all situa
     //    int i = value.intValue();
     int i = value;
 
+.. _generics:
+    
 ArrayList and Generics
 ----------------------
 
@@ -2135,6 +2137,9 @@ What happens if we call an overloaded method but there is no version of the meth
     }
 
 Which one of the two :code:`giveWeapon()` will be called if the argument is a :code:`MagicSword` object? In this situation, the compiler will choose the method with the closest type to :code:`MagicSword`, that is :code:`void giveWeapon(MightySword weapon)`.
+
+
+.. _multiple_inheritance:
 
 Multiple Inheritance
 ====================

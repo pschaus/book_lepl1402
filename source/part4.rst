@@ -1,12 +1,12 @@
 .. _part4:
 
 ********************************************************************************
-Part 4: Object Oriented Programming: Data Structures and and Design Patterns
+Part 4: Object Oriented Programming: Data Structures and Design Patterns
 ********************************************************************************
 
 
-Interfaces and Abstract Classes
-===============================
+Abstract classes
+================
 
 An abstract class in Java is a class that cannot be instantiated on its own and is intended to be a parent class. 
 Abstract classes are used when you want to provide a common base for different subclasses but do not want this base class to be instantiated on its own. 
@@ -25,8 +25,8 @@ This approach ensures that our program can grow and adapt over time without nece
 
 
 Abstract classes become immensely valuable in this context. 
-We can encapsulate all the common functionalities into an abstract class, thereby avoiding code duplication. 
-This abstract class will define methods that are common across all shapes, such as a method to print shape information. 
+We can encapsulate all the common functionalities for handling the various geometric shapes into an abstract class, thereby avoiding code duplication. 
+This abstract class will define methods that are common across all shapes, such as a method to print information about the shape. 
 However, for specific functionalities that vary from one shape to another, such as the computation of area, we leave the method abstract.
 
 
@@ -52,11 +52,11 @@ However, for specific functionalities that vary from one shape to another, such 
 
 
 
-With this design, introducing new shapes into the program is straightforward and does not require changes to the existing code structure. 
+With this design, introducing new shapes into the program is straightforward and does not require to change the structure of existing code. 
 We simply add new subclasses for the new shapes.
 
 ..  code-block:: java
-    :caption: Shape Concrete
+    :caption: Concrete shapes
     :name: shape_concrete
 
     public class Circle extends Shape {
@@ -107,8 +107,8 @@ We simply add new subclasses for the new shapes.
 
 
 
-To compute the total area of all shapes in an array, we can create a static method that takes an array of Shape objects as its parameter. 
-This method will iterate on it, invoking the ``calculateArea()`` method on each Shape object, and accumulate the total area.
+To compute the total area of all shapes in an array, we can create a static method that takes an array of ``Shape`` objects as its parameter. 
+This method will iterate on it, invoking the ``calculateArea()`` method on each ``Shape`` object, and accumulate the total area.
 This static method remains valid even if you introduce later a new shape in your library.
 
 ..  code-block:: java
@@ -136,15 +136,18 @@ This static method remains valid even if you introduce later a new shape in your
     }
 
 
+Interfaces
+==========
 
-An interface in Java is a completely abstract class that is used to group related methods with empty bodies. 
+An interface in Java is a class that is completely abstract. In other words, none of its methods has a concrete implementation. Interfaces are used to group related methods with empty bodies. 
 Interfaces specify what a class must do, but not how it does it.
 
 One advantage of interfaces over abstract classes is the ability of a class to implement multiple interfaces. 
-Recall that this is not possible to extend multiple classes.
+Remember that Java doesn't allow to :ref:`extend multiple classes <multiple_inheritance>`.
 
-Therefore interfaces promotes a higher degree of flexibility and modularity in design than abstract classes
-but they don't often the same facility in terms of factorization of the code.
+.. TODO - Not sure to understand the end of the following sentence
+
+Therefore interfaces promote a higher degree of flexibility and modularity in software design than abstract classes, but they don't often the same facility in terms of factorization of the code.
 
 
 ..  code-block:: java
@@ -193,22 +196,22 @@ but they don't often the same facility in terms of factorization of the code.
 Abstract Data Types (ADT)
 ==========================================
 
-In the context of data collection, an Abstract Data Type (ADT) is a high-level description of a collection of data and the operations that can be performed on this data.
-An ADT can best be described by an interface in Java.
+In the context of data collection, an Abstract Data Type (ADT) is a high-level description of a collection of data and of the operations that can be performed on this data.
 
-It specifies what operations can be done on the data, but without prescribing how these operations will be implemented. 
+An ADT can best be described by an interface in Java. This interface specifies what operations can be done on the data, but without prescribing how these operations will be implemented. 
 Implementation details are abstracted away.
 
-It means that the underlying implementation of an ADT can change without affecting how users of the ADT interact with it.
+It means that the underlying implementation of an ADT can change without affecting how the users of the ADT interact with it.
 
 
 Abstract Data Types are present in the Java Collections Framework. 
-Let's consider the `List <https://docs.oracle.com/javase/8/docs/api/java/util/List.html>`_  interface.
-This is one of the most used Abstract Data Types.
-It defines an ordered collection of elements with duplicates allowed. 
-List is an ADT because it specifies a set of operations (``add(E e)``, ``get(int index)``, ``remove(int index)``, ``size()``, etc.) that you can perform on a list without specifying how these operations are implemented.
-To get a concrete implementation you must use one of the concrete classes that implement this interface, 
-for instance `ArrayList <https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html>`_ or `LinkedList <https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html>`_  
+Let's consider the `List <https://docs.oracle.com/javase/8/docs/api/java/util/List.html>`_  interface that belongs to the standard ``java.util`` namespace.
+This is one of the most frequently used Abstract Data Types.
+It defines an ordered collection of elements, with duplicates allowed. 
+``List`` is an ADT because it specifies a set of operations (e.g., ``add(E e)``, ``get(int index)``, ``remove(int index)``, ``size()``) that you can perform on a list without specifying how these operations are concretely implemented.
+
+To get a concrete implementation of a ``List``, you must use one of the concrete classes that implement this interface, 
+for instance `ArrayList <https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html>`_ or `LinkedList <https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html>`_.
 Whatever the one you choose the high level contract described at the interface level remain the same, although depending on the instanciation you might have different behaviors in terms of speed for example.
 
 One example of the ``List`` ADT is given next.
@@ -242,19 +245,20 @@ One example of the ``List`` ADT is given next.
     }
 
 
-In the above example, you have seen a special notation using "<>" also called generics in java.
-Generics introduce the concept of type parameters to Java, allowing you to write code that is parameterized by one or more types. 
-This enables you to create generic algorithms that work on collections of different types, classes, interfaces, and methods that operate on a parameterized type.
-Generics offer a way to define and enforce strong type-checks at compile-time without committing to a specific data type. 
+In the example above, you see the special notation ``<>`` that is associated with :ref:`generics <generics>` in Java.
+Generics correspond to the concept of type parameters, allowing you to write code that is parameterized by one or more types.
 The core idea is to allow type (classes and interfaces) to be parameters when defining classes, interfaces, and methods.
 
+This enables you to create generic algorithms that can work on collections of different types, classes, interfaces, and methods that operate on a parameterized type.
+Generics offer a way to define and enforce strong type-checks at compile-time without committing to a specific data type. 
 
-In earlier versions of Java generics did not exit.
-You could add any type of objects to collections, which could lead to runtime type-casting errors. 
+
+Java introduced support for generics in 2004, as a part of Java 5 (formally referred to as J2SE 5.0). In earlier versions of Java generics did not exit.
+You could add any type of object to collections, which was prone to runtime type-casting errors, as illustrated in this example:
 
 
 ..  code-block:: java
-    :caption: Example of ClassCastException at runtime
+    :caption: Example of ``ClassCastException`` at runtime
     :name: java_list_no_generics
 
 
@@ -267,16 +271,17 @@ You could add any type of objects to collections, which could lead to runtime ty
     String s = (String) list.get(1); // ClassCastException at runtime
 
 
-With generics, the type of elements you can add is restricted at compile-time, eliminating the potential for ``ClassCastException`` at runtime.
-Generics enable you to write generalized algorithms and classed based on parameterized types, making it possible to reuse the same method, class, or interface for different data types.
+With generics, the type of elements you can add is restricted at compile-time, eliminating the potential for ``ClassCastException`` at runtime. In the example above, you would have used the ``List<String>`` and ``ArrayList<String>`` parametrized classes instead of the ``List`` and ``ArrayList`` plain classes. Consequently, the call to ``list.add(1)`` would have resulted in a compilation error, because ``1`` is not a ``String``.
+
+Generics enable you to write generalized algorithms and classes based on parameterized types, making it possible to reuse the same method, class, or interface for different data types.
 
 
 Stack ADT
 ------------
 
-Let us now study in depth an ADT called Stack, also frequently used by programmers.
+Let us now study in-depth an ADT called ``Stack`` that is also frequently used by programmers.
 A stack is a collection that operates on a Last-In-First-Out (LIFO) principle. 
-The primary operations are ``push``, ``pop``, and ``peek`` as described in the next interface.
+The primary operations of a ``Stack`` are ``push()``, ``pop()``, and ``peek()``, as described in the next interface:
 
 ..  code-block:: java
     :caption: Stack ADT
@@ -304,10 +309,10 @@ The primary operations are ``push``, ``pop``, and ``peek`` as described in the n
 Let us now see some possible concrete implementations of this interface.
 
 
-Implementing a Stack With Linked Structure
-"""""""""""""""""""""""""""""""""""""""""""
+Implementing a Stack With a Linked Structure
+""""""""""""""""""""""""""""""""""""""""""""
 
-The ``LinkedStack`` is a stack implementation that uses a linked list structure to store its elements. 
+The ``LinkedStack`` is an implementation of the ``Stack`` ADT that uses a linked list structure to store its elements. 
 Each element in the stack is stored in a node, and each node has a reference to the next node (like individual wagons are connected in a train). 
 The top of the stack is maintained as a reference to the first node (head) of the linked list.
 
@@ -380,7 +385,7 @@ Implementing a Stack With an Array
 """"""""""""""""""""""""""""""""""""
 
 
-Another method for implementing the Stack ADT is by utilizing an internal array to hold the elements.
+Another method for implementing the ``Stack`` ADT is by utilizing an internal array to hold the elements.
 An implementation is given in the next fragment.
 The internal array is initialized with a size larger than the expected number of elements in the stack to prevent frequent resizing.
 
