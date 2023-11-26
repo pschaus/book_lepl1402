@@ -5,6 +5,8 @@ Part 4: Object Oriented Programming: Data Structures and Design Patterns
 ********************************************************************************
 
 
+.. _abstract_classes:
+
 Abstract classes
 ================
 
@@ -19,7 +21,7 @@ For instance, each shape should have the capability to print information about i
 Additionally, the program is designed to allow users to define their own shapes.
 
 
-Our design objective is to adhere to the crucial "open/closed principle" of object-oriented programming. 
+Our design objective is to adhere to the crucial "Open/Closed Principle" (OCP) of object-oriented programming. 
 This principle advocates that software entities (such as classes, modules, and functions) should be open for extension but closed for modification. 
 This approach ensures that our program can grow and adapt over time without necessitating alterations to the existing, stable parts of the code.
 
@@ -386,22 +388,7 @@ Implementing a Stack With an Array
 
 
 Another method for implementing the ``Stack`` ADT is by utilizing an internal array to hold the elements.
-An implementation is given in the next fragment.
-The internal array is initialized with a size larger than the expected number of elements in the stack to prevent frequent resizing.
-
-An integer variable, often termed top or size, represents the current position in the stack. When pushing a new element onto the stack, it's added at the position indicated by this integer. Subsequently, the integer is incremented. The pop operation reverses this process: the element at the current position is retrieved, and the integer is decremented. Both the push and pop operations have constant time complexity: :math:`O(1)`.
-
-However, there's an inherent limitation when using arrays in Java: their size is fixed upon creation. Thus, if the stack's size grows to match the internal array's size, any further push operation risks an ``ArrayIndexOutOfBoundsException``.
-
-To counteract this limitation, when the internal array is detected to be full, its size is doubled. This is achieved by creating a new array with double the capacity and copying the contents of the current array to the new one. Although this resizing operation has a linear time complexity of :math:`O(n)`, where 
-:math:`n` is the number of elements, it doesn't happen often.
-
-Additionally, to avoid inefficiencies, if the size of the stack drops to one-quarter of the internal array's capacity, the array size is halved. This prevents the array from being overly sparse and consuming unnecessary memory.
-
-Although resizing (either increasing or decreasing the size) requires :math:`O(n)`
-:math:`O(n)` time in the worst case, this cost is distributed over many operations, making the average cost constant. This is known as amortized analysis. Thus, when analyzed in an amortized sense, the average cost per operation over 
-:math:`n` operations is :math:`O(1)`.
-
+An implementation is given in the next code fragment:
 
 
 ..  code-block:: java
@@ -470,11 +457,27 @@ Although resizing (either increasing or decreasing the size) requires :math:`O(n
         }
     }
 
+The internal array is initialized with a size larger than the expected number of elements in the stack to prevent frequent resizing.
+
+An integer variable, often termed ``top`` or ``size``, represents the current position in the stack. When pushing a new element onto the stack, it is added at the position indicated by this integer. Subsequently, the integer is incremented. The ``pop()`` operation reverses this process: The element at the current position is retrieved, and the integer is decremented. Both the ``push()`` and ``pop()`` operations have constant time complexity: :math:`O(1)`.
+
+However, there's an inherent limitation when using arrays in Java: Their size is fixed upon creation. Thus, if the stack's size grows to match the internal array's size, any further push operation risks an ``ArrayIndexOutOfBoundsException``.
+
+To counteract this limitation, when the internal array is detected to be full, its size is doubled. This is achieved by creating a new array whose capacity is doubled with respect to the current array, then copying the contents of the current array to the new one. Although this resizing operation has a linear time complexity of :math:`O(n)`, where 
+:math:`n` is the number of elements, it doesn't happen often.
+
+In addition, to avoid inefficiencies in terms of memory usage, if the size of the stack drops to one-quarter of the internal array's capacity, the array size is halved. This prevents the array from being overly sparse and consuming unnecessary memory.
+
+Although resizing (either increasing or decreasing the size) requires :math:`O(n)` time in the worst case, this cost is distributed over many operations, making the average cost constant. This is known as amortized analysis. Thus, when analyzed in an amortized sense, the average cost per operation over 
+:math:`n` operations is :math:`O(1)`.
+
+
+
 
 Evaluating Arithmetic Expressions with a Stack
 """""""""""""""""""""""""""""""""""""""""""""""
 
-A typical use of stacks is to evaluate arithmetic expressions as provided in the next algorithm.
+A typical use of stacks is to evaluate arithmetic expressions, as demonstrated in the next algorithm:
 
 ..  code-block:: java
     :caption: Evaluating Expressions Using Stacks
@@ -516,7 +519,7 @@ A typical use of stacks is to evaluate arithmetic expressions as provided in the
 
 The time complexity of the algorithm is clearly :math:`O(n)` where :math:`n` is the size of the input string:
 
-* Each token (whether it's a number, operator, or parenthesis) in the expression is read and processed exactly once.
+* Each token (whether it is a number, operator, or parenthesis) in the expression is read and processed exactly once.
 * Pushing and popping elements from a stack take constant time, :math:`O(1)`.
 * Arithmetic operations (addition, subtraction, multiplication, and division) are performed in constant time, :math:`O(1)`.
 
@@ -534,7 +537,7 @@ As can be seen, a fully parenthesized expression can be represented as a binary 
 
 The internal nodes are the operator and the leaf nodes are the values.
 The algorithm uses two stacks. One stack (``ops``) is for operators and the other (``vals``) is for (reduced) values.
-The program splits the input string args[0] by spaces to process each token of the expression individually.
+The program splits the input string ``args[0]`` by spaces to process each token of the expression individually.
 
 
 We will not formalize completely the invariant here but give some intuition about what it is.
@@ -543,30 +546,30 @@ At any point during the processing of the expression:
 
 1. The ``vals`` stack contains the results of all fully evaluated sub-expressions (reduced subtrees) encountered so far.
 2. The ``ops`` stack contains operators that are awaiting their right-hand operands to form a complete sub-expression (subtree) that can be reduced.
-3. For every operator in the ops stack, its corresponding left-hand operand is already in the vals stack, awaiting the completion of its subtree for reduction.
+3. For every operator in the ``ops`` stack, its corresponding left-hand operand is already in the ``vals`` stack, awaiting the completion of its subtree for reduction.
 
 The figure displays the status of the stacks at three distinct stages for our brief example.
 
-When we encounter an operand, it's like encountering a leaf of this tree, and we immediately know its value, so it's pushed onto the ``vals`` stack.
+When we encounter an operand, it is like encountering a leaf of this tree, and we immediately know its value, so it is pushed onto the ``vals`` stack.
 
-When we encounter an operator, it's pushed onto the ``ops`` stack. This operator is awaiting its right-hand operand to form a complete subtree. Its left-hand operand is already on the vals stack.
+When we encounter an operator, it is pushed onto the ``ops`` stack. This operator is awaiting its right-hand operand to form a complete subtree. Its left-hand operand is already on the ``vals`` stack.
 
 When a closing parenthesis ``)`` is encountered, it indicates the end of a fully parenthesized sub-expression, corresponding to an entire subtree of the expression. This subtree is "reduced" or "evaluated" in the following manner:
 
-1. The operator for this subtree is popped from the ops stack.
-2. The right-hand operand (the value of the right subtree) is popped from the vals stack.
-3. The left-hand operand (the value of the left subtree) is popped from the vals stack.
-4. The operator is applied to the two operands, and the result (the value of the entire subtree) is pushed back onto the vals stack.
+1. The operator for this subtree is popped from the ``ops`` stack.
+2. The right-hand operand (the value of the right subtree) is popped from the ``vals`` stack.
+3. The left-hand operand (the value of the left subtree) is popped from the ``vals`` stack.
+4. The operator is applied to the two operands, and the result (the value of the entire subtree) is pushed back onto the ``vals`` stack.
 
-This invariant captures the essence of the algorithm's approach to the problem: it traverses the expression tree in a sort of depth-first manner, evaluating each subtree as it's fully identified by its closing parenthesis.
+This invariant captures the essence of the algorithm's approach to the problem: It traverses the expression tree in a sort of depth-first manner, evaluating each subtree as it is fully identified by its closing parenthesis.
 
 
-This algorithm taking a String in input is a an example of an interpreter.
+This algorithm taking a ``String`` as its input is a an example of an interpreter.
 Interpreted programming languages (like Python) do similarly but accept constructs that a slightly more complex that parenthesized arithmetic expressions.
 
 
 
-. admonition:: Exercise
+.. admonition:: Exercise
    :class: note
 
    Write an recursive algorithm for evaluation arithmetic expressions. 
@@ -577,6 +580,8 @@ Interpreted programming languages (like Python) do similarly but accept construc
 
 Trees
 ------------
+
+.. TODO - Add an introduction paragraph
 
 ..  code-block:: java
     :caption: LinkedBinaryTree
@@ -711,7 +716,7 @@ Here is the output order obtained on the binary represented :ref:`binary-tree` f
 * In-Order: 2, 8, 5, 6, 7, 7, 3, 5, 3
 * Post-Order: 2, 5, 7, 6, 3, 7, 8, 3, 5
 
-Visiting a binary tree with ``n`` nodes takes :math:`\Theta(n)` (assuming the visit of one node takes a constant time)
+Visiting a binary tree with ``n`` nodes takes :math:`\Theta(n)` (assuming the visit of one node takes a constant time),
 since each node is visited exactly once.
 
 
@@ -719,7 +724,7 @@ since each node is visited exactly once.
 .. admonition:: Exercise
    :class: note
    
-   Write an iterative algorithm (not recursive) for implementing each of these traversal.
+   Write an iterative algorithm (not recursive) for implementing each of these traversals.
    You will need to use an explicit stack.
 
 
@@ -888,6 +893,8 @@ We now enrich this class with two functionalities:
 Representing a set with a tree
 """""""""""""""""""""""""""""""""""""""""""""""
 
+.. TODO - Add an explanation paragraph
+
 
 ..  code-block:: java
     :caption: BinarySearchTree
@@ -966,22 +973,22 @@ Representing a set with a tree
 Iterators
 ===========
 
-An iterator is an object that facilitates the traversal of a data structure, especially collections, in a systematic manner without exposing the underlying details of that structure. The primary purpose of an iterator is to allow a programmer to process each element of a collection, one at a time, without needing to understand the inner workings or specific layout of the collection.
+An iterator is an object that facilitates the traversal of a data structure, especially collections, in a systematic manner without exposing the underlying details of that structure. The primary purpose of an iterator is to allow a programmer to process each element of a collection, one at a time, without needing to understand the inner workings or the specific memory layout of the collection.
 
-Java provides an Iterator interface in the ``java.util`` package, which is implemented by various collection classes. This allows objects of those classes to return iterator instances to traverse through the collection.
+Java provides an ``Iterator`` interface in the ``java.util`` package, which is implemented by various collection classes. This allows objects of those classes to create iterator instances on demand that can be used to traverse through the collection.
 
 An iterator acts like a cursor pointing to some element within the collection. 
 The two important methods of an iterator are:
 
-* ``hasNext()``: Returns true if there are more elements to iterate over.
-* ``next()``: Returns the next element in the collection and advances the iterator.
+* ``hasNext()``: Returns ``true`` if and only if there are more elements to iterate over.
+* ``next()``: Returns the next element in the collection and advances the iterator. This method fails if ``hasNext()`` is ``false``.
 
-The method ``remove()`` is optional and we will not use it in this course.
+The method ``remove()`` is optional and will not be covered in this course.
 
 The next example show how to use an iterator to print every element of a list.
 
 ..  code-block:: java
-    :caption: Iterator Usage Example
+    :caption: ``Iterator`` Usage Example
     :name: iterator
 
 
@@ -1008,12 +1015,12 @@ The next example show how to use an iterator to print every element of a list.
 It is also an interface in Java, found in the ``java.lang package``. 
 An object is "iterable" if it implements the ``Iterable`` interface which has a single method:
 ``Iterator<T> iterator();``.
-This essentially means that the object has the capability to produce an ``Iterator``.
+This essentially means that the object has the capability to provide an ``Iterator`` over itself.
 
 Many data structures (like lists, sets, and queues) in the ``java.util.collections`` package implement the ``Iterable`` interface to provide a standardized method to iterate over their elements.
 
-One of the main benefits of the Iterable interface is that it allows objects to be used with the enhanced for-each loop in Java. 
-Any class that implements Iterable can be used in a for-each loop.
+One of the main benefits of the ``Iterable`` interface is that it allows objects to be used with the :ref:`enhanced for-each loop <simple_for_loops>` in Java. 
+Any class that implements ``Iterable`` can be used in a for-each loop.
 This is illustrated next that is equivalent to the previous code.
 
 ..  code-block:: java
@@ -1045,30 +1052,29 @@ In conclusion, while they are closely related and often used together, ``Iterabl
 Implementing your own iterators
 ---------------------------------
 
-When implementing an iterator properly, there are two possible strategies.
+To properly implement an ``Iterator``, there are two possible strategies:
+
+1. Fail-Fast: Such iterators throw ``ConcurrentModificationException`` if there is structural modification of the collection. 
+2. Fail-Safe: Such iterators don't throw any exceptions if a collection is structurally modified while iterating over it. This is because they operate on the clone of the collection, not on the original collection.
+
+Fail-Safe iterator may be slower since one have to pay the cost of the clone at the creation of the iterator, even if we only end-up iterating over few elements. Therefore we will rather focus on the Fail-Fast strategy, which corresponds to the most frequent choice in the implementation of Java collections.
 
 
-1. Fail-Fast: they throw ``ConcurrentModificationException`` if there is structural modification of the collection. 
-2. Fail-Safe: they don’t throw any exceptions if a collection is structurally modified while iterating over it. This is because, they operate on the clone of the collection, not on the original collection and that’s why they are called fail-safe iterators.
-
-Fail-Safe iterator may be slower since one have to pay the cost of the clone at the creation of the iterator, even if we only end-up iterating on a few elements. Therefore we will rather focus on the Fail-Fast strategy that is also the one chosen most frequently in the implementation of Java collections.
-
-
-To implement a fail-fast iterator for our ``LinkedStack``, we can keep track of a modification count for the stack. 
+To implement a Fail-Fast iterator for our ``LinkedStack``, we can keep track of a modification count for the stack. 
 This count will be incremented whenever there's a structural modification to the stack (like pushing or popping). 
-The iterator will then capture this count when it's created and compare its own captured count to the stack's modification count during iteration. 
+The iterator will then capture this count when it is created and compare its own captured count to the stack's modification count during iteration. 
 If they differ, the iterator will throw a ``ConcurrentModificationException``.
-The ``LinkedStack`` class has an inner ``LinkedStackIterator`` class that checks the modification count every time it's asked if there's a next item or when retrieving the next item.
-It is important to understand that this is a non static inner class. An inner class cannot be instantiated without first instantiating the outer class and it is tied to a specific instance of the outer class. This is why, the instance variables of the Iterator inner class can be initialized using the instance variables of the outer class.
+The ``LinkedStack`` class has an inner ``LinkedStackIterator`` class that checks the modification count every time it is asked if there's a next item or when retrieving the next item.
+It is important to understand that this is a non static inner class. An inner class cannot be instantiated without first instantiating the outer class and it is tied to a specific instance of the outer class. This is why, the instance variables of the ``Iterator`` inner class can be initialized using the instance variables of the outer class.
 
 
 The sample main method demonstrates that trying to modify the stack during iteration (by pushing a new item) results in a
 ``ConcurrentModificationException``.
 
-The creation of the iterator has a constant time complexity, :math:`O(1)`.
+The creation of the iterator has a constant time complexity, :math:`O(1)`. Indeed:
 
 
-1. The iterator's current node is set to the top node of the stack. This operation is done in constant time since it's just a reference assignment.
+1. The iterator's current node is set to the top node of the stack. This operation is done in constant time since it is just a reference assignment.
 2. Modification Count Assignment: The iterator captures the current modification count of the stack. This again is a simple assignment operation, done in constant time.
 
 No other operations are involved in the iterator's creation, and notably, there are no loops or recursive calls that would add to the time complexity. Therefore, the total time complexity of creating the LinkedStackIterator is :math:`O(1)`.
@@ -1170,7 +1176,7 @@ No other operations are involved in the iterator's creation, and notably, there 
 Delegation 
 ===========
 
-We consider the book class below:
+Let us consider the ``Book`` class below:
 
 ..  code-block:: java
     :caption: Book
@@ -1191,8 +1197,8 @@ We consider the book class below:
 	    // ... getters, setters, and other methods ...
 	}
 
-We aim to sort a collection of ``Book``s based on their titles in lexicographic order. 
-This can be done by implementing the Comparable interface, requiring to define the ``compareTo()`` method.
+We aim to sort a collection of ``Book`` objects based on their titles in lexicographic order. 
+This can be done by implementing the ``Comparable`` interface that requires to define the ``compareTo()`` method.
 The ``compareTo()`` method, when implemented within the ``Book`` class, leverages the inherent ``compareTo()`` method of the ``String`` class.
 
 ..  code-block:: java
@@ -1233,18 +1239,18 @@ The ``compareTo()`` method, when implemented within the ``Book`` class, leverage
 Imagine that the books are displayed on a website, allowing visitors to browse through an extensive catalog. 
 To enhance user experience, the website provides a feature to sort the books not just by their titles, but also by other attributes: the author's name or the publication year.
 
-Now, the challenge arises: our current ``Book`` class design uses the Comparable interface to determine the natural ordering of books based solely on their titles. While this design works perfectly for sorting by title, it becomes restrictive when we want to provide multiple sorting criteria. Since the ``Comparable`` interface mandates a single ``compareTo()`` method, it implies that there's only one "natural" way to sort the objects of a class. This design decision binds us to sorting by title and makes it less straightforward to introduce additional sorting methods for other attributes.
+Now, the challenge arises: Our current ``Book`` class design uses the ``Comparable`` interface to determine the natural ordering of books based solely on their titles. While this design works perfectly for sorting by title, it becomes restrictive when we want to provide multiple sorting criteria (for instance, sorting by author or publication year). Since the ``Comparable`` interface mandates a single ``compareTo()`` method, it implies that there's only one "natural" way to sort the objects of a class. This design decision binds us to sorting by title and makes it less straightforward to introduce additional sorting methods for other attributes.
 
 
-A general important principle of object-oriented design is the Open/Closed Principle (OCP): a software module (like a class or method) should be open for extension but closed for modification:
+A general important principle of object-oriented design is the :ref:`Open/Closed Principle (OCP) <abstract_classes>`: A software module (like a class or method) should be open for extension but closed for modification:
 
 1. Open for Extension: This means that the behavior of the module can be extended or changed as the requirements of the application evolve or new functionalities are introduced.
 2. Closed for Modification: Once the module is developed, it should not be modified to add new behavior or features. Any new functionality should be added by extending the module, not by making modifications to the existing code.
 
 
 
-The delegate design pattern can help us improve our design and is a nice example of the OCP.
-The delegation here occurs when the sorting algorithm (within ``Collections.sort()``) calls the ``compare()`` method of the provided ``Comparator`` object. 
+The so-called *Delegate Design Pattern* can help us improve our design and is a nice example of the OCP.
+In the example of ``Book``, delegation occurs when the sorting algorithm (within ``Collections.sort()``) calls the ``compare()`` method of the provided ``Comparator`` object. 
 The responsibility of defining how two ``Book`` objects compare is delegated to the ``Comparator`` object, allowing for flexibility in sorting criteria without modifying the ``Book`` class or the sorting algorithm itself.
 
 This delegation approach with ``Comparator`` has a clear advantage over inheritance because you can define countless sorting criteria without needing to modify or subclass the original ``Book`` class.
@@ -1315,7 +1321,7 @@ As next example shows, we can now sort by title, author or publication year by j
     You are developing a document management system. As part of the system, you have a ``Document`` class that contains content. 
     You want to provide a printing capability for the ``Document``.
 
-    Instead of embedding the printing logic directly within the ``Document`` class, you decide to use the delegate design principle. 
+    Instead of embedding the printing logic directly within the ``Document`` class, you decide to use the delegate design pattern. 
     This will allow the ``Document`` class to delegate the responsibility of printing to another class, thus adhering to the single responsibility principle.
 
     Complete the code below.
@@ -1378,13 +1384,13 @@ As next example shows, we can now sort by title, author or publication year by j
 Observer
 ==========
 
-In computer science, it is considered a good practice to have a loose coupling between objects (the opposite is generally called a spaghetti code).
+In computer science, it is considered as a good practice to have a loose coupling between objects (the opposite is generally referred to as a "spaghetti code").
 Loose coupling allows for more modular and maintainable code.
 
 
-The *Observer Pattern* is a pattern that we can use to have a loose coupling between objects.
+The *Observer Design Pattern* is a pattern that we can use to have a loose coupling between objects.
 
-First show how to use it in the context of GUI development (Graphical User Interface) , and then will show how to implement it.
+We will first show how to use observers in the context of GUI development (Graphical User Interface), then will show how to implement observers.
 
 
 
@@ -1393,7 +1399,7 @@ Observer pattern on GUI components
 
 
 In Java, the ``swing`` and ``awt`` packages facilitate the creation of Graphical User Interfaces (GUIs). 
-Swing in Java uses a system based on the observer pattern to handle events like button clicks. 
+Swing in Java uses a system based on the observer pattern to handle events, such as mouse clicks. 
 
 
 On the next example we have a solitary button that, when clicked, responds with the message "Thank you" to the user.
@@ -1437,17 +1443,17 @@ On the next example we have a solitary button that, when clicked, responds with 
 
 
 The ``ActionListener`` is an interface within Java that contains a single method: ``actionPerformed()``.
-In our application, we've implemented this interface within the ``ButtonActionListener`` class. 
+In our application, this interface is implemented by the ``ButtonActionListener`` concrete class. 
 When invoked, it displays a dialog with the message "Thank you!" to the user. 
-However, this setup remains inactive until we associate an instance of our ButtonActionListener to a button using the ``addActionListener()`` method. This ensures that every time the button is pressed, the ``actionPerformed()`` method of our listener gets triggered.
+However, this setup remains inactive until we associate an instance of our ``ButtonActionListener`` to a button using the ``addActionListener()`` method. This ensures that every time the button is pressed, the ``actionPerformed()`` method of our listener gets triggered.
 
-It's worth noting that the inner workings of how the button manages this relationship or stores the listener are abstracted away. 
-What's crucial for developers to understand is the contract: the listener's method will be invoked whenever the button is clicked. 
-This process is often referred to as attaching a callback to the button. 
-This concept echoes a well-known programming principle sometimes dubbed the Hollywood principle: "Don't call us, we'll call you."
+It is worth noting that the inner workings of how the button manages this relationship or stores the listener are abstracted away. 
+What is crucial for developers to understand is the contract: The listener's method will be invoked whenever the button is clicked. 
+This process is often referred to as "attaching a callback" to the button, or as "registering an event handler" to the button.
+This concept echoes a well-known programming principle sometimes dubbed the Hollywood principle: "Don't call us, we will call you."
 
 Although we have registered only one listener to the button, this is not a limitation.
-Buttons can accommodate multiple listeners. For example, another listener might track the total number of times the button has been clicked.
+Buttons can accommodate multiple listeners. For example, a second listener could be added to track the total number of times the button has been clicked.
 
 This setup exemplifies the observer design pattern from the perspective of end users, using the JButton as an illustration. 
 Let's now delve into how to implement this pattern for custom classes.
@@ -1511,16 +1517,16 @@ The complete source code is given next.
 
 
 In this context, our bank account is the subject being observed. 
-In our code, we'll refer to it as the ObservableAccount. 
+In our code, this will be modeled by the ``ObservableAccount`` class. 
 This account maintains a balance, which can be incremented through a deposit function.
 
-We require a mechanism to register observers (note: observers and listeners can be used interchangeably) who wish to be informed about deposits. The LinkedList data structure is an excellent choice for this purpose: it offers constant-time addition and seamlessly supports iteration since it implements the Iterable interface. 
-To add an AccountObserver, one would simply append it to this list. 
-We've chosen not to check for duplicate observers in the list, believing that ensuring uniqueness is the user's responsibility.
+We require a mechanism to register observers (note: the wordings "observer" and "listener" are synonyms that can be used interchangeably) who wish to be informed about deposits. The ``LinkedList`` data structure is an excellent choice for this purpose: It offers constant-time addition and seamlessly supports iterators since it implements the ``Iterable`` interface. 
+To add an ``AccountObserver``, one would simply append it to this list. 
+We have chosen not to check for duplicate observers in the list, believing that ensuring uniqueness is the user's responsibility.
 
 Whenever a deposit occurs, the account balance is updated, and subsequently, each registered observer is notified by invoking its ``accountHasChangedMethod()``, which shares the updated balance.
 
-It's important to note that the notification order is determined by the sequence of registration because we're using a list. However, from a user's standpoint, depending on a specific order is inadvisable. We could have just as easily used a set, which does not guarantee iteration order.
+It is important to note that in this specific implementation, the order of notification is determined by the sequence of registrations because we are using a list. However, from a user's standpoint, the caller should never make the hypothesis that this order is always used. Indeed, one could replace the ``LinkedList`` by another collection, for instance a set, which would not guarantee the same order while iterating over the observers.
 
 
 
@@ -1539,12 +1545,12 @@ It's important to note that the notification order is determined by the sequence
        :alt: GUI Exercise
 
 
-    It's imperative that your design allows for seamless swapping of the spell checker without necessitating changes to the ``MessageApp`` class. Additionally, the ``MessageSubject`` class should remain decoupled from the MessageApp. 
+    It is imperative that your design allows for seamless swapping of the spell checker without necessitating changes to the ``MessageApp`` class. Additionally, the ``MessageSubject`` class should remain decoupled from the ``MessageApp``. 
     It must not depend on it and should not even be aware that it exists.
 
     Use the observer pattern in your design. You'll have to add instance variables and additional arguments to some existing constructors.
-    When possible always prefer to depend on interfaces rather than on concrete classes when declaring your parameters.
-    With the progress of deep-learning we anticipate that we will soon have to replace the existing ``StupidSpellChecker`` by a more advanced one.
+    When possible, always prefer to depend on interfaces rather than on concrete classes when declaring your parameters.
+    With the advances of Deep Learning, we anticipate that we will soon have to replace the existing ``StupidSpellChecker`` by a more advanced one.
     Make this planned change as simple as possible, without having to change your classes.
 
 

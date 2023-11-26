@@ -684,6 +684,8 @@ This is also true for other types of loops and for if/else statements.
 
 **To avoid "accidents" like the one shown above, it is highly recommended to always use braces for the body of a loop or if/else statement, even if the body only contains one statement.**
 
+.. _simple_for_loops:
+
 Simple "for" loops
 ------------------
 
