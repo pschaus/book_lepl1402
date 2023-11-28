@@ -57,6 +57,8 @@ Click on the right triangle in the upper right corner to start the program. A ne
   :alt: Output of the program
 
 
+.. _java_main:
+
 How do Java programs look like?
 ===============================
 
@@ -1440,6 +1442,9 @@ Unfortunately, that's a bit annoying because it also means that we cannot access
         }
     }
 
+
+.. _inheritance:
+    
 Inheritance
 ===========
 

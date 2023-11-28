@@ -138,6 +138,8 @@ This static method remains valid even if you introduce later a new shape in your
     }
 
 
+.. _interfaces:
+
 Interfaces
 ==========
 
