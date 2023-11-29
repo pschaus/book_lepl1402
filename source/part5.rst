@@ -67,7 +67,9 @@ Also, note that all programmers are constantly confronted with threads. Indeed, 
 Threads in Java
 ===============
 
-Java provides extensive support of multithreading. When a Java program starts its execution, the Java Virtual Machine (JVM) starts an initial thread. This initial thread is called the **main thread** and is responsible for the execution of the ``main()`` method, which is the :ref:`entry point of most Java applications <java_main>`. Alongside the main thread, the JVM can also start background threads for its own housekeeping (most notably the garbage collector).
+Java provides extensive support of multithreading.
+
+When a Java program starts its execution, the Java Virtual Machine (JVM) starts an initial thread. This initial thread is called the **main thread** and is responsible for the execution of the ``main()`` method, which is the :ref:`entry point of most Java applications <java_main>`. Alongside the main thread, the JVM can also start background threads for its own housekeeping (most notably the garbage collector).
 
 Additional threads can then be created by software developers in two different ways:
 
@@ -107,7 +109,7 @@ As an illustration, let us consider the task of computing the minimum value of a
         }
     }
 
-As explained above, if one wishes to run this computation as a background thread, the ``computeMinValue()`` method must wrapped inside some implementation of the ``Runnable`` interface. But the ``run()`` method of the ``Runnable`` interface doesn't accept any parameter, so we cannot directly give the ``values`` array as an argument to ``run()``. The trick is to store a reference to the ``values`` array inside a class that implements ``Runnable``:
+As explained above, if one wishes to run this computation as a background thread, the ``computeMinValue()`` method must wrapped inside some implementation of the ``Runnable`` interface. But the ``run()`` method of the ``Runnable`` interface does not accept any parameter, so we cannot directly give the ``values`` array as an argument to ``run()``. The trick is to store a reference to the ``values`` array inside a class that implements ``Runnable``:
 
 ..  code-block:: java
 
@@ -124,7 +126,7 @@ As explained above, if one wishes to run this computation as a background thread
         }
     }
 
-Our ``MinComputation`` class specifies how to compute the minimum of an array. We can evidently run it in a purely sequential way as follows:
+Our ``MinComputation`` class specifies how to compute the minimum of an array. We can evidently run this computation in a purely sequential way as follows:
 
 ..  code-block:: java
 
@@ -178,7 +180,111 @@ The following sequence diagram (loosely inspired from `UML <https://en.wikipedia
 
 In this diagram, the white bands indicate the moments where the different classes are executing code. It can be seen that between the two calls ``t.start()`` and ``t.join()``, two threads are simultaneously active: the main thread and the computation thread. Note that once the main thread calls ``t.join()``, it falls asleep until the computation thread finishes its work.
 
-In other words, the ``t.join()`` call is a form of **synchronization** between threads. In general, it is always a good idea for the main Java thread to wait for all of its child threads by calling ``join()`` on each of them. The Java process will end if all its threads have ended, including the main thread.
+In other words, the ``t.join()`` call is a form of **synchronization** between threads. It is always a good idea for the main Java thread to wait for all of its child threads by calling ``join()`` on each of them. If a child thread launches its own set of sub-threads, it is highly advised for this child thread to call ``join()`` of each of its sub-threads before ending. The Java process will end if all its threads have ended, including the main thread.
+
+
+Speeding up the computation
+---------------------------
+
+The ``MinComputation`` example creates one background thread to do a computation on a array. As explained in the :ref:`introduction <part5>`, this software architecture can have an interest to keep the user interface reactive during the computation.
+
+However, this design does not exploit multiple CPU cores to speed up the computation: The time that is necessary to compute the minimum value is still the same as a purely sequential implementation. In order to optimize the computation itself, the basic idea is to split the array in two parts, then to process each of those parts by two distinct threads:
+   
+.. image:: _static/images/part5/array-threads.svg
+  :width: 80%
+  :align: center
+  :alt: Splitting an array to improve performance
+
+Once the two threads have finished their work, it is possible to **combine** their results to get the final result: The minimum of the whole array is the minimum of the two minimums computed on the two parts.
+
+To implement this solution, the class that implements the ``Runnable`` interface must not only receive the ``values`` array, but it must also receive the start index and the end index of the block of interest in the array. Furthermore, the class must not *print* the minimum, but must provide access to computed minimum value. This is implemented in the following code:
+
+..  code-block:: java
+
+    static class MinBlockComputation implements Runnable {
+        private float values[];
+        private int startIndex;
+        private int endIndex;
+        private float minValue;
+
+        public MinBlockComputation(float values[],
+                                   int startIndex,
+                                   int endIndex) {
+            if (startIndex >= endIndex) {
+                throw new IllegalArgumentException("Empty array");
+            }
+
+            this.values = values;
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+        }
+
+        @Override
+        public void run() {
+            minValue = values[startIndex];
+            for (int i = 1; i < endIndex; i++) {
+                minValue = Math.min(values[i], minValue);
+            }
+        }
+
+        float getMinValue() {
+            return minValue;
+        }
+    }
+
+Note that we now have to throw an exception if the array is empty, because the minimum is not defined in this case. In the previous implementation, we simply printed out the information. This is not an appropriate solution anymore, as we have to provide an access to the computed minimum value.
+    
+As before, the ``MinBlockComputation`` class can be invoked in a sequential way:
+
+..  code-block:: java
+
+    public static void main(String[] args) {
+        float values[] = new float[] { -2, -5, 4 };
+        MinBlockComputation r = new MinBlockComputation(values, 0, values.length);
+        r.run();
+        System.out.println("Minimum value: " + r.getMinValue());
+    }
+
+Thanks to this new design, it is however now possible to speed up the compution the minimum using two threads:
+
+..  code-block:: java
+
+    public static void main(String[] args) throws InterruptedException {
+        float values[] = new float[] { -2, -5, 4 };
+
+        MinBlockComputation c1 = new MinBlockComputation(values, 0, values.length / 2);
+        MinBlockComputation c2 = new MinBlockComputation(values, values.length / 2, values.length);
+        
+        Thread t1 = new Thread(c1);
+        Thread t2 = new Thread(c2);
+
+        t1.start();
+        t2.start();
+
+        t1.join();
+        t2.join();
+
+        System.out.println("Minimum is: " + Math.min(c1.getMinValue(), c2.getMinValue()));
+    }
+
+This implementation works as follows:
+
+1. We define the two computations ``c1`` and ``c2`` that must be carried on the two parts of the whole array. Importantly, the computations are only *defined*, the minimum is not computed at this point.
+
+2. We create and launch two threads ``t1`` and ``t2`` that will respectively be in charge of calling the ``c1.run()`` and ``c2.run()`` methods. In other words, it is only *after* the calls to ``t1.start()`` and ``t2.start()`` that the search for the minimum begins.
+
+3. Once the two threads have finished their work, the main thread collects the partial results from ``c1`` and ``c2``, then combines these partial results in order to print the final result.
+
+Also note that this version does not catch the possible ``InterruptedException``, but reports it to the caller.
+
+
+Optional results
+----------------
+
+Even though the implementation from the previous section works fine on arrays containing at least 2 elements, it fails if the ``values`` array is empty or only contains 1 element. Indeed, in this case, ``values.length / 2 == 0``, which throws the ``IllegalArgumentException`` in the constructor of ``c1``. Furthermore, if ``values.length == 0``, the constructor of ``c2`` would launch the same exception.
+
+One could solve this problem by conditionning the creation of ``c1``, ``c2``, ``t1``, and ``t2`` according to the value of ``values.length``. This would however necessitate to deal with multiple cases that are difficult to write and maintain. This problem would also be exacerbated if we want to divide the array into more than 2 parts to better exploit the available CPU cores.
+
 
 
 ..
