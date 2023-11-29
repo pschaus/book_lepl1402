@@ -1395,6 +1395,7 @@ The *Observer Design Pattern* is a pattern that we can use to have a loose coupl
 We will first show how to use observers in the context of GUI development (Graphical User Interface), then will show how to implement observers.
 
 
+.. _awt:
 
 Observer pattern on GUI components
 ------------------------------------
