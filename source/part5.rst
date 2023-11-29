@@ -543,6 +543,8 @@ This alternative implementation would have been slightly shorter and would have 
    Reimplement the ``MinMaxBlockComputation`` class by replacing ``MinMaxResult`` with ``Optional<MinMaxResult2>``, and run threads based on this new class.
 
 
+.. _thread_pools:
+   
 Thread pools
 ============
 
@@ -889,3 +891,181 @@ This callable can be used as a drop-in replacement in the :ref:`source code to c
 Shared memory
 =============
 
+Linear algebra is a mathematical domain that can greatly benefit from parallel programming. Let us consider the following basic implementation of a matrix in Java:
+
+..  code-block:: java
+
+    public class Matrix {
+        private float values[][];
+
+        private void checkPosition(int row,
+                                   int column) {
+            if (row >= getRows() ||
+                column >= getColumns()) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        public Matrix(int rows,
+                      int columns) {
+            if (rows <= 0 ||
+                columns <= 0) {
+                throw new IllegalArgumentException();
+            } else {
+                values = new float[rows][columns];
+            }
+        }
+
+        public int getRows() {
+            return values.length;
+        }
+
+        public int getColumns() {
+            // "values[0]" is guaranteed to exist, because "columns > 0" in the constructor
+            return values[0].length;
+        }
+
+        public float getValue(int row,
+                              int column) {
+            checkPosition(row, column);
+            return values[row][column];
+        }
+
+        public void setValue(int row,
+                             int column,
+                             float value) {
+            checkPosition(row, column);
+            values[row][column] = value;
+        }
+    }
+
+We are interested in the task of computing the product :math:`C \in \mathbb{R}^{m\times p}` of two matrices :math:`A \in \mathbb{R}^{m\times n}` and :math:`B \in \mathbb{R}^{n\times p}` of compatible dimensions.
+
+Remember the definition of matrix multiplication: :math:`c_{ij} = \sum_{k=1}^{n} a_{ik} b_{kj}`.
+
+This definition can directly be turned into a sequential algorithm:
+
+..  code-block:: java
+
+    public static void main(String args[]) {
+        Matrix a = new Matrix(..., ...);
+        Matrix b = new Matrix(..., ...);
+        // Fill a and b
+
+        Matrix c = new Matrix(a.getRows(), b.getColumns());
+
+        for (int row = 0; row < c.getRows(); row++) {
+            for (int column = 0; column < c.getColumns(); column++) {
+                float accumulator = 0;
+                for (int k = 0; k < a.getColumns(); k++) {
+                    accumulator += a.getValue(row, k) * b.getValue(k, column);
+                }
+                c.setValue(row, column, accumulator);
+            }
+        }
+    }
+
+How could we leverage multithreading to speed up this computation? The main observation is that the inner loop is executed for each entry of :math:`C`. Therefore, a possible solution consists in creating :math:`m\times p` tasks that will be handled by a thread pool, each of these tasks implementing the inner loop with the accumulator.
+
+
+Filling the output matrix after the computations
+------------------------------------------------
+
+Following our explanation of :ref:`thread pools <thread_pools>`, we can start by implementing a "result" data structure that will store the value of one cell of the matrix product:
+
+..  code-block:: java
+
+    class ProductAtCellResult {
+        private int row;
+        private int column;
+        private float value;
+
+        ProductAtCellResult(int row,
+                            int column,
+                            float value) {
+            this.row = row;
+            this.column = column;
+            this.value = value;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public int getColumn() {
+            return column;
+        }
+
+        public float getValue() {
+            return value;
+        }
+    }
+
+We can then implement the ``Callable<T>`` interface to use this data structure in a thread pool:
+
+..  code-block:: java
+
+    class ComputeProductAtCell implements Callable<ProductAtCellResult> {
+        private Matrix a;
+        private Matrix b;
+        private int row;
+        private int column;
+
+        public ComputeProductAtCell(Matrix a,
+                                    Matrix b,
+                                    int row,
+                                    int column) {
+            this.a = a;
+            this.b = b;
+            this.row = row;
+            this.column = column;
+        }
+
+        public ProductAtCellResult call() {
+            float accumulator = 0;
+            
+            for (int k = 0; k < a.getColumns(); k++) {
+                accumulator += a.getValue(row, k) * b.getValue(k, column);
+            }
+
+            return new ProductAtCellResult(row, column, accumulator);
+        }
+    }
+
+The thread pool would then be used as follows:
+
+..  code-block:: java
+
+    public static void main(String args[]) throws ExecutionException, InterruptedException {
+        Matrix a = new Matrix(..., ...);
+        Matrix b = new Matrix(..., ...);
+        // Fill a and b
+
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+
+        Stack<Future<ProductAtCellResult>> pendingComputations = new Stack<>();
+            
+        for (int row = 0; row < a.getRows(); row++) {
+            for (int column = 0; column < b.getColumns(); column++) {
+                pendingComputations.add(executor.submit(new ComputeProductAtCell(a, b, row, column)));
+            }
+        }
+
+        // Copy the values from the stack into the target matrix
+        Matrix c = new Matrix(a.getRows(), b.getColumns());
+        
+        while (!pendingComputations.empty()) {
+            Future<ProductAtCellResult> future = pendingComputations.pop();
+            c.setValue(future.get().getRow(), future.get().getColumn(), future.get().getValue());
+        }
+
+        executor.shutdown();
+    }
+
+Even though this solution works fine, it is demanding in terms of memory. Indeed, the row, column, and value of each cell in the product will first be stored in a separate data structure (the stack), before being copied to the target matrix ``c``. Couldn't the results be directly written into ``c``?
+
+The answer is "yes", because threads from the same process share the same memory. However, in general, care must be taken because of race conditions.
+
+
+Monitors and race conditions
+----------------------------
