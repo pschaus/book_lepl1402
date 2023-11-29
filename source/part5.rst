@@ -64,6 +64,8 @@ It is always worth remembering that the fact that different threads do not live 
 Also, note that all programmers are constantly confronted with threads. Indeed, even if you never explicitly create a thread by yourself, the vast majority of software frameworks (such as GUI frameworks and a software libraries to deal with network programming or scientific computations) will create threads on your behalf. For instance, in the context of Java-based GUI, both the :ref:`AWT (Abstract Window Toolkit) <awt>` and the Swing framework will transparently create threads to handle the interactions with the user. Consequently, parallel programming should never be considered as an "advanced feature" of a programming language, because almost any software development has to deal with threads. In other words, even if you do not create your own threads, it is important to understand how to design thread-safe applications that properly coordinate the accesses to the shared memory space.
 
 
+.. _runnable:
+
 Threads in Java
 ===============
 
@@ -538,12 +540,352 @@ This alternative implementation would have been slightly shorter and would have 
 .. admonition:: Exercise
    :class: note
 
-   Reimplement the ``MinMaxBlockComputation`` class by replacing ``MinMaxResult`` with ``Optional<MinMaxResult2>``, and run threads out of it.
+   Reimplement the ``MinMaxBlockComputation`` class by replacing ``MinMaxResult`` with ``Optional<MinMaxResult2>``, and run threads based on this new class.
 
 
+Thread pools
+============
 
-..
-   Take-home messages
-   ==================
+So far, we have only created two threads, but a modern CPU will typically have at least 4 cores. One could launch more threads to benefit from those additional cores. For instance, the following code would use 4 threads by dividing the array in 4 parts:
+   
+..  code-block:: java
 
-   It is really important to master multithreading. Even if
+    public static void main(String[] args) throws InterruptedException {
+        float values[] = new float[1024];
+        // Fill the array
+
+        int blockSize = values.length / 4;
+        MinMaxBlockComputation c1 = new MinMaxBlockComputation(values, 0, blockSize);
+        MinMaxBlockComputation c2 = new MinMaxBlockComputation(values, blockSize, 2 * blockSize);
+        MinMaxBlockComputation c3 = new MinMaxBlockComputation(values, 2 * blockSize, 3 * blockSize);
+        MinMaxBlockComputation c4 = new MinMaxBlockComputation(values, 3 * blockSize, values.length);
+        Thread t1 = new Thread(c1);
+        Thread t2 = new Thread(c2);
+        Thread t3 = new Thread(c3);
+        Thread t4 = new Thread(c4);
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t1.join();
+        t2.join();
+        t3.join();
+        t4.join();
+
+        MinMaxResult result = MinMaxResult.empty();
+        result.combine(c1.getResult());
+        result.combine(c2.getResult());
+        result.combine(c3.getResult());
+        result.combine(c4.getResult());
+        result.print();
+    }
+
+Note that the definition of ``c4`` uses the size of the array (i.e., ``values.length``) as its stop index, instead of ``4 * blockSize``, in order to be sure that the last items in the array get processed if the size of the array is not a multiple of 4.
+
+We could continue adding more threads in this way (for instance, 8, 16, 32...). But if we use, say, 100 threads, does that mean that our program will run 100 faster? The answer is no, for at least two reasons:
+
+* Obviously, the level of parallelism is limited by the number of CPU cores that are available. If using a CPU with 4 cores, you cannot expect a speed up of more than 4.
+
+* Even if threads are lightweight, there is still an overhead associated with the creation of a thread. On a modern computer, creating a simple thread (without any extra object) takes around 0.05-0.1 ms. That is approximately the time to calculate the sum from 1 to 100,000.
+
+We can conclude that threads only improve the speed of a program if the tasks for the threads are longer than the overhead to create and manage them.
+
+This motivates the introduction of **thread pools**. A thread pool is a group of threads that are ready to work:
+
+.. image:: _static/images/part5/thread-pool.svg
+  :width: 80%
+  :align: center
+  :alt: Thread pool
+
+In this drawing, we have a thread pool that is made of 2 threads. Those threads are continuously monitoring a queue of pending tasks. As soon as some task is enqueued and as soon as some thread becomes available, the available thread takes care of this task. Once the task is over, the thread informs the caller that the result is available, then it goes back to listening to the queue, waiting for a new task to be processed.
+
+Thread pools are an efficient way to avoid the overhead associated with the initialization and finalization of threads. It also allows to write user code that is uncoupled from the number of CPU cores.
+
+
+Thread pools in Java
+--------------------
+
+In Java, three different interfaces are generally combined to create a thread pool:
+
+* ``java.util.concurrent.ExecutorService`` implements the thread pool itself, including the queue of requests and its background threads: `<https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html>`_.
+
+* ``java.util.concurrent.Callable<T>`` is a generic interface that implements the task to be run. The task must return an object of type ``T``: `<https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html>`_.
+
+* ``java.util.concurrent.Future<T>`` is a generic interface that represents the result of a task that is in the process of being computed: `<https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html>`_.
+
+The :ref:`Java Development Kit (JDK) <jdk>` contains concrete implementations of ``ExecutorService`` and ``Future``, so we (fortunately!) do not have to implement them by ourselves. A concrete thread pool can be created as follows:
+
+..  code-block:: java
+
+    ExecutorService executor = Executors.newFixedThreadPool(2 /* numberOfThreads */);
+
+                 
+As developers, our sole responsability consists in choosing the generic type ``T`` and in providing an implementation of interface ``Callable<T>`` that describes the task to be achieved. The interface ``Callable<T>`` looks as follows:
+
+..  code-block:: java
+
+    public interface Callable<T> {
+        public T call();
+    }
+
+This looks extremely similar to the ``Runnable`` interface that :ref:`we have been using so far <runnable>`! The difference between the ``Runnable`` and a ``Callable<T>`` interfaces is that the former has no return value, whereas the latter returns a result of type ``T``.
+
+Once a concrete implementation of ``Callable<T>`` is available, tasks can be submitted to the thread pool. The pattern is as follows:
+
+..  code-block:: java
+
+    Future<T> future1 = executor.submit(new MyCallable(...));
+
+Threads in threadpool are like chefs in the kitchen of a restaurant waiting for orders. If you submit one task to the pool using the call above, one of the chefs will take the task and it will immediately start working on it. You can submit more tasks, but they might have to wait until one chef has finished dealing with its current task:
+
+..  code-block:: java
+
+    Future<T> future2 = executor.submit(new MyCallable(...));
+    Future<T> future3 = executor.submit(new MyCallable(...));
+    Future<T> future4 = executor.submit(new MyCallable(...));
+    // ...
+
+You can obtain the result of the futures with their ``get()`` method:
+
+..  code-block:: java
+
+    T result1 = future1.get();
+    T result2 = future2.get();
+    T result3 = future3.get();
+    T result4 = future4.get();
+    // ...
+
+If the task is not yet finished, the method ``get()`` will wait. This contrast with the ``executor.submit()`` method that always returns immediately.
+
+At the end of the program or when you don't need the thread pool anymore, you have to shut it down explicitly to stop all its threads, otherwise the software might not properly exit:
+
+..  code-block:: java
+
+    executor.shutdown();
+
+
+Thread pool for computing the minimum and maximum
+-------------------------------------------------
+
+It is straightforward to turn the ``MinMaxBlockComputation`` runnable that :ref:`was defined above<MinMaxResult>` into an callable:
+
+..  code-block:: java
+
+    class MinMaxBlockCallable implements Callable<MinMaxResult> {
+        private float[] values;
+        private int startIndex;
+        private int endIndex;
+        // Removed member: MinMaxResult result;
+
+        public MinMaxBlockCallable(float[] values,
+                                   int startIndex,
+                                   int endIndex) {
+            this.values = values;
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+        }
+
+        @Override
+        public MinMaxResult call() {
+            if (startIndex >= endIndex) {
+                return MinMaxResult.empty();
+            } else {
+                float minValue = values[startIndex];
+                float maxValue = values[startIndex];
+
+                for (int i = startIndex + 1; i < endIndex; i++) {
+                    if (values[i] < minValue) {
+                        minValue = values[i];
+                    }
+                    if (values[i] > maxValue) {
+                        maxValue = values[i];
+                    }
+                }
+
+                return new MinMaxResult(minValue, maxValue);
+            }        
+        }
+    }
+ 
+The only differences are:
+
+* The ``Runnable`` interface is replaced by the ``Callable<MinMaxResult>`` interface.
+
+* The method ``run()`` is replaced by method ``call()``.
+
+* The member variable ``result`` and the method ``getResult()`` are removed. These elements are replaced by the return value of ``call()``.
+
+Thanks to the newly defined ``MinMaxBlockCallable`` class, it is now possible to use a thread pool:
+
+..  code-block:: java
+
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        // Create a thread pool with 4 threads (the thread pool could be shared with other methods)
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
+        float values[] = new float[1024];
+        // Fill the array
+
+        // Create two tasks that work on two distinct parts of the whole array
+        Future<MinMaxResult> partialResult1 = executor.submit(new MinMaxBlockCallable(values, 0, values.length / 2));
+        Future<MinMaxResult> partialResult2 = executor.submit(new MinMaxBlockCallable(values, values.length / 2, values.length));
+
+        // Combine the partial results on the two parts to get the final result
+        MinMaxResult finalResult = MinMaxResult.empty();
+        finalResult.combine(partialResult1.get());  // This call blocks the main thread until the first part is processed
+        finalResult.combine(partialResult2.get());  // This call blocks the main thread until the second part is processed
+        finalResult.print();
+
+        // Do not forget to shut down the thread pool
+        executor.shutdown();
+    }
+    
+
+This solution looks extremely similar to the previous solution using ``Runnable`` and ``Thread``. However, in this code, we do not have to manage the threads by ourselves, and the thread pool could be shared with other parts of the software.
+
+The ``throws`` construction is needed because the ``get()`` method of futures can possibly throw an ``InterruptedException`` (if the future was interrupted while waiting) or an ``ExecutionException`` (if there was a problem during the calculation).
+
+
+.. _pool_multiple_blocks:
+
+Dividing the array input multiple blocks
+----------------------------------------
+
+So far, we have divided the array ``values`` into 2 or 4 blocks, because we were guided by the number of CPU cores. In practice, it is a better idea to divide the array into blocks of a fixed size to become agnosic of the underlying number of cores. A thread pool can be used in this situation to manage the computations, while preventing the number of threads to exceed the CPU capacity.
+
+To this end, we can create a separate data structure (e.g., a stack or a list) that keeps track of the pending computations by storing the ``Future<MinMaxResult>`` objects:
+
+..  code-block:: java
+
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
+        float values[] = new float[1024];
+        // Fill the array
+
+        int blockSize = 128;
+
+        Stack<Future<MinMaxResult>> pendingComputations = new Stack<>();
+
+        for (int block = 0; block < numberOfBlocks; block++) {
+            int startIndex = block * blockSize;
+            int endIndex;
+            if (block == numberOfBlocks - 1) {
+                endIndex = values.length;
+            } else {
+                endIndex = (block + 1) * blockSize;
+            }
+            
+            pendingComputations.add(executor.submit(new MinMaxBlockCallable(values, startIndex, endIndex)));
+        }
+
+        MinMaxResult result = MinMaxResult.empty();
+
+        while (!pendingComputations.empty()) {
+            Future<MinMaxResult> partialResult = pendingComputations.pop();
+            result.combine(partialResult.get());
+        }
+
+        result.print();
+        
+        executor.shutdown();
+    }
+
+Note that the end index of the last block is treated specifically, because ``values.length`` might not be an integer multiple of ``blockSize``.
+
+
+Computing the mean of an array
+------------------------------
+
+Up to now, this chapter has been entirely focused on the task of finding the minimum and maximum values in an array. We have explained how the introduction of the separate class ``MinMaxResult`` that is dedicated to the storage of the result leads to a natural use of thread pools by implementing the ``Callable<MinMaxResult>`` interface. An important trick was to define the ``combine()`` method that is responsible for combining the partial results obtained from different parts of the array.
+
+How could we compute the mean of the array using a similar approach?
+
+The first thing is to define a class that stores the partial result over a block of the array. One could decide to store only the mean value itself. Unfortunately, this choice would not give enough information to implement the ``combine()`` method. Indeed, in order to combine two means, it is necessary to know the number of elements upon which the individual means were computed.
+
+The solution consists in storing the sum and the number of elements in a dedicated class:
+
+..  code-block:: java
+
+    class MeanResult {
+        private double sum;  // We use doubles as we might be summing a large number of floats
+        private int count;
+
+        public MeanResult() {
+            sum = 0;
+            count = 0;
+        }
+
+        public void addValue(float value) {
+            sum += value;
+            count++;
+        }
+
+        public boolean isPresent() {
+            return count > 0;
+        }
+
+        public float getMean() {
+            if (isPresent()) {
+                return (float) (sum / (double) count);
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
+        public void combine(MeanResult with) {
+            sum += with.sum;
+            count += with.count;
+        }
+
+        public void print() {
+            if (isPresent()) {
+                System.out.println(getMean());
+            } else {
+                System.out.println("Empty array");
+            }
+        }    
+    }
+
+Thanks to the ``MeanResult`` class, we can now adapt the source code of ``MinMaxBlockCallable`` in order to define a callable that computes the mean of a block of an array:
+
+..  code-block:: java
+
+    class MeanUsingCallable implements Callable<MeanResult> {
+        private float[] values;
+        private int startIndex;
+        private int endIndex;
+
+        public MeanUsingCallable(float[] values,
+                                 int startIndex,
+                                 int endIndex) {
+            this.values = values;
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+        }
+
+        @Override
+        public MeanResult call() {
+            MeanResult result = new MeanResult();
+            for (int i = startIndex; i < endIndex; i++) {
+                result.addValue(values[i]);
+            }
+            return result;
+        }
+    }
+  
+This callable can be used as a drop-in replacement in the :ref:`source code to compute the minimum/maximum <pool_multiple_blocks>`.
+
+.. admonition:: Exercise
+   :class: note
+
+   The classes ``MinMaxBlockCallable`` and ``MeanUsingCallable`` share many similarities: They both represent a computation that can be done on a block of an array, they both use a dedicated class to store their results, and they both support the operation ``combine()`` to merge partial results. However, the :ref:`source code to compute the minimum/maximum <pool_multiple_blocks>` must be adapted for each of them.
+
+   Implement a hierarchy of classes/interfaces that can be used to implement a single source code that is compatible with both ``MinMaxBlockCallable`` and ``MeanUsingCallable``. Futhermore, validate your approach by demonstrating its compatibility with the computation of the standard deviation.
+
+   Hint: Standard deviation can be derived from the variance, which can be computed from the number of elements in the block, from the sum of elements in the block, and from the sum of the squared elements in the block: `<https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance>`_ (cf. naïve algorithm).
+
+    
+Shared memory
+=============
+

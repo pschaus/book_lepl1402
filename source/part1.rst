@@ -13,6 +13,8 @@ The goal of the following sections is to make you quickly familiar with the impo
 Your first Java program with IntelliJ
 =====================================
 
+.. _jdk:
+
 Installing IntelliJ
 -------------------
 
