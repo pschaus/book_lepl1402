@@ -95,25 +95,25 @@ As an illustration, let us consider the task of computing the minimum value of a
 
 ..  code-block:: java
 
-    static void computeMinValue(float values[]) {
-        if (values.length == 0) {
-            System.out.println("This is an empty array");
-        } else {
-            float minValue = values[0];
-            for (int i = 1; i < values.length; i++) {
-                if (values[i] < minValue) {
-                    minValue = values[i];
+        static public void computeMinValue(float values[]) {
+            if (values.length == 0) {
+                System.out.println("This is an empty array");
+            } else {
+                float minValue = values[0];
+                for (int i = 1; i < values.length; i++) {
+                    if (values[i] < minValue) {
+                        minValue = values[i];
+                    }
                 }
+                System.out.println("Minimum value: " + minValue);
             }
-            System.out.println("Minimum value: " + minValue);
         }
-    }
 
 As explained above, if one wishes to run this computation as a background thread, the ``computeMinValue()`` method must wrapped inside some implementation of the ``Runnable`` interface. But the ``run()`` method of the ``Runnable`` interface does not accept any parameter, so we cannot directly give the ``values`` array as an argument to ``run()``. The trick is to store a reference to the ``values`` array inside a class that implements ``Runnable``:
 
 ..  code-block:: java
 
-   static class MinComputation implements Runnable {
+    class MinComputation implements Runnable {
         private float values[];
 
         public MinComputation(float values[]) {
@@ -123,6 +123,20 @@ As explained above, if one wishes to run this computation as a background thread
         @Override
         public void run() {
             computeMinValue(values);
+        }
+
+        static public void computeMinValue(float values[]) {
+            if (values.length == 0) {
+                System.out.println("This is an empty array");
+            } else {
+                float minValue = values[0];
+                for (int i = 1; i < values.length; i++) {
+                    if (values[i] < minValue) {
+                        minValue = values[i];
+                    }
+                }
+                System.out.println("Minimum value: " + minValue);
+            }
         }
     }
 
@@ -183,6 +197,8 @@ In this diagram, the white bands indicate the moments where the different classe
 In other words, the ``t.join()`` call is a form of **synchronization** between threads. It is always a good idea for the main Java thread to wait for all of its child threads by calling ``join()`` on each of them. If a child thread launches its own set of sub-threads, it is highly advised for this child thread to call ``join()`` of each of its sub-threads before ending. The Java process will end if all its threads have ended, including the main thread.
 
 
+.. _MinBlockComputation:
+
 Speeding up the computation
 ---------------------------
 
@@ -201,7 +217,7 @@ To implement this solution, the class that implements the ``Runnable`` interface
 
 ..  code-block:: java
 
-    static class MinBlockComputation implements Runnable {
+    class MinBlockComputation implements Runnable {
         private float values[];
         private int startIndex;
         private int endIndex;
@@ -245,7 +261,7 @@ As before, the ``MinBlockComputation`` class can be invoked in a sequential way:
         System.out.println("Minimum value: " + r.getMinValue());
     }
 
-Thanks to this new design, it is however now possible to speed up the compution the minimum using two threads:
+Thanks to this new design, it is also now possible to speed up the compution the minimum using two threads:
 
 ..  code-block:: java
 
@@ -267,7 +283,7 @@ Thanks to this new design, it is however now possible to speed up the compution 
         System.out.println("Minimum is: " + Math.min(c1.getMinValue(), c2.getMinValue()));
     }
 
-This implementation works as follows:
+The implementation works as follows:
 
 1. We define the two computations ``c1`` and ``c2`` that must be carried on the two parts of the whole array. Importantly, the computations are only *defined*, the minimum is not computed at this point.
 
@@ -278,12 +294,251 @@ This implementation works as follows:
 Also note that this version does not catch the possible ``InterruptedException``, but reports it to the caller.
 
 
-Optional results
-----------------
+.. _MinMaxResult:
+
+Dealing with empty parts
+------------------------
 
 Even though the implementation from the previous section works fine on arrays containing at least 2 elements, it fails if the ``values`` array is empty or only contains 1 element. Indeed, in this case, ``values.length / 2 == 0``, which throws the ``IllegalArgumentException`` in the constructor of ``c1``. Furthermore, if ``values.length == 0``, the constructor of ``c2`` would launch the same exception.
 
 One could solve this problem by conditionning the creation of ``c1``, ``c2``, ``t1``, and ``t2`` according to the value of ``values.length``. This would however necessitate to deal with multiple cases that are difficult to write and maintain. This problem would also be exacerbated if we want to divide the array into more than 2 parts to better exploit the available CPU cores.
+
+A simpler, more scalable solution consists in introducing a Boolean flag that indicates whether a result is present for each computation. Instead of throwing the ``IllegalArgumentException`` in the constructor, this flag would be set to ``false``.
+
+To illustrate this idea, let us consider the slightly more complex problem of computing both the minimum and the maximum values of an array. The first step is to define a class that will hold the result of a computation:
+
+..  code-block:: java
+
+    class MinMaxResult {
+        private boolean isPresent;
+        private float minValue;
+        private float maxValue;
+
+        private MinMaxResult(boolean isPresent,
+                             float minValue,
+                             float maxValue) {
+            this.isPresent = isPresent;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public MinMaxResult(float minValue,
+                            float maxValue) {
+            this(true /* present */, minValue, maxValue);
+        }
+
+        static public MinMaxResult empty() {
+            return new MinMaxResult(false /* not present */, 0 /* dummy min */, 0 /* dummy max */);
+        }
+
+        public boolean isPresent() {
+            return isPresent;
+        }
+
+        public float getMinValue() {
+            if (isPresent()) {
+                return minValue;
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
+        public float getMaxValue() {
+            if (isPresent()) {
+                return maxValue;
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
+        public void print() {
+            if (isPresent()) {
+                System.out.println(getMinValue() + " " + getMaxValue());
+            } else {
+                System.out.println("Empty array");
+            }
+        }
+
+        public void combine(MinMaxResult with) {
+            if (with.isPresent) {
+                if (isPresent) {
+                    // Combine the results from two non-empty blocks
+                    minValue = Math.min(minValue, with.minValue);
+                    maxValue = Math.max(maxValue, with.maxValue);
+                } else {
+                    // Replace the currently absent result by the provided result
+                    isPresent = true;
+                    minValue = with.minValue;
+                    maxValue = with.maxValue;
+                }
+            } else {
+                // Do nothing if the other result is absent
+            }
+        }
+    }
+
+Introducing the ``MinMaxResult`` class will allow us to cleanly separate the two distinct concepts of the "algorithm to do a computation" and of the "results of the computation." This separation is another example of a :ref:`design pattern <part4>`.
+
+There are two possible ways to create an object of the ``MinMaxResult`` class:
+
+* either by using the ``MinMaxResult(minValue, maxValue)`` constructor, which sets the ``isPresent`` flag to ``true`` in order to indicate the presence of a result,
+
+* or by using the ``MinMaxResult.empty()`` static method, that creates a ``MinMaxResult`` object with the ``isPresent`` flag set to ``false`` in order to indicte the absence of a result (which results from an empty block).
+
+The object throws an exception if trying to access the minimum or the maximum values if the result is absent.
+
+Finally, note the presence of the ``combine()`` method. This method updates the currently available minimum/maximum values with the results obtained from a different block.
+
+It is now possible to create an implementation of the ``Runnable`` interface that leverages ``MinMaxResult``:
+
+..  code-block:: java
+
+    class MinMaxBlockComputation implements Runnable {
+        private float[] values;
+        private int startIndex;
+        private int endIndex;
+        private MinMaxResult result;
+
+        public MinMaxBlockComputation(float[] values,
+                                      int startIndex,
+                                      int endIndex) {
+            this.values = values;
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+        }
+
+        @Override
+        public void run() {
+            if (startIndex >= endIndex) {
+                result = MinMaxResult.empty();
+            } else {
+                float minValue = values[startIndex];
+                float maxValue = values[startIndex];
+
+                for (int i = startIndex + 1; i < endIndex; i++) {
+                    if (values[i] < minValue) {
+                        minValue = values[i];
+                    }
+                    if (values[i] > maxValue) {
+                        maxValue = values[i];
+                    }
+                }
+
+                result = new MinMaxResult(minValue, maxValue);
+            }        
+        }
+
+        MinMaxResult getResult() {
+            return result;
+        }
+    }
+
+                 
+The ``MinMaxBlockComputation`` class is essentially the same as the ``MinBlockComputation`` class :ref:`defined earlier<MinBlockComputation>`. It only differs in the way the result is stored: ``MinBlockComputation`` uses a ``float`` to hold the result of the computation on a block, whereas ``MinMaxBlockComputation`` uses an object of the ``MinMaxResult`` class. This allows ``MinMaxBlockComputation`` not only to report both the minimum and maximum values of part of an array, but also to indicate whether the part was empty or non-empty.
+                 
+It is now easy to run the computation using two threads in a way that is also correct when the ``values`` array contains 0 or 1 element:
+
+..  code-block:: java
+
+    public static void main(String[] args) throws InterruptedException {
+        float values[] = new float[1024];
+        // Fill the array
+
+        MinMaxBlockComputation c1 = new MinMaxBlockComputation(values, 0, values.length / 2);
+        MinMaxBlockComputation c2 = new MinMaxBlockComputation(values, values.length / 2, values.length);
+        Thread t1 = new Thread(c1);
+        Thread t2 = new Thread(c2);
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+
+        MinMaxResult result = c1.getResult();
+        result.combine(c2.getResult());
+        result.print();
+    }
+
+
+Optional results
+----------------
+
+The ``MinMaxResult`` class :ref:`was previously introduced <MinMaxResult>` as a way to deal with the absence of a result in the case of an empty part of an array. More generally, dealing with the absence of a value is a common pattern in software architectures. For this reason, Java introduces the ``Optional<T>`` generic class: `<https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html>`_ 
+
+The ``Optional<T>`` class does exactly the same stuff as the ``isPresent`` Boolean flag that we manually introduced in the ``MinMaxResult`` class. The four main operations on ``Optional<T>`` are:
+
+* ``of(T t)`` is a static method that constructs an ``Optional<T>`` object embedding the given object ``t`` of class ``T``.
+* ``empty()`` is a static method that constructs an ``Optional<T>`` object indicating the absence of an object of class ``T``.
+* ``isPresent()`` is a method that indicates whether the ``Optional<T>`` object contains an object.
+* ``get()`` returns the embedded object of class ``T``. If the ``Optional<T>`` does not contains an object, an exception is thrown.
+
+Consequently, we could have defined a simplified version of ``MinMaxResult`` without the Boolean as follows:
+
+..  code-block:: java
+
+    import java.util.Optional;
+
+    class MinMaxResult2 {
+        private float minValue;
+        private float maxValue;
+
+        public MinMaxResult2(float minValue,
+                             float maxValue) {
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public float getMinValue() {
+            return minValue;
+        }
+
+        public float getMaxValue() {
+            return maxValue;
+        }
+    }
+
+By combining ``MinMaxResult2`` with ``Optional<T>``, the sequential algorithm to be integrated inside the ``run()`` method of the ``Runnable`` class could have been rewritten as:
+
+..  code-block:: java
+
+    public static Optional<MinMaxResult2> computeMinMaxSequential(float values[],
+                                                                  int startIndex,
+                                                                  int stopIndex) {
+        if (startIndex >= stopIndex) {
+            return Optional.empty();
+        } else {
+            float minValue = values[startIndex];
+            float maxValue = values[startIndex];
+
+            for (int i = startIndex; i < stopIndex; i++) {
+                if (values[i] < minValue) {
+                    minValue = values[i];
+                }
+                if (values[i] > maxValue) {
+                    maxValue = values[i];
+                }
+            }
+
+            return Optional.of(new MinMaxResult2(minValue, maxValue));
+        }
+    }
+
+    public static void main(String[] args) {
+        float values[] = new float[] { -2, -5, 4 };
+
+        Optional<MinMaxResult2> result = computeMinMaxSequential(values, 0, values.length);
+        if (result.isPresent()) {
+            System.out.println(result.get().getMinValue() + " " + result.get().getMaxValue());
+        } else {
+            System.out.println("Empty array");
+        }
+    }
+
+This alternative implementation would have been slightly shorter and would have avoided any possible bug in our manual implementation of the ``isPresent`` flag.
+    
+.. admonition:: Exercise
+   :class: note
+
+   Reimplement the ``MinMaxBlockComputation`` class by replacing ``MinMaxResult`` with ``Optional<MinMaxResult2>``, and run threads out of it.
 
 
 
