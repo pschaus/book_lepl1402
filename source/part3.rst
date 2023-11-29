@@ -1078,7 +1078,7 @@ We do it on the inductive parameter ``i``.
         :name: bubble_loop
 
 
-    	 public class Main {
+    	public class Main {
     	    public static void main(String[] args) {
     	        int[] numbers = {5, 1, 12, -5, 16};
     	        bubbleSort(numbers);
@@ -1104,7 +1104,7 @@ We do it on the inductive parameter ``i``.
     	    }
     	}
 
- .. // Loop invariant: 
+.. // Loop invariant:
    //  - the largest i elements are in their correct, final positions at the end of the array.
    //  - the array contains the same set of values as the input array       
 
