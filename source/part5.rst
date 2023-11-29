@@ -263,7 +263,7 @@ As before, the ``MinBlockComputation`` class can be invoked in a sequential way:
         System.out.println("Minimum value: " + r.getMinValue());
     }
 
-Thanks to this new design, it is also now possible to speed up the compution the minimum using two threads:
+Thanks to this new design, it is also now possible to speed up the computation the minimum using two threads:
 
 ..  code-block:: java
 
@@ -303,7 +303,7 @@ Dealing with empty parts
 
 Even though the implementation from the previous section works fine on arrays containing at least 2 elements, it fails if the ``values`` array is empty or only contains 1 element. Indeed, in this case, ``values.length / 2 == 0``, which throws the ``IllegalArgumentException`` in the constructor of ``c1``. Furthermore, if ``values.length == 0``, the constructor of ``c2`` would launch the same exception.
 
-One could solve this problem by conditionning the creation of ``c1``, ``c2``, ``t1``, and ``t2`` according to the value of ``values.length``. This would however necessitate to deal with multiple cases that are difficult to write and maintain. This problem would also be exacerbated if we want to divide the array into more than 2 parts to better exploit the available CPU cores.
+One could solve this problem by conditioning the creation of ``c1``, ``c2``, ``t1``, and ``t2`` according to the value of ``values.length``. This would however necessitate to deal with multiple cases that are difficult to write and maintain. This problem would also be exacerbated if we want to divide the array into more than 2 parts to better exploit the available CPU cores.
 
 A simpler, more scalable solution consists in introducing a Boolean flag that indicates whether a result is present for each computation. Instead of throwing the ``IllegalArgumentException`` in the constructor, this flag would be set to ``false``.
 
@@ -385,7 +385,7 @@ There are two possible ways to create an object of the ``MinMaxResult`` class:
 
 * either by using the ``MinMaxResult(minValue, maxValue)`` constructor, which sets the ``isPresent`` flag to ``true`` in order to indicate the presence of a result,
 
-* or by using the ``MinMaxResult.empty()`` static method, that creates a ``MinMaxResult`` object with the ``isPresent`` flag set to ``false`` in order to indicte the absence of a result (which results from an empty block).
+* or by using the ``MinMaxResult.empty()`` static method, that creates a ``MinMaxResult`` object with the ``isPresent`` flag set to ``false`` in order to indicate the absence of a result (which results from an empty block).
 
 The object throws an exception if trying to access the minimum or the maximum values if the result is absent.
 
@@ -620,7 +620,7 @@ The :ref:`Java Development Kit (JDK) <jdk>` contains concrete implementations of
     ExecutorService executor = Executors.newFixedThreadPool(2 /* numberOfThreads */);
 
                  
-As developers, our sole responsability consists in choosing the generic type ``T`` and in providing an implementation of interface ``Callable<T>`` that describes the task to be achieved. The interface ``Callable<T>`` looks as follows:
+As developers, our sole responsibility consists in choosing the generic type ``T`` and in providing an implementation of interface ``Callable<T>`` that describes the task to be achieved. The interface ``Callable<T>`` looks as follows:
 
 ..  code-block:: java
 
@@ -636,7 +636,7 @@ Once a concrete implementation of ``Callable<T>`` is available, tasks can be sub
 
     Future<T> future1 = executor.submit(new MyCallable(...));
 
-Threads in threadpool are like chefs in the kitchen of a restaurant waiting for orders. If you submit one task to the pool using the call above, one of the chefs will take the task and it will immediately start working on it. You can submit more tasks, but they might have to wait until one chef has finished dealing with its current task:
+Threads in thread pool are like chefs in the kitchen of a restaurant waiting for orders. If you submit one task to the pool using the call above, one of the chefs will take the task and it will immediately start working on it. You can submit more tasks, but they might have to wait until one chef has finished dealing with its current task:
 
 ..  code-block:: java
 
@@ -751,7 +751,7 @@ The ``throws`` construction is needed because the ``get()`` method of futures ca
 Dividing the array input multiple blocks
 ----------------------------------------
 
-So far, we have divided the array ``values`` into 2 or 4 blocks, because we were guided by the number of CPU cores. In practice, it is a better idea to divide the array into blocks of a fixed size to become agnosic of the underlying number of cores. A thread pool can be used in this situation to manage the computations, while preventing the number of threads to exceed the CPU capacity.
+So far, we have divided the array ``values`` into 2 or 4 blocks, because we were guided by the number of CPU cores. In practice, it is a better idea to divide the array into blocks of a fixed size to become agnostic of the underlying number of cores. A thread pool can be used in this situation to manage the computations, while preventing the number of threads to exceed the CPU capacity.
 
 To this end, we can create a separate data structure (e.g., a stack or a list) that keeps track of the pending computations by storing the ``Future<MinMaxResult>`` objects:
 
@@ -881,9 +881,9 @@ This callable can be used as a drop-in replacement in the :ref:`source code to c
 
    The classes ``MinMaxBlockCallable`` and ``MeanUsingCallable`` share many similarities: They both represent a computation that can be done on a block of an array, they both use a dedicated class to store their results, and they both support the operation ``combine()`` to merge partial results. However, the :ref:`source code to compute the minimum/maximum <pool_multiple_blocks>` must be adapted for each of them.
 
-   Implement a hierarchy of classes/interfaces that can be used to implement a single source code that is compatible with both ``MinMaxBlockCallable`` and ``MeanUsingCallable``. Futhermore, validate your approach by demonstrating its compatibility with the computation of the standard deviation.
+   Implement a hierarchy of classes/interfaces that can be used to implement a single source code that is compatible with both ``MinMaxBlockCallable`` and ``MeanUsingCallable``. Furthermore, validate your approach by demonstrating its compatibility with the computation of the standard deviation.
 
-   Hint: Standard deviation can be derived from the variance, which can be computed from the number of elements in the block, from the sum of elements in the block, and from the sum of the squared elements in the block: `<https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance>`_ (cf. naïve algorithm).
+   Hint: Standard deviation can be derived from the variance, which can be computed from the number of elements in the block, from the sum of elements in the block, and from the sum of the squared elements in the block: `<https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance>`_ (cf. naive algorithm).
 
     
 Shared memory
