@@ -1207,6 +1207,10 @@ The ``compareTo()`` method, when implemented within the ``Book`` class, leverage
     :caption: Book Comparable
     :name: book_comparable
 
+    import java.util.ArrayList;
+    import java.util.Collections;
+    import java.util.List;
+
 	public class Book implements Comparable<Book> {
 	    final String title;
 	    final String author;
