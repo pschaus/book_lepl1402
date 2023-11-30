@@ -240,7 +240,7 @@ To implement this solution, the class that implements the ``Runnable`` interface
         @Override
         public void run() {
             minValue = values[startIndex];
-            for (int i = 1; i < endIndex; i++) {
+            for (int i = startIndex; i < endIndex; i++) {
                 minValue = Math.min(values[i], minValue);
             }
         }
