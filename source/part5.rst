@@ -5,17 +5,17 @@
 Part 5: Parallel Programming
 *****************************************************************
 
-Parallel programming is a computing technique where multiple tasks are executed simultaneously to achieve faster execution times and to improve resource utilization compared to sequential execution.
+Parallel programming is a computing technique where multiple tasks are executed simultaneously to achieve faster execution times and to improve resource utilization, compared to sequential execution.
 
-Parallel programming involves **breaking down a task into smaller sub-tasks that can be executed independently and concurrently** across multiple processing units, such as CPUs (central processing units), GPUs (graphics processing units), or distributed computing resources.
+Parallel programming involves **breaking down a task into smaller sub-tasks that can be executed independently and concurrently** across multiple processors, such as CPUs (central processing units), GPUs (graphics processing units), or distributed computing resources.
 
 Parallel programming is often introduced as a way to optimally take advantage of the multiple computing units that are embedded in modern computers, in order to **speed up some computation that takes a lot time**.
 
 However, besides this exploitation of multiple computing units to speed up computations, parallel programming also enables the design of **responsive user interfaces**. Indeed, most GUI (graphical user interface) frameworks are built on the top of a "main event loop" that continuously monitors user interactions and that calls application code to react to those events. If the application code takes too much time to run, the user interface appears to "freeze." Parallel programming allows to run this applicative logic in the background, hereby preserving an optimal user experience.
 
-This concept of "main event loop" can also be encountered in **network applications**, where a software must serve requests issued by different clients. Thanks to parallel programming, each connection with a client can be handled in the background, leaving the main server listen to new connections.
+This concept of "main event loop" can also be encountered in **network applications**, where a software must simultaneously serve requests issued by different clients. Thanks to parallel programming, each connection with a client can be handled in the background, leaving the main server able to listen to new connections.
 
-Finally, it may also happen that the design of a whole software can be more naturally modeled using parallel programming than using sequential programming. Think about your personal week agenda: You have a number of distinct tasks of different natures to be achieved during the week, and those tasks only have loose dependencies between them. A large-scale software is likewise: It can generally be **decomposed into a set of mostly uncoupled tasks**, where each of the individual tasks has a different objective and can be solved using sequential programming. Sequential programming has indeed the advantage of being easier to write, to :ref:`test <software_testing>`, and to correct. Nevertheless, developing the whole software using sequential programming would introduce unnecessary, arbitrary dependencies between the individual tasks, hereby reducing the performance and increasing the complexity of the design.
+Finally, it may also happen that the design of a whole software can be more naturally modeled using parallel programming than using sequential programming. Think about your personal week agenda: You have a number of distinct tasks of different natures to be achieved during the week, and those tasks only have loose dependencies between them. A large-scale software is likewise: It can generally be **decomposed into a set of mostly uncoupled tasks**, where each of the individual tasks has a different objective and can be solved using sequential programming. Sequential programming has indeed the advantage of being easier to write, to :ref:`test <software_testing>`, and to correct. Nevertheless, developing the whole software using sequential programming would introduce unnecessary, arbitrary dependencies between the individual tasks, hereby reducing the performance and increasing the complexity of the design. Parallel programming can be a solution to improve such designs.
 
 
 GPUs vs. CPUs
@@ -23,9 +23,9 @@ GPUs vs. CPUs
 
 In recent years, there is a growing interest in the exploitation of GPUs to carry on computations that are not related to computer graphics. Indeed, **GPUs** consist of a massive number of processing units working in parallel that are highly optimized for certain types of computations, especially those involving graphics rendering, heavy matrix operations, numerical simulations, and deep learning.
 
-However, while GPUs are incredibly powerful for certain types of parallel computations, they are not a universal replacement for CPUs. Indeed, CPUs are much more versatile, as they are designed to handle a wide range of tasks, including general-purpose computing, running operating systems, managing I/O operations, executing single-threaded applications, and handling diverse workloads. In contrast, the processing units of GPUs focus on simpler tasks that can be duplicated a large number of times in an identical way. Furthermore, certain types of tasks, particularly those with sequential dependencies or requiring frequent access to shared data, might not benefit significantly from GPU acceleration. Finally, writing code for GPUs often requires the usage of specialized programming languages or libraries and the understanding of the underlying hardware architecture.
+However, while GPUs are incredibly powerful for certain types of parallel computations, they are not a universal replacement for CPUs. Indeed, CPUs are much more versatile, as they are designed to handle a wide range of tasks, including general-purpose computing, running operating systems, managing I/O operations, executing single-threaded applications, and handling diverse workloads. In contrast, the processing units of GPUs focus on simpler, identical tasks that can be duplicated a large number of times. Furthermore, certain types of tasks, particularly those with sequential dependencies or requiring frequent access to shared data, might not benefit significantly from GPU acceleration. Finally, writing code for GPUs often requires the usage of specialized programming languages or libraries and the understanding of the underlying hardware architecture.
 
-Consequently, in this course, we will only focus on **parallel programming on CPU**. It is indeed essential to notice that thanks to hardware evolution, any consumer computer is nowadays equipped with multiple CPU cores (even if they are less numerous than processing units inside a GPU), as depicted on the following picture:
+Consequently, in this course, we will only focus on **parallel programming on CPUs**. It is indeed essential to notice that thanks to hardware evolution, any consumer computer is nowadays equipped with multiple CPU cores (even if they are less numerous than processing units inside a GPU), as depicted on the following picture:
 
 .. image:: _static/images/part5/gpu-vs-cpu.svg
   :width: 75%
@@ -40,28 +40,28 @@ Multiprocessing vs. multithreading
 
 In computing, a **process** corresponds to a program that is actively running on the CPU of a computer, along with its current state. A typical operating system allows multiple independent processes to run concurrently on the available CPU cores, hereby providing an environment to achieve parallelism that is referred to as **multiprocessing**.
 
-A process has its own memory space (including code, data, stack, and CPU registers) and its own resources that are isolated from other processes to prevent unauthorized access and interference. Distinct processes may still communicate with each other through the so-called **"interprocess communication" (IPC)** mechanisms provided by the operating system, such as files, pipes, message passing, shared memory, or network communications (sockets).
+A process has its own memory space (including code, data, stack, and CPU registers) and its own resources that are isolated from other processes to prevent unauthorized access and interference. Distinct processes may still communicate with each other through the so-called **"interprocess communication" (IPC)** mechanisms provided by the operating system. IPCs include files, pipes, message passing, shared memory, and network communications (sockets).
 
-Multiprocessing has two main downsides. Firstly, creating new processes incurs a high overhead due to the need for separate memory allocation and setup for each process. Secondly, because different processes are isolated from each other, interprocess communications are relatively complex and come at a non-negligible cost.
+Multiprocessing has two main downsides. Firstly, creating new processes incurs a high overhead due to the need for separate memory allocation and setup for each process. Secondly, because the different processes are isolated from each other, interprocess communications are relatively complex and come at a non-negligible cost.
 
-This motivates the introduction of the concept of a **thread**. A thread refers to the smallest unit of execution within a process. A thread corresponds to a sequence of instructions that can be scheduled and executed independently by one CPU core. One single process can run multiple threads, as illustrated below:
+This motivates the introduction of the concept of a **thread**. A thread refers to the smallest unit of execution within a process: A thread corresponds to a sequence of instructions that can be scheduled and executed independently by one CPU core. One single process can run multiple threads, as illustrated below:
 
 .. image:: _static/images/part5/threads.svg
   :width: 50%
   :align: center
   :alt: Multithreading
 
-In this picture, the blue blocks indicate at which moment the different threads are active (i.e., are executing something). A thread can indeed "fall asleep" while waiting for additional data to process, while waiting for user interaction, or while waiting for the result of a computation done by another thread.
+In this picture, the blue blocks indicate at which moment the different threads are active (i.e., are executing something) within the process. A thread can indeed "fall asleep" while waiting for additional data to process, while waiting for user interaction, or while waiting for the result of a computation done by another thread.
 
-Accordingly, **multithreading** is a programming technique where a single process is divided into multiple threads of execution. Threads can perform different operations concurrently, such as handling different parts of an application (e.g., keeping the user interface responsive while performing a background computation).
+Accordingly, **multithreading** is a programming technique where a single process is divided into multiple threads of execution. Threads can perform different operations concurrently, such as doing a computation in the background or handling different parts of the application (e.g., keeping the user interface responsive or serving requests from multiple clients).
 
-Importantly, contrarily to processes, **threads within the same process are not isolated**: They share the same memory space and resources, which allows distinct threads to directly access the same variables and data structures. Threads are sometimes called *lightweight processes*, because creating threads within a process incurs less overhead compared to creating multiple processes.
+Importantly, contrarily to processes, **threads within the same process are not isolated**: They share the same memory space and resources, which allows distinct threads to directly access the same variables and data structures. Threads are sometimes called *lightweight processes*, because creating threads within a process incurs less overhead compared to creating separate processes.
 
 Summarizing, multithreading tends to be simpler and more lightweight than multiprocessing. This explains why this course will only cover the **basics of multithreading in Java**.
 
 It is always worth remembering that the fact that different threads do not live in isolation can be error-prone. Multithreading notably requires the introduction of suitable synchronization and coordination mechanisms between threads when accessing shared variables. If not properly implemented, **race conditions, deadlocks, and synchronization issues can emerge**, which can be extremely hard to identify and resolve.
 
-Also, note that all programmers are constantly confronted with threads. Indeed, even if you never explicitly create a thread by yourself, the vast majority of software frameworks (such as GUI frameworks and a software libraries to deal with network programming or scientific computations) will create threads on your behalf. For instance, in the context of Java-based GUI, both the :ref:`AWT (Abstract Window Toolkit) <awt>` and the Swing framework will transparently create threads to handle the interactions with the user. Consequently, parallel programming should never be considered as an "advanced feature" of a programming language, because almost any software development has to deal with threads. In other words, even if you do not create your own threads, it is important to understand how to design thread-safe applications that properly coordinate the accesses to the shared memory space.
+Also, note that all programmers are constantly confronted with threads. Indeed, even if you never explicitly create a thread by yourself, the vast majority of software frameworks (such as GUI frameworks and a software libraries that deal with network programming or scientific computations) will create threads on your behalf. For instance, in the context of Java-based GUI, both the :ref:`AWT (Abstract Window Toolkit) <awt>` and the Swing framework will transparently create threads to handle the interactions with the user. Consequently, parallel programming should never be considered as an "advanced feature" of a programming language, because almost any software development has to deal with threads. In other words, even if you do not create your own threads, it is important to understand how to design thread-safe applications that properly coordinate the accesses to the shared memory space.
 
 
 .. _runnable:
@@ -71,13 +71,13 @@ Threads in Java
 
 Java provides extensive support of multithreading.
 
-When a Java program starts its execution, the Java Virtual Machine (JVM) starts an initial thread. This initial thread is called the **main thread** and is responsible for the execution of the ``main()`` method, which is the :ref:`entry point of most Java applications <java_main>`. Alongside the main thread, the JVM can also start background threads for its own housekeeping (most notably the garbage collector).
+When a Java program starts its execution, the Java Virtual Machine (JVM) starts an initial thread. This initial thread is called the **main thread** and is responsible for the execution of the ``main()`` method, which is the :ref:`entry point of most Java applications <java_main>`. Alongside the main thread, the JVM also start some private background threads for its own housekeeping (most notably the garbage collector).
 
 Additional threads can then be created by software developers in two different ways:
 
 * By :ref:`extending <inheritance>` the standard class ``Thread``. Note that since ``Thread`` belongs to the ``java.lang`` package, no ``import`` directive is needed. Here is the documentation of the ``Thread`` class: `<https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html>`_ 
 
-* By :ref:`implementing <interfaces>` the standard interface ``Runnable`` that is also of the ``java.lang`` package: `<https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html>`_ 
+* By :ref:`implementing <interfaces>` the standard interface ``Runnable`` that is also part of the ``java.lang`` package: `<https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html>`_ 
 
 In this course, we will use the second approach. The ``Runnable`` interface is quite intuitive:
 
@@ -97,21 +97,22 @@ As an illustration, let us consider the task of computing the minimum value of a
 
 ..  code-block:: java
 
-        static public void computeMinValue(float values[]) {
-            if (values.length == 0) {
-                System.out.println("This is an empty array");
-            } else {
-                float minValue = values[0];
-                for (int i = 1; i < values.length; i++) {
-                    if (values[i] < minValue) {
-                        minValue = values[i];
-                    }
+    static public void computeMinValue(float values[]) {
+        if (values.length == 0) {
+            System.out.println("This is an empty array");
+        } else {
+            float minValue = values[0];
+            for (int i = 1; i < values.length; i++) {
+                if (values[i] < minValue) {
+                    minValue = values[i];
                 }
-                System.out.println("Minimum value: " + minValue);
+                // One could have written more compactly: minValue = Math.min(minValue, values[i]);
             }
+            System.out.println("Minimum value: " + minValue);
         }
+    }
 
-As explained above, if one wishes to run this computation as a background thread, the ``computeMinValue()`` method must wrapped inside some implementation of the ``Runnable`` interface. But the ``run()`` method of the ``Runnable`` interface does not accept any parameter, so we cannot directly give the ``values`` array as an argument to ``run()``. The trick is to store a reference to the ``values`` array inside a class that implements ``Runnable``:
+As explained above, if one wishes to run this computation as a background thread, the ``computeMinValue()`` method must wrapped inside some implementation of the ``Runnable`` interface. But the ``run()`` method of the ``Runnable`` interface does not accept any parameter, so we cannot directly give the ``values`` array as an argument to ``run()``. The trick is to store a reference to the ``values`` array inside the class that implements ``Runnable``:
 
 ..  code-block:: java
 
@@ -125,20 +126,6 @@ As explained above, if one wishes to run this computation as a background thread
         @Override
         public void run() {
             computeMinValue(values);
-        }
-
-        static public void computeMinValue(float values[]) {
-            if (values.length == 0) {
-                System.out.println("This is an empty array");
-            } else {
-                float minValue = values[0];
-                for (int i = 1; i < values.length; i++) {
-                    if (values[i] < minValue) {
-                        minValue = values[i];
-                    }
-                }
-                System.out.println("Minimum value: " + minValue);
-            }
         }
     }
 
@@ -194,7 +181,7 @@ The following sequence diagram (loosely inspired from `UML <https://en.wikipedia
   :align: center
   :alt: Sequence diagram of the computation of the minimum
 
-In this diagram, the white bands indicate the moments where the different classes are executing code. It can be seen that between the two calls ``t.start()`` and ``t.join()``, two threads are simultaneously active: the main thread and the computation thread. Note that once the main thread calls ``t.join()``, it falls asleep until the computation thread finishes its work.
+In this diagram, the white bands indicate the moments where the different objects are executing code. It can be seen that between the two calls ``t.start()`` and ``t.join()``, two threads are simultaneously active: the main thread and the computation thread. Note that once the main thread calls ``t.join()``, it falls asleep until the computation thread finishes its work.
 
 In other words, the ``t.join()`` call is a form of **synchronization** between threads. It is always a good idea for the main Java thread to wait for all of its child threads by calling ``join()`` on each of them. If a child thread launches its own set of sub-threads, it is highly advised for this child thread to call ``join()`` of each of its sub-threads before ending. The Java process will end if all its threads have ended, including the main thread.
 
@@ -240,7 +227,7 @@ To implement this solution, the class that implements the ``Runnable`` interface
         @Override
         public void run() {
             minValue = values[startIndex];
-            for (int i = startIndex; i < endIndex; i++) {
+            for (int i = startIndex + 1; i < endIndex; i++) {
                 minValue = Math.min(values[i], minValue);
             }
         }
@@ -511,7 +498,7 @@ By combining ``MinMaxResult2`` with ``Optional<T>``, the sequential algorithm to
             float minValue = values[startIndex];
             float maxValue = values[startIndex];
 
-            for (int i = startIndex; i < stopIndex; i++) {
+            for (int i = startIndex + 1; i < stopIndex; i++) {
                 if (values[i] < minValue) {
                     minValue = values[i];
                 }
