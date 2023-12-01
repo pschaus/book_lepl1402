@@ -61,7 +61,7 @@ Summarizing, multithreading tends to be simpler and more lightweight than multip
 
 It is always worth remembering that the fact that different threads do not live in isolation can be error-prone. Multithreading notably requires the introduction of suitable synchronization and coordination mechanisms between threads when accessing shared variables. If not properly implemented, **race conditions, deadlocks, and synchronization issues can emerge**, which can be extremely hard to identify and resolve.
 
-Also, note that all programmers are constantly confronted with threads. Indeed, even if you never explicitly create a thread by yourself, the vast majority of software frameworks (such as GUI frameworks and a software libraries that deal with network programming or scientific computations) will create threads on your behalf. For instance, in the context of Java-based GUI, both the :ref:`AWT (Abstract Window Toolkit) <awt>` and the Swing framework will transparently create threads to handle the interactions with the user. Consequently, parallel programming should never be considered as an "advanced feature" of a programming language, because almost any software development has to deal with threads. In other words, even if you do not create your own threads, it is important to understand how to design thread-safe applications that properly coordinate the accesses to the shared memory space.
+Also, note that all programmers are constantly confronted with threads. Indeed, even if you never explicitly create a thread by yourself, the vast majority of software frameworks (such as GUI frameworks and a software libraries that deal with network programming or scientific computations) will create threads on your behalf. For instance, in the context of Java-based GUI, both the :ref:`AWT (Abstract Window Toolkit) and the Swing frameworks <awt_swing>` will transparently create threads to handle the interactions with the user. Consequently, parallel programming should never be considered as an "advanced feature" of a programming language, because almost any software development has to deal with threads. In other words, even if you do not create your own threads, it is important to understand how to design thread-safe applications that properly coordinate the accesses to the shared memory space.
 
 
 .. _runnable:
@@ -89,6 +89,8 @@ In this course, we will use the second approach. The ``Runnable`` interface is q
 
 This snippet indicates that to create a thread, we first have to define a class providing a ``run()`` method that will take care of the computations. Once a concrete class implementing this ``Runnable`` interface is available, it can be executed as a thread by instantiating an object of the ``Thread`` class.
 
+
+.. _MinComputation:
 
 Using a thread to compute the minimum
 -------------------------------------
@@ -186,23 +188,123 @@ In this diagram, the white bands indicate the moments where the different object
 In other words, the ``t.join()`` call is a form of **synchronization** between threads. It is always a good idea for the main Java thread to wait for all of its child threads by calling ``join()`` on each of them. If a child thread launches its own set of sub-threads, it is highly advised for this child thread to call ``join()`` of each of its sub-threads before ending. The Java process will end if all its threads have ended, including the main thread.
 
 
+.. _responsive:
+
+Keeping user interfaces responsive
+----------------------------------
+
+The ``MinComputation`` example creates one background thread to run a computation on a array. As explained in the :ref:`introduction <part5>`, this software architecture can have an interest to keep the user interface responsive during some long computation. To illustrate this interest, consider a :ref:`GUI application <awt_swing>` with three buttons using Swing:
+
+.. image:: _static/images/part5/swing.png
+  :width: 320
+  :align: center
+  :alt: Swing application with 3 buttons
+
+The corresponding source code is:
+
+..  code-block:: java
+
+    import java.awt.GridLayout;
+    import java.awt.event.ActionEvent;
+    import java.awt.event.ActionListener;
+    import javax.swing.JButton;
+    import javax.swing.JFrame;
+    import javax.swing.JOptionPane;
+    import javax.swing.JPanel;
+    
+    class SayHello implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JOptionPane.showMessageDialog(null, "Hello world!");
+        }
+    }
+    
+    public class ButtonThread {
+        public static void main(String[] args) {
+            JFrame frame = new JFrame("Hello");
+            frame.setSize(400,200);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(3, 1));
+            frame.add(panel);
+    
+            JButton button1 = new JButton("Say hello!");
+            button1.addActionListener(new SayHello());
+            panel.add(button1);
+    
+            JButton button2 = new JButton("Run the computation without a thread");
+            button2.addActionListener(new RunWithoutThread());
+            panel.add(button2);
+    
+            JButton button3 = new JButton("Run the computation using a thread");
+            button3.addActionListener(new RunUsingThread());
+            panel.add(button3);
+    
+            frame.setVisible(true);
+        }
+    }
+
+Once the user clicks on the "Say hello!" button, a message box appears saying "Hello world!". Let us now implement the button entitled "Run the computation without a thread". In the ``ActionListener`` observer associated with this button, a long computation is emulated by waiting for 3 seconds:
+
+..  code-block:: java
+
+    static public void expensiveComputation() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+        }
+        JOptionPane.showMessageDialog(null, "Phew! I've finished my hard computation!");
+    }
+
+    static class RunWithoutThread implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            expensiveComputation();
+        }
+    }
+
+If you try and run this example, if clicking on this second button, it becomes impossible to do any other interaction with the "Say hello!" button. The user interface is totally frozen until the ``expensiveComputation()`` method finishes its work.
+
+In order to turn this non-responsive application into a responsive application, one can simply start a thread that runs the ``expensiveComputation()`` method:
+
+..  code-block:: java
+
+    static class Computation implements Runnable {
+        @Override
+        public void run() {
+            expensiveComputation();
+        }
+    }
+
+    static class RunUsingThread implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Thread t = new Thread(new Computation());
+            t.start();
+        }
+    }
+
+This way, even when the computation is running, it is still possible to click on "Say hello!".
+                 
+
 .. _MinBlockComputation:
 
 Speeding up the computation
 ---------------------------
 
-The ``MinComputation`` example creates one background thread to do a computation on a array. As explained in the :ref:`introduction <part5>`, this software architecture can have an interest to keep the user interface reactive during the computation.
+Even though starting a background thread can be interesting to improve the responsivness of an application (:ref:`as illustrated above <responsive>`), this does not speed up the computation. For instance, the time that is necessary to :ref:`compute the minimum value <MinComputation>` using ``MinComputation`` is still the same as the purely sequential implementation of method ``computeMinValue()``. In order to reduce the computation time, it is needed to modify the sequential algorithm so that it can exploit multiple CPU cores.
 
-However, this design does not exploit multiple CPU cores to speed up the computation: The time that is necessary to compute the minimum value is still the same as a purely sequential implementation. In order to optimize the computation itself, the basic idea is to split the array in two parts, then to process each of those parts by two distinct threads:
+For algorithms working on an array, the basic idea is to split the array in two parts, then to process each of those parts by two distinct threads:
    
 .. image:: _static/images/part5/array-threads.svg
   :width: 80%
   :align: center
   :alt: Splitting an array to improve performance
 
-Once the two threads have finished their work, it is possible to **combine** their results to get the final result: The minimum of the whole array is the minimum of the two minimums computed on the two parts.
+Once the two threads have finished their work, we need to **combine** their results to get the final result. In our example, the minimum of the whole array is the minimum of the two minimums computed on the two parts.
 
-To implement this solution, the class that implements the ``Runnable`` interface must not only receive the ``values`` array, but it must also receive the start index and the end index of the block of interest in the array. Furthermore, the class must not *print* the minimum, but must provide access to computed minimum value. This is implemented in the following code:
+To implement this solution, the class that implements the ``Runnable`` interface must not only receive the ``values`` array, but it must also receive the start index and the end index of the block of interest in the array. Furthermore, the class must not *print* the minimum, but must provide access to computed minimum value in either block. This is implemented in the following code:
 
 ..  code-block:: java
 
@@ -239,18 +341,7 @@ To implement this solution, the class that implements the ``Runnable`` interface
 
 Note that we now have to throw an exception if the array is empty, because the minimum is not defined in this case. In the previous implementation, we simply printed out the information. This is not an appropriate solution anymore, as we have to provide an access to the computed minimum value.
     
-As before, the ``MinBlockComputation`` class can be invoked in a sequential way:
-
-..  code-block:: java
-
-    public static void main(String[] args) {
-        float values[] = new float[] { -2, -5, 4 };
-        MinBlockComputation r = new MinBlockComputation(values, 0, values.length);
-        r.run();
-        System.out.println("Minimum value: " + r.getMinValue());
-    }
-
-Thanks to this new design, it is also now possible to speed up the computation the minimum using two threads:
+Thanks to this new design, it is now possible to speed up the computation the minimum using two threads:
 
 ..  code-block:: java
 
@@ -290,9 +381,9 @@ Dealing with empty parts
 
 Even though the implementation from the previous section works fine on arrays containing at least 2 elements, it fails if the ``values`` array is empty or only contains 1 element. Indeed, in this case, ``values.length / 2 == 0``, which throws the ``IllegalArgumentException`` in the constructor of ``c1``. Furthermore, if ``values.length == 0``, the constructor of ``c2`` would launch the same exception.
 
-One could solve this problem by conditioning the creation of ``c1``, ``c2``, ``t1``, and ``t2`` according to the value of ``values.length``. This would however necessitate to deal with multiple cases that are difficult to write and maintain. This problem would also be exacerbated if we want to divide the array into more than 2 parts to better exploit the available CPU cores.
+One could solve this problem by conditioning the creation of ``c1``, ``c2``, ``t1``, and ``t2`` according to the value of ``values.length``. This would however necessitate to deal with multiple cases that are difficult to write and maintain. This problem would also be exacerbated if we decide to divide the array into more than 2 parts to better exploit the available CPU cores.
 
-A simpler, more scalable solution consists in introducing a Boolean flag that indicates whether a result is present for each computation. Instead of throwing the ``IllegalArgumentException`` in the constructor, this flag would be set to ``false``.
+A simpler, more scalable solution consists in introducing a Boolean flag that indicates whether a result is present for each part of the array. Instead of throwing the ``IllegalArgumentException`` in the constructor, this flag would be set to ``false`` if the search for minimum is launched on an empty block.
 
 To illustrate this idea, let us consider the slightly more complex problem of computing both the minimum and the maximum values of an array. The first step is to define a class that will hold the result of a computation:
 
@@ -366,17 +457,17 @@ To illustrate this idea, let us consider the slightly more complex problem of co
         }
     }
 
-Introducing the ``MinMaxResult`` class will allow us to cleanly separate the two distinct concepts of the "algorithm to do a computation" and of the "results of the computation." This separation is another example of a :ref:`design pattern <part4>`.
+Introducing the ``MinMaxResult`` class allows us to cleanly separate the two distinct concepts of the "*algorithm to do a computation*" and of the "*results of the computation*." This separation is another example of a :ref:`design pattern <part4>`.
 
-There are two possible ways to create an object of the ``MinMaxResult`` class:
+As can be seen in the source code, there are two possible ways to create an object of the ``MinMaxResult`` class:
 
 * either by using the ``MinMaxResult(minValue, maxValue)`` constructor, which sets the ``isPresent`` flag to ``true`` in order to indicate the presence of a result,
 
-* or by using the ``MinMaxResult.empty()`` static method, that creates a ``MinMaxResult`` object with the ``isPresent`` flag set to ``false`` in order to indicate the absence of a result (which results from an empty block).
+* or by using the ``MinMaxResult.empty()`` static method, that creates a ``MinMaxResult`` object with the ``isPresent`` flag set to ``false`` in order to indicate the absence of a result (this is the case of an empty block).
 
-The object throws an exception if trying to access the minimum or the maximum values if the result is absent.
+The object throws an exception if trying to access the minimum or the maximum values if the result is absent. It is up to the caller to check the presence of a result using the ``isPresent()`` method, before calling ``getMinValue()`` or ``getMaxValue()``.
 
-Finally, note the presence of the ``combine()`` method. This method updates the currently available minimum/maximum values with the results obtained from a different block.
+Finally, note the presence of the ``combine()`` method. This method updates the currently available minimum/maximum values with the results obtained from a different block. The ``combine()`` implements the combination of two partial results.
 
 It is now possible to create an implementation of the ``Runnable`` interface that leverages ``MinMaxResult``:
 
@@ -405,12 +496,8 @@ It is now possible to create an implementation of the ``Runnable`` interface tha
                 float maxValue = values[startIndex];
 
                 for (int i = startIndex + 1; i < endIndex; i++) {
-                    if (values[i] < minValue) {
-                        minValue = values[i];
-                    }
-                    if (values[i] > maxValue) {
-                        maxValue = values[i];
-                    }
+                    minValue = Math.min(minValue, values[i]);
+                    maxValue = Math.max(maxValue, values[i]);
                 }
 
                 result = new MinMaxResult(minValue, maxValue);
@@ -423,7 +510,7 @@ It is now possible to create an implementation of the ``Runnable`` interface tha
     }
 
                  
-The ``MinMaxBlockComputation`` class is essentially the same as the ``MinBlockComputation`` class :ref:`defined earlier<MinBlockComputation>`. It only differs in the way the result is stored: ``MinBlockComputation`` uses a ``float`` to hold the result of the computation on a block, whereas ``MinMaxBlockComputation`` uses an object of the ``MinMaxResult`` class. This allows ``MinMaxBlockComputation`` not only to report both the minimum and maximum values of part of an array, but also to indicate whether the part was empty or non-empty.
+The ``MinMaxBlockComputation`` class is essentially the same as the ``MinBlockComputation`` class :ref:`defined earlier<MinBlockComputation>`. It only differs in the way the result is stored: ``MinBlockComputation`` uses a ``float`` to hold the result of the computation on a block, whereas ``MinMaxBlockComputation`` uses an object of the ``MinMaxResult`` class. This allows ``MinMaxBlockComputation`` not only to report both the minimum and maximum values of part of an array, but also to indicate whether that part was empty or non-empty.
                  
 It is now easy to run the computation using two threads in a way that is also correct when the ``values`` array contains 0 or 1 element:
 
@@ -453,18 +540,16 @@ Optional results
 
 The ``MinMaxResult`` class :ref:`was previously introduced <MinMaxResult>` as a way to deal with the absence of a result in the case of an empty part of an array. More generally, dealing with the absence of a value is a common pattern in software architectures. For this reason, Java introduces the ``Optional<T>`` generic class: `<https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html>`_ 
 
-The ``Optional<T>`` class does exactly the same stuff as the ``isPresent`` Boolean flag that we manually introduced in the ``MinMaxResult`` class. The four main operations on ``Optional<T>`` are:
+The ``Optional<T>`` class does exactly the same stuff as the ``isPresent`` Boolean flag that we manually introduced into the ``MinMaxResult`` class. The four main operations of ``Optional<T>`` are:
 
 * ``of(T t)`` is a static method that constructs an ``Optional<T>`` object embedding the given object ``t`` of class ``T``.
 * ``empty()`` is a static method that constructs an ``Optional<T>`` object indicating the absence of an object of class ``T``.
 * ``isPresent()`` is a method that indicates whether the ``Optional<T>`` object contains an object.
 * ``get()`` returns the embedded object of class ``T``. If the ``Optional<T>`` does not contains an object, an exception is thrown.
 
-Consequently, we could have defined a simplified version of ``MinMaxResult`` without the Boolean as follows:
+Consequently, we could have defined a simplified version of ``MinMaxResult`` without the ``isPresent`` Boolean flag as follows:
 
 ..  code-block:: java
-
-    import java.util.Optional;
 
     class MinMaxResult2 {
         private float minValue;
@@ -489,6 +574,8 @@ By combining ``MinMaxResult2`` with ``Optional<T>``, the sequential algorithm to
 
 ..  code-block:: java
 
+    import java.util.Optional;
+
     public static Optional<MinMaxResult2> computeMinMaxSequential(float values[],
                                                                   int startIndex,
                                                                   int stopIndex) {
@@ -499,12 +586,8 @@ By combining ``MinMaxResult2`` with ``Optional<T>``, the sequential algorithm to
             float maxValue = values[startIndex];
 
             for (int i = startIndex + 1; i < stopIndex; i++) {
-                if (values[i] < minValue) {
-                    minValue = values[i];
-                }
-                if (values[i] > maxValue) {
-                    maxValue = values[i];
-                }
+                minValue = Math.min(minValue, values[i]);
+                maxValue = Math.max(maxValue, values[i]);
             }
 
             return Optional.of(new MinMaxResult2(minValue, maxValue));
@@ -527,7 +610,7 @@ This alternative implementation would have been slightly shorter and would have 
 .. admonition:: Exercise
    :class: note
 
-   Reimplement the ``MinMaxBlockComputation`` class by replacing ``MinMaxResult`` with ``Optional<MinMaxResult2>``, and run threads based on this new class.
+   Reimplement the ``MinMaxBlockComputation`` class by replacing ``MinMaxResult`` with ``Optional<MinMaxResult2>``, and launch threads based on this new class.
 
 
 .. _thread_pools:
@@ -575,20 +658,18 @@ We could continue adding more threads in this way (for instance, 8, 16, 32...). 
 
 * Obviously, the level of parallelism is limited by the number of CPU cores that are available. If using a CPU with 4 cores, you cannot expect a speed up of more than 4.
 
-* Even if threads are lightweight, there is still an overhead associated with the creation of a thread. On a modern computer, creating a simple thread (without any extra object) takes around 0.05-0.1 ms. That is approximately the time to calculate the sum from 1 to 100,000.
+* Even if threads are lightweight, there is still an overhead associated with the creation and management of a thread. On a modern computer, creating a simple thread (without any extra object) takes around 0.05-0.1 ms. That is approximately the time to calculate the sum from 1 to 100,000.
 
-We can conclude that threads only improve the speed of a program if the tasks for the threads are longer than the overhead to create and manage them.
-
-This motivates the introduction of **thread pools**. A thread pool is a group of threads that are ready to work:
+We can conclude that threads only improve the speed of a program if the tasks for the threads are longer than the overhead to create and manage them. This motivates the introduction of **thread pools**. A thread pool is a group of threads that are ready to work:
 
 .. image:: _static/images/part5/thread-pool.svg
   :width: 80%
   :align: center
   :alt: Thread pool
 
-In this drawing, we have a thread pool that is made of 2 threads. Those threads are continuously monitoring a queue of pending tasks. As soon as some task is enqueued and as soon as some thread becomes available, the available thread takes care of this task. Once the task is over, the thread informs the caller that the result is available, then it goes back to listening to the queue, waiting for a new task to be processed.
+In this drawing, we have a thread pool that is made of 2 threads. Those threads are continuously monitoring a queue of pending tasks. As soon as some task is enqueued and as soon as some thread becomes available, the available thread takes care of this task. Once the task is over, the thread informs the caller that the result of the task is available, then it goes back to listening to the queue, waiting for a new task to be processed.
 
-Thread pools are an efficient way to avoid the overhead associated with the initialization and finalization of threads. It also allows to write user code that is uncoupled from the number of CPU cores.
+Thread pools are an efficient way to avoid the overhead associated with the initialization and finalization of threads. It also allows to write user code that is uncoupled from the number of threads or from the number of CPU cores.
 
 
 Thread pools in Java
@@ -598,15 +679,15 @@ In Java, three different interfaces are generally combined to create a thread po
 
 * ``java.util.concurrent.ExecutorService`` implements the thread pool itself, including the queue of requests and its background threads: `<https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html>`_.
 
-* ``java.util.concurrent.Callable<T>`` is a generic interface that implements the task to be run. The task must return an object of type ``T``: `<https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html>`_.
+* ``java.util.concurrent.Callable<T>`` is a generic interface that represents the task to be run. The task must return an object of type ``T``: `<https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html>`_.
 
 * ``java.util.concurrent.Future<T>`` is a generic interface that represents the result of a task that is in the process of being computed: `<https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html>`_.
 
-The :ref:`Java Development Kit (JDK) <jdk>` contains concrete implementations of ``ExecutorService`` and ``Future``, so we (fortunately!) do not have to implement them by ourselves. A concrete thread pool can be created as follows:
+The :ref:`Java Development Kit (JDK) <jdk>` provides concrete implementations of ``ExecutorService`` and ``Future``, so we (fortunately!) do not have to implement them by ourselves. A concrete thread pool can be created as follows:
 
 ..  code-block:: java
 
-    ExecutorService executor = Executors.newFixedThreadPool(2 /* numberOfThreads */);
+    ExecutorService executor = Executors.newFixedThreadPool(4 /* numberOfThreads */);
 
                  
 As developers, our sole responsibility consists in choosing the generic type ``T`` and in providing an implementation of interface ``Callable<T>`` that describes the task to be achieved. The interface ``Callable<T>`` looks as follows:
@@ -646,7 +727,7 @@ You can obtain the result of the futures with their ``get()`` method:
 
 If the task is not yet finished, the method ``get()`` will wait. This contrast with the ``executor.submit()`` method that always returns immediately.
 
-At the end of the program or when you don't need the thread pool anymore, you have to shut it down explicitly to stop all its threads, otherwise the software might not properly exit:
+At the end of the program or when you do not need the thread pool anymore, you have to shut it down explicitly to stop all its threads, otherwise the software might not properly exit:
 
 ..  code-block:: java
 
@@ -683,12 +764,8 @@ It is straightforward to turn the ``MinMaxBlockComputation`` runnable that :ref:
                 float maxValue = values[startIndex];
 
                 for (int i = startIndex + 1; i < endIndex; i++) {
-                    if (values[i] < minValue) {
-                        minValue = values[i];
-                    }
-                    if (values[i] > maxValue) {
-                        maxValue = values[i];
-                    }
+                    minValue = Math.min(minValue, values[i]);
+                    maxValue = Math.max(maxValue, values[i]);
                 }
 
                 return new MinMaxResult(minValue, maxValue);
