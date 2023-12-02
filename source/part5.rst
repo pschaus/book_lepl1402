@@ -295,7 +295,7 @@ This way, even when the computation is running, it is still possible to click on
 Speeding up the computation
 ---------------------------
 
-Even though starting a background thread can be interesting to improve the responsivness of an application (:ref:`as illustrated above <responsive>`), this does not speed up the computation. For instance, the time that is necessary to :ref:`compute the minimum value <MinComputation>` using ``MinComputation`` is still the same as the purely sequential implementation of method ``computeMinValue()``. In order to reduce the computation time, it is needed to modify the sequential algorithm so that it can exploit multiple CPU cores.
+Even though starting a background thread can be interesting to improve the responsiveness of an application (:ref:`as illustrated above <responsive>`), this does not speed up the computation. For instance, the time that is necessary to :ref:`compute the minimum value <MinComputation>` using ``MinComputation`` is still the same as the purely sequential implementation of method ``computeMinValue()``. In order to reduce the computation time, it is needed to modify the sequential algorithm so that it can exploit multiple CPU cores.
 
 For algorithms working on an array, the basic idea is to split the array in two parts, then to process each of those parts by two distinct threads:
    
@@ -1024,7 +1024,7 @@ The ``SharedMinMaxComputation`` can be executed exactly the same way as ``MinMax
         result.print();
     }
 
-Note that it doesn't make much sense to use a ``Callable<T>`` in this approach. Indeed, because the individual computations directly merge their partial results with a shared variable, they never have to report a result to their caller. However, it still makes much sense to use a thread pool to avoid manipulating the threads directly.
+Note that it does not make much sense to use a ``Callable<T>`` in this approach. Indeed, because the individual computations directly merge their partial results with a shared variable, they never have to report a result to their caller. However, it still makes much sense to use a thread pool to avoid manipulating the threads directly.
 
 This is why the standard interface ``ExecutorService`` that :ref:`implements thread pools <thread_pools>` accepts not only implementations of the ``Callable<T>`` interface in its ``submit()`` method, but also implementations of the ``Runnable`` interface. In this case, the futures do not convey any result, so ``Future<T>`` must simply be replaced by ``Future``. This is illustrated in the following code:
 
@@ -1043,7 +1043,7 @@ This is why the standard interface ``ExecutorService`` that :ref:`implements thr
         Future future1 = executor.submit(c1);
         Future future2 = executor.submit(c2);
 
-        future1.get();  // The "Future" doesn't convey any result, so we just wait here
+        future1.get();  // The "Future" does not convey any result, so we just wait here
         future2.get();
 
         executor.shutdown();
@@ -1324,13 +1324,15 @@ The downside of this source code is that the classes ``MinMaxResult`` and ``Shar
 Application to matrix multiplication
 ------------------------------------
 
-Linear algebra is a mathematical domain that can greatly benefit from parallel programming. Let us consider the following basic implementation of a matrix in Java:
+Linear algebra is a mathematical domain that can greatly benefit from parallel programming. This section gives an example about how multithreading can be used to implement matrix multiplication.
+
+Let us consider the following basic implementation of a matrix in Java:
 
 ..  code-block:: java
 
-    public class Matrix {
+    public class SynchronizedMatrix {
         private float values[][];
-
+    
         private void checkPosition(int row,
                                    int column) {
             if (row >= getRows() ||
@@ -1338,9 +1340,9 @@ Linear algebra is a mathematical domain that can greatly benefit from parallel p
                 throw new IllegalArgumentException();
             }
         }
-
-        public Matrix(int rows,
-                      int columns) {
+    
+        public SynchronizedMatrix(int rows,
+                                  int columns) {
             if (rows <= 0 ||
                 columns <= 0) {
                 throw new IllegalArgumentException();
@@ -1348,44 +1350,42 @@ Linear algebra is a mathematical domain that can greatly benefit from parallel p
                 values = new float[rows][columns];
             }
         }
-
-        public int getRows() {
+    
+        public synchronized int getRows() {
             return values.length;
         }
-
-        public int getColumns() {
+    
+        public synchronized int getColumns() {
             // "values[0]" is guaranteed to exist, because "columns > 0" in the constructor
             return values[0].length;
         }
-
-        public float getValue(int row,
-                              int column) {
+    
+        public synchronized float getValue(int row,
+                                           int column) {
             checkPosition(row, column);
             return values[row][column];
         }
-
-        public void setValue(int row,
-                             int column,
-                             float value) {
+    
+        public synchronized void setValue(int row,
+                                          int column,
+                                          float value) {
             checkPosition(row, column);
             values[row][column] = value;
         }
     }
 
-We are interested in the task of computing the product :math:`C \in \mathbb{R}^{m\times p}` of two matrices :math:`A \in \mathbb{R}^{m\times n}` and :math:`B \in \mathbb{R}^{n\times p}` of compatible dimensions.
+Note that the ``SynchronizedMatrix`` class has each of its methods tagged with the ``synchronized`` keyword, so it is suitable for use as a shared variable between multiple threads.
 
-Remember the definition of matrix multiplication: :math:`c_{ij} = \sum_{k=1}^{n} a_{ik} b_{kj}`.
-
-This definition can directly be turned into a sequential algorithm:
+We are interested in the task of computing the product :math:`C \in \mathbb{R}^{m\times p}` of two matrices :math:`A \in \mathbb{R}^{m\times n}` and :math:`B \in \mathbb{R}^{n\times p}` of compatible dimensions. Remember the definition of matrix multiplication: :math:`c_{ij} = \sum_{k=1}^{n} a_{ik} b_{kj}`. This definition can directly be turned into a sequential algorithm:
 
 ..  code-block:: java
 
     public static void main(String args[]) {
-        Matrix a = new Matrix(..., ...);
-        Matrix b = new Matrix(..., ...);
+        SynchronizedMatrix a = new SynchronizedMatrix(..., ...);
+        SynchronizedMatrix b = new SynchronizedMatrix(..., ...);
         // Fill a and b
 
-        Matrix c = new Matrix(a.getRows(), b.getColumns());
+        SynchronizedMatrix c = new SynchronizedMatrix(a.getRows(), b.getColumns());
 
         for (int row = 0; row < c.getRows(); row++) {
             for (int column = 0; column < c.getColumns(); column++) {
@@ -1398,13 +1398,9 @@ This definition can directly be turned into a sequential algorithm:
         }
     }
 
-How could we leverage multithreading to speed up this computation? The main observation is that the inner loop is executed for each entry of :math:`C`. Therefore, a possible solution consists in creating :math:`m\times p` tasks that will be handled by a thread pool, each of these tasks implementing the inner loop with the accumulator.
+How could we leverage multithreading to speed up this computation? The main observation is that the innermost loop on ``k`` is executed for each entry of :math:`C`. Therefore, a possible solution consists in creating :math:`m\times p` tasks that will be processed by a thread pool, each of these tasks implementing the innermost loop with the accumulator.
 
-
-Filling the output matrix after the computations
-------------------------------------------------
-
-Following our explanation of :ref:`thread pools <thread_pools>`, we can start by implementing a "result" data structure that will store the value of one cell of the matrix product:
+A first possible implementation consists in creating a "result" data structure that will store the value of one cell of the matrix product:
 
 ..  code-block:: java
 
@@ -1438,14 +1434,14 @@ We can then implement the ``Callable<T>`` interface to use this data structure i
 
 ..  code-block:: java
 
-    class ComputeProductAtCell implements Callable<ProductAtCellResult> {
-        private Matrix a;
-        private Matrix b;
+    static class ComputeProductAtCell implements Callable<ProductAtCellResult> {
+        private SynchronizedMatrix a;
+        private SynchronizedMatrix b;
         private int row;
         private int column;
 
-        public ComputeProductAtCell(Matrix a,
-                                    Matrix b,
+        public ComputeProductAtCell(SynchronizedMatrix a,
+                                    SynchronizedMatrix b,
                                     int row,
                                     int column) {
             this.a = a;
@@ -1470,11 +1466,11 @@ The thread pool would then be used as follows:
 ..  code-block:: java
 
     public static void main(String args[]) throws ExecutionException, InterruptedException {
-        Matrix a = new Matrix(..., ...);
-        Matrix b = new Matrix(..., ...);
+        SynchronizedMatrix a = new SynchronizedMatrix(..., ...);
+        SynchronizedMatrix b = new SynchronizedMatrix(..., ...);
         // Fill a and b
 
-        ExecutorService executor = Executors.newFixedThreadPool(8);
+        ExecutorService executor = Executors.newFixedThreadPool(10);
 
         Stack<Future<ProductAtCellResult>> pendingComputations = new Stack<>();
             
@@ -1484,8 +1480,7 @@ The thread pool would then be used as follows:
             }
         }
 
-        // Copy the values from the stack into the target matrix
-        Matrix c = new Matrix(a.getRows(), b.getColumns());
+        SynchronizedMatrix c = new SynchronizedMatrix(a.getRows(), b.getColumns());
         
         while (!pendingComputations.empty()) {
             Future<ProductAtCellResult> future = pendingComputations.pop();
@@ -1494,11 +1489,77 @@ The thread pool would then be used as follows:
 
         executor.shutdown();
     }
+    
+Note that this implementation would also work fine if there were no ``synchronized`` keyword in the class implementing matrices, because the threads do not apply modifications to shared variables. Even though this solution works fine, it is demanding in terms of memory. Indeed, the row, column, and value of each cell in the product will first be stored in a separate data structure (the stack of futures referring to ``ProductAtCellResult`` objects), before being copied onto the target matrix ``c``. Couldn't the results be directly written into ``c``?
 
-Even though this solution works fine, it is demanding in terms of memory. Indeed, the row, column, and value of each cell in the product will first be stored in a separate data structure (the stack), before being copied to the target matrix ``c``. Couldn't the results be directly written into ``c``?
+The answer is obviously "yes": Thanks to the fact that the ``SynchronizedMatrix`` implements the ``synchronized`` keyword, it is thread-safe and it can be used as a shared variable into which the different threads can directly write their results.
 
-The answer is "yes", because threads from the same process share the same memory. However, in general, care must be taken because of race conditions.
+According to this discussion, here is a second possible implementation that replaces ``Callable<ProductAtCellResult>`` by a set of ``Runnable`` objects, each of those objects writing one cell of the target matrix:
 
+..  code-block:: java
 
-Monitors and race conditions
-----------------------------
+    static class StoreProductAtCell implements Runnable {
+        private SynchronizedMatrix a;
+        private SynchronizedMatrix b;
+        private SynchronizedMatrix c;
+        private int row;
+        private int column;
+
+        public StoreProductAtCell(SynchronizedMatrix a,
+                                  SynchronizedMatrix b,
+                                  SynchronizedMatrix c,
+                                  int row,
+                                  int column) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+            this.row = row;
+            this.column = column;
+        }
+
+        public void run() {
+            float accumulator = 0;
+            
+            for (int k = 0; k < a.getColumns(); k++) {
+                accumulator += a.getValue(row, k) * b.getValue(k, column);
+            }
+
+            c.setValue(row, column, accumulator);
+        }
+    }
+
+Thanks to the ``StoreProductAtCell`` class, the matrix multiplication can be computed by a thread pool as follows:
+
+..  code-block:: java
+
+    public static void main(String args[]) throws ExecutionException, InterruptedException {
+        SynchronizedMatrix a = new SynchronizedMatrix(..., ...);
+        SynchronizedMatrix b = new SynchronizedMatrix(..., ...);
+        // Fill a and b
+
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+
+        Stack<Future> pendingComputations = new Stack<>();
+            
+        SynchronizedMatrix c = new SynchronizedMatrix(a.getRows(), b.getColumns());
+        
+        for (int row = 0; row < a.getRows(); row++) {
+            for (int column = 0; column < b.getColumns(); column++) {
+                pendingComputations.add(executor.submit(new StoreProductAtCell(a, b, c, row, column)));
+            }
+        }
+
+        while (!pendingComputations.empty()) {
+            Future future = pendingComputations.pop();
+            future.get();
+        }
+
+        executor.shutdown();
+    }
+
+Note that in the specific example of matrix multiplication, the solution based on ``Runnable`` is both simpler and more memory efficient, as it does not require the use of an intermediate class such as ``ProductAtCellResult`` to store the partial results before writing them onto the target matrix.
+
+.. admonition:: Remark
+   :class: remark
+
+   In practice, the parallel implementation of matrix multiplication proposed above will probably have really bad performance, possibly even worse than a purely sequential algorithm. Indeed, this implementation totally neglects the `processor cache <https://en.wikipedia.org/wiki/Cache_(computing)>`_: Because the various threads work on different areas of the matrices, the CPU will continuously have to access the RAM, which slows down the computation. Real software libraries for optimized linear algebra implement algorithms that feature **locality** in their patterns of access to the RAM. Because CPU cores include a cache memory that is much faster than the RAM, exploiting locality can dramatically increase the performance of an algorithm. Such optimized algorithms will typically leverage `block matrix multiplication <https://en.wikipedia.org/wiki/Block_matrix#Block_matrix_multiplication>`_ and `SIMD instructions <https://fr.wikipedia.org/wiki/Single_instruction_multiple_data>`_, in addition to multithreading.
