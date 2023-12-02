@@ -35,6 +35,8 @@ Consequently, in this course, we will only focus on **parallel programming on CP
 Parallel programming on CPU seeks to leverage the multiple CPU cores available inside a single computer to execute multiple tasks or portions of a single task simultaneously.
 
 
+.. _multithreading:
+
 Multiprocessing vs. multithreading
 ==================================
 
@@ -257,7 +259,7 @@ Once the user clicks on the "Say hello!" button, a message box appears saying "H
         JOptionPane.showMessageDialog(null, "Phew! I've finished my hard computation!");
     }
 
-    static class RunWithoutThread implements ActionListener {
+    class RunWithoutThread implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             expensiveComputation();
@@ -270,14 +272,14 @@ In order to turn this non-responsive application into a responsive application, 
 
 ..  code-block:: java
 
-    static class Computation implements Runnable {
+    class Computation implements Runnable {
         @Override
         public void run() {
             expensiveComputation();
         }
     }
 
-    static class RunUsingThread implements ActionListener {
+    class RunUsingThread implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             Thread t = new Thread(new Computation());
@@ -863,7 +865,7 @@ Note that the end index of the last block is treated specifically, because ``val
 Computing the mean of an array
 ------------------------------
 
-Up to now, this chapter has been entirely focused on the task of finding the minimum and maximum values in an array. We have explained how the introduction of the separate class ``MinMaxResult`` that is dedicated to the storage of the result leads to a natural use of thread pools by implementing the ``Callable<MinMaxResult>`` interface. An important trick was to define the ``combine()`` method that is responsible for combining the partial results obtained from different parts of the array.
+Up to now, this chapter has been almost entirely focused on the task of finding the minimum and maximum values in an array. We have explained how the introduction of the separate class ``MinMaxResult`` that is dedicated to the storage of partial results leads to a natural use of thread pools by implementing the ``Callable<MinMaxResult>`` interface. An important trick was to define the ``combine()`` method that is responsible for combining the partial results obtained from different parts of the array.
 
 How could we compute the mean of the array using a similar approach?
 
@@ -913,7 +915,7 @@ The solution consists in storing the sum and the number of elements in a dedicat
         }    
     }
 
-Thanks to the ``MeanResult`` class, we can now adapt the source code of ``MinMaxBlockCallable`` in order to define a callable that computes the mean of a block of an array:
+Thanks to the ``MeanResult`` class, the source code of ``MinMaxBlockCallable`` can be adapted in order to define a callable that computes the mean of a block of an array:
 
 ..  code-block:: java
 
@@ -945,7 +947,7 @@ This callable can be used as a drop-in replacement in the :ref:`source code to c
 .. admonition:: Exercise
    :class: note
 
-   The classes ``MinMaxBlockCallable`` and ``MeanUsingCallable`` share many similarities: They both represent a computation that can be done on a block of an array, they both use a dedicated class to store their results, and they both support the operation ``combine()`` to merge partial results. However, the :ref:`source code to compute the minimum/maximum <pool_multiple_blocks>` must be adapted for each of them.
+   The classes ``MinMaxBlockCallable`` and ``MeanUsingCallable`` share many similarities: They both represent a computation that can be done on a part of an array, they both use a dedicated class to store their results, and they both support the operation ``combine()`` to merge partial results. However, the :ref:`source code to compute the minimum/maximum <pool_multiple_blocks>` must be adapted for each of them.
 
    Implement a hierarchy of classes/interfaces that can be used to implement a single source code that is compatible with both ``MinMaxBlockCallable`` and ``MeanUsingCallable``. Furthermore, validate your approach by demonstrating its compatibility with the computation of the standard deviation.
 
@@ -954,6 +956,185 @@ This callable can be used as a drop-in replacement in the :ref:`source code to c
     
 Shared memory
 =============
+
+In the solutions presented so far, the strategy was to make ``Runnable`` or ``Callable<T>`` responsible for computing the partial results, then to make the main Java thread responsible to combine those partial results. But, :ref:`as explained earlier <multithreading>`, threads that belong to the same process share the same memory space. This means that **threads can access the same variables**.
+
+
+Using a shared variable to collect the partial results
+------------------------------------------------------
+
+According to this discussion, it should be possible to make the threads merge *directly* their partial results into a shared variable, freeing the main thread from this combination task. This is a perfectly valid idea, that is implemented in the following ``Runnable``:
+
+..  code-block:: java
+
+    class SharedMinMaxComputation implements Runnable {
+        private SharedMinMaxResult target;
+        private float[] values;
+        private int startIndex;
+        private int endIndex;
+
+        public SharedMinMaxComputation(SharedMinMaxResult target,
+                                       float[] values,
+                                       int startIndex,
+                                       int endIndex) {
+            this.target = target;
+            this.values = values;
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+        }
+
+        @Override
+        public void run() {
+            if (startIndex < endIndex) {
+                float minValue = values[startIndex];
+                float maxValue = values[startIndex];
+
+                for (int i = startIndex + 1; i < endIndex; i++) {
+                    minValue = Math.min(minValue, values[i]);
+                    maxValue = Math.max(maxValue, values[i]);
+                }
+
+                target.combine(new SharedMinMaxResult(minValue, maxValue));
+            }
+        }
+    }
+
+The ``SharedMinMaxComputation`` can be executed exactly the same way as ``MinMaxBlockComputation`` (cf. :ref:`above <MinMaxResult>`), except that the main Java thread has to create the ``target`` variable and to provide it to the individual ``Runnable``:
+
+..  code-block:: java
+
+    public static void main(String[] args) throws InterruptedException {
+        float values[] = new float[1024];
+        // Fill the array
+
+        SharedMinMaxResult result = SharedMinMaxResult.empty();
+
+        SharedMinMaxComputation c1 = new SharedMinMaxComputation(result, values, 0, values.length / 2);
+        SharedMinMaxComputation c2 = new SharedMinMaxComputation(result, values, values.length / 2, values.length);
+        Thread t1 = new Thread(c1);
+        Thread t2 = new Thread(c2);
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+
+        // No more call to "combine()" here!
+        result.print();
+    }
+
+Note that it doesn't make much sense to use a ``Callable<T>`` in this approach. Indeed, because the individual computations directly merge their partial results with a shared variable, they never have to report a result to their caller. However, it still makes much sense to use a thread pool to avoid manipulating the threads directly.
+
+This is why the standard interface ``ExecutorService`` that :ref:`implements thread pools <thread_pools>` accepts not only implementations of the ``Callable<T>`` interface in its ``submit()`` method, but also implementations of the ``Runnable`` interface. In this case, the futures do not convey any result, so ``Future<T>`` must simply be replaced by ``Future``. This is illustrated in the following code:
+
+..  code-block:: java
+                 
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        float values[] = new float[1024];
+        // Fill the array
+
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
+        SharedMinMaxResult result = SharedMinMaxResult.empty();
+
+        SharedMinMaxComputation c1 = new SharedMinMaxComputation(result, values, 0, values.length / 2);
+        SharedMinMaxComputation c2 = new SharedMinMaxComputation(result, values, values.length / 2, values.length);
+        Future future1 = executor.submit(c1);
+        Future future2 = executor.submit(c2);
+
+        future1.get();  // The "Future" doesn't convey any result, so we just wait here
+        future2.get();
+
+        executor.shutdown();
+    }
+
+
+Race conditions, mutual exclusion, and monitors
+-----------------------------------------------
+
+There is however an important danger in the use of shared variables! Let us consider the following code, in which two threads are incrementing the same counter:
+
+..  code-block:: java
+
+    public class BadCounter {
+        private int counter = 0; // Both threads use the same counter
+    
+        public void incrementCounter() {
+            counter++;
+        }
+        
+        class Counter implements Runnable {
+            @Override
+            public void run() {
+                for (int i = 0; i < 100000; i++) {
+                    incrementCounter();
+                }
+            }
+        }
+    
+        public void test() throws InterruptedException {
+            Thread t1 = new Thread(new Counter());
+            Thread t2 = new Thread(new Counter());
+            t1.start();
+            t2.start();
+            t1.join();
+            t2.join();
+            System.out.println(counter);
+        }
+    
+        public static void main(String[] args) throws InterruptedException {
+            new BadCounter().test();
+        }
+    }
+
+One would expect that at the end of the computation, the software would print ``200000``: The two threads count from ``0`` to ``100000``, so the result should be ``2 * 100000``. However, if you run this software, the printed result is different between each execution and is never equal to ``200000`` (it is even closer to ``100000`` than to ``200000``). Why so?
+
+This is because of **race conditions**. The line ``counter++`` actually corresponds to 3 low-level instructions:
+
+1. Read the value of the variable ``counter``,
+
+2. Add 1 to the read value,
+
+3. Store the incremented value to the variable ``counter``.
+
+This decomposition implies that the following sequence of low-level instructions can happen:
+
+.. image:: _static/images/part5/race-condition.png
+  :width: 320
+  :align: center
+  :alt: Race condition
+
+In such a sequence, the first thread would overwrite the change made by the second thread to ``counter``: There is an interference between the two threads! Race conditions depend on the way the instructions are dispatched and ordered between the different CPU cores. 
+
+Fortunately, operating systems and thread libraries offer primitives to prevent such race conditions to occur. The idea is to define so-called **critical sections** in the source code, in which at most one thread can be present at any time. In our example, method ``incrementCounter()`` should correspond to a critical section: In our example, thread 1 should have waited for thread 2 to write its result to the shared variable before starting its computation.
+
+In Java, critical sections can be defined by adding the ``synchronized`` keyword to the methods associated with a shared object. In our example, one could simply replace:
+
+..  code-block:: java
+
+    public void incrementCounter() {
+        counter++;
+    }
+
+by:
+
+..  code-block:: java
+
+    public synchronized void incrementCounter() {
+        counter++;
+    }
+
+Intuitively, adding the ``synchronized`` keyword means that a thread entering the method "locks a padlock". As a consequence, any other thread arriving later on cannot enter the method, as the padlock is locked. Once the first thread exits the method, it "unlocks the padlock", leaving the opportunity for one of the waiting threads to enter the method in its turn.
+
+Internally, each Java object is automatically equipped with one padlock that is shared between all the methods of the object. This padlock is referred to as the **monitor** of the object. The process of locking/unlocking the monitor is referred to as **running in mutual exclusion**.
+
+There is one main caveat associated with ``synchronized``: Because ``synchronized`` limits the concurrency between threads, it also reduces the performance of multithreaded software. For instance, you should try and avoid making a complex computation in a ``synchronized`` method, if possible. Nevertheless, always remember that it is less important to have a program that is *fast* than a program that is *correct*! In other words, **correctness is always more important than speed**.
+
+The ``synchronized`` keyword is only one of the multiple synchronization mechanisms for multithreading that are provided by Java. It is however the most important one, as it allows to develop thread-safe software without diving too much into the complexity of concurrency. As such, it should be mastered by any Java developer. As this course is about the basics of multithreading, more advanced constructions will not be covered.
+
+
+
+Application to matrix multiplication
+------------------------------------
 
 Linear algebra is a mathematical domain that can greatly benefit from parallel programming. Let us consider the following basic implementation of a matrix in Java:
 
