@@ -960,6 +960,8 @@ Shared memory
 In the solutions presented so far, the strategy was to make ``Runnable`` or ``Callable<T>`` responsible for computing the partial results, then to make the main Java thread responsible to combine those partial results. But, :ref:`as explained earlier <multithreading>`, threads that belong to the same process share the same memory space. This means that **threads can access the same variables**.
 
 
+.. _shared_partial:
+
 Using a shared variable to collect the partial results
 ------------------------------------------------------
 
@@ -1056,13 +1058,13 @@ There is however an important danger in the use of shared variables! Let us cons
 ..  code-block:: java
 
     public class BadCounter {
-        private int counter = 0; // Both threads use the same counter
+        private static int counter = 0; // Both threads use the same counter
     
-        public void incrementCounter() {
+        private static void incrementCounter() {
             counter++;
         }
         
-        class Counter implements Runnable {
+        private static class Counter implements Runnable {
             @Override
             public void run() {
                 for (int i = 0; i < 100000; i++) {
@@ -1071,7 +1073,7 @@ There is however an important danger in the use of shared variables! Let us cons
             }
         }
     
-        public void test() throws InterruptedException {
+        public static void main(String[] args) throws InterruptedException {
             Thread t1 = new Thread(new Counter());
             Thread t2 = new Thread(new Counter());
             t1.start();
@@ -1079,10 +1081,6 @@ There is however an important danger in the use of shared variables! Let us cons
             t1.join();
             t2.join();
             System.out.println(counter);
-        }
-    
-        public static void main(String[] args) throws InterruptedException {
-            new BadCounter().test();
         }
     }
 
@@ -1105,9 +1103,9 @@ This decomposition implies that the following sequence of low-level instructions
 
 In such a sequence, the first thread would overwrite the change made by the second thread to ``counter``: There is an interference between the two threads! Race conditions depend on the way the instructions are dispatched and ordered between the different CPU cores. 
 
-Fortunately, operating systems and thread libraries offer primitives to prevent such race conditions to occur. The idea is to define so-called **critical sections** in the source code, in which at most one thread can be present at any time. In our example, method ``incrementCounter()`` should correspond to a critical section: In our example, thread 1 should have waited for thread 2 to write its result to the shared variable before starting its computation.
+Fortunately, operating systems and thread libraries offer primitives to prevent such race conditions to occur. The idea is to define so-called **critical sections** in the source code, in which at most one thread can be present at any time. In our example, method ``incrementCounter()`` should correspond to a critical section: Thread 1 should have waited for thread 2 to write its result to the shared variable before starting its computation.
 
-In Java, critical sections can be defined by adding the ``synchronized`` keyword to the methods associated with a shared object. In our example, one could simply replace:
+In Java, critical sections can be defined by adding the ``synchronized`` keyword to the methods associated with a shared object. Our example can be made correct simply by replacing:
 
 ..  code-block:: java
 
@@ -1123,14 +1121,204 @@ by:
         counter++;
     }
 
-Intuitively, adding the ``synchronized`` keyword means that a thread entering the method "locks a padlock". As a consequence, any other thread arriving later on cannot enter the method, as the padlock is locked. Once the first thread exits the method, it "unlocks the padlock", leaving the opportunity for one of the waiting threads to enter the method in its turn.
+Intuitively, adding the ``synchronized`` keyword means that a thread entering the method "locks a padlock". As a consequence, any other thread arriving later on cannot enter the method, because the padlock is locked. Once the first thread exits the method, it "unlocks the padlock", leaving the opportunity to one of the waiting threads to enter the method in its turn.
 
 Internally, each Java object is automatically equipped with one padlock that is shared between all the methods of the object. This padlock is referred to as the **monitor** of the object. The process of locking/unlocking the monitor is referred to as **running in mutual exclusion**.
 
-There is one main caveat associated with ``synchronized``: Because ``synchronized`` limits the concurrency between threads, it also reduces the performance of multithreaded software. For instance, you should try and avoid making a complex computation in a ``synchronized`` method, if possible. Nevertheless, always remember that it is less important to have a program that is *fast* than a program that is *correct*! In other words, **correctness is always more important than speed**.
+Another reason for using ``synchronized`` consists in ensuring the **visibility** of variable modifications done by one thread to the other threads. For instance, let us consider the following source code:
 
-The ``synchronized`` keyword is only one of the multiple synchronization mechanisms for multithreading that are provided by Java. It is however the most important one, as it allows to develop thread-safe software without diving too much into the complexity of concurrency. As such, it should be mastered by any Java developer. As this course is about the basics of multithreading, more advanced constructions will not be covered.
+..  code-block:: java
 
+    public class Visibility {
+        private static boolean ready;
+        private static String name = "Hello";
+        
+        private static class MyRunnable implements Runnable {
+            public void run() {
+                while (!ready) {
+                    // Wait for "ready" to become "true"
+                }
+                System.out.println(name);
+            }
+        }
+        
+        public static void main(String[] args) {
+            Runnable r = new MyRunnable();
+            Thread t = new Thread(r);
+            
+            t.start();
+            name = "World";
+            ready = true;
+        }
+    }
+
+While it may seem obvious that the software will print ``World``, it is in fact possible that it will print ``Hello``, or never terminate at all! The problem is that the Java specification does not guarantee that some thread sees the modifications made by another thread, unless both threads synchronize (for example with a ``synchronized`` statement). In other words, the ``synchronized`` keyword also implies that threads *publish* their changes to other threads.
+
+In the program above, the ``while (!ready)`` loop might go on forever because the modification ``ready = true`` done by the main thread might never become visible to ``MyRunnable``. Even worse, the JVM might decide to swap the statements ``name = "World"`` and ``ready = true`` in the main thread to apply some low-level hardware optimization: The Java specification allows such *reorderings*, as long as the reordering does not change the semantics of the code within *that* thread. As our source code does not enforce the visibility of the changes to ``ready``, the JVM will notice that the reordering has no side-effect on the main thread and might decide to first execute ``ready = true``, which will make ``MyRunnable`` print ``Hello`` instead of ``World``.
+
+The solution is to make sure that the two threads access the shared variables only through ``synchronized`` methods, as in the following source code:
+
+..  code-block:: java
+                 
+    public class FixedVisibility {
+        private static boolean ready;
+        private static String name = "Hello";
+    
+        public static synchronized void start(String newName) {
+            ready = true;
+            name = newName;
+        }
+    
+        public static synchronized boolean isReady() {
+            return ready;
+        }
+    
+        public static synchronized String getName() {
+            return name;
+        }
+        
+        private static class MyRunnable implements Runnable {
+            public void run() {
+                while (!isReady()) {
+                    // Wait for "ready" to become "true"
+                }
+                System.out.println(getName());
+            }
+        }
+        
+        public static void main(String[] args) {
+            Runnable r = new MyRunnable();
+            Thread t = new Thread(r);
+            
+            t.start();
+            start("World");
+        }
+    }
+
+Summarizing, as a general rule of thumb in this course, make sure that **shared variables are only accessed through synchronized methods**. This will both prevent race conditions and ensure the visibility of the changes.
+
+There is one main caveat associated with the ``synchronized`` keyword: Because ``synchronized`` methods limit the concurrency between threads, they also reduce the overall performance of multithreaded software. In other words, synchronized methods represent a **bottleneck** in the execution of a multithreaded software. For instance, you should try and avoid making a complex computation in a ``synchronized`` method, if possible. Nevertheless, always remember that it is less important to have a program that is *fast* than a program that *works properly*! **Correctness is always more important than speed**.
+
+Finally, note that the ``synchronized`` keyword is only the most basic of the multiple synchronization mechanisms for multithreading that are offered by Java. It is however the most important one, as it allows one to develop thread-safe software without diving too much into the complexity of parallel programming. As such, ``synchronized`` should be mastered by any Java developer. As this course is about the basics of multithreading, more advanced constructions will not be covered.
+
+
+Shared object for computing the minimum and maximum
+---------------------------------------------------
+
+We now apply mutual exclusion to our example of :ref:`computing the minimum and maximum using a shared variable <shared_partial>`. Note that in the version that uses the shared ``result`` variable, the original class ``MinMaxResult`` was replaced by the ``SharedMinMaxResult`` class. The latter class is exactly the same as ``MinMaxResult``, but with the addition of the ``synchronized`` keyword in each of its methods:
+
+..  code-block:: java
+
+    class SharedMinMaxResult {
+        private boolean isPresent;
+        private float minValue;
+        private float maxValue;
+
+        private SharedMinMaxResult(boolean isPresent,
+                                   float minValue,
+                                   float maxValue) {
+            this.isPresent = isPresent;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public SharedMinMaxResult(float minValue,
+                                  float maxValue) {
+            this(true /* present */, minValue, maxValue);
+        }
+
+        static public SharedMinMaxResult empty() {
+            return new SharedMinMaxResult(false /* not present */, 0 /* dummy min */, 0 /* dummy max */);
+        }
+
+        public synchronized boolean isPresent() {
+            return isPresent;
+        }
+
+        public synchronized float getMinValue() {
+            if (isPresent()) {
+                return minValue;
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
+        public synchronized float getMaxValue() {
+            if (isPresent()) {
+                return maxValue;
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
+        public synchronized void print() {
+            if (isPresent()) {
+                System.out.println(getMinValue() + " " + getMaxValue());
+            } else {
+                System.out.println("Empty array");
+            }
+        }
+
+        public synchronized void combine(SharedMinMaxResult with) {
+            if (with.isPresent) {
+                if (isPresent) {
+                    // Combine the results from two non-empty blocks
+                    minValue = Math.min(minValue, with.minValue);
+                    maxValue = Math.max(maxValue, with.maxValue);
+                } else {
+                    // Replace the currently absent result by the provided result
+                    isPresent = true;
+                    minValue = with.minValue;
+                    maxValue = with.maxValue;
+                }
+            } else {
+                // Do nothing if the other result is absent
+            }
+        }
+    }
+
+The addition of ``synchronized`` prevents any race condition between the threads when they combine their partial results with the final result. Also note that the ``synchronized`` methods are only part of the class holding the final result: The threads still make their computation in full parallelism. It is only when the partial results are combined that mutual exclusion occurs, which does not represent a large bottleneck.
+
+The downside of this source code is that the classes ``MinMaxResult`` and ``SharedMinMaxResult`` share almost all of their source code, which is highly redundant. One could avoid this redundancy by wrapping an object of class ``MinMaxResult`` inside a class with the same set of methods, but with the ``synchronized`` keyword added:
+
+..  code-block:: java
+
+    class SharedMinMaxResult {
+        private MinMaxResult wrapped;
+
+        private SharedMinMaxResult(MinMaxResult wrapped) {
+            this.wrapped = wrapped;
+        }
+
+        public SharedMinMaxResult(float minValue,
+                                   float maxValue) {
+            this(new MinMaxResult(minValue, maxValue));
+        }
+
+        static public SharedMinMaxResult empty() {
+            return new SharedMinMaxResult(MinMaxResult.empty());
+        }
+
+        public synchronized boolean isPresent() {
+            return wrapped.isPresent();
+        }
+
+        public synchronized float getMinValue() {
+            return wrapped.getMinValue();
+        }
+
+        public synchronized float getMaxValue() {
+            return wrapped.getMaxValue();
+        }
+
+        public synchronized void print() {
+            wrapped.print();
+        }
+
+        public synchronized void combine(SharedMinMaxResult with) {
+            wrapped.combine(with.wrapped);
+        }
+    }
 
 
 Application to matrix multiplication
