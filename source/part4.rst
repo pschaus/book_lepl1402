@@ -734,6 +734,8 @@ since each node is visited exactly once.
 We show next two practical examples using binary trees data-structures.
 
 
+.. _arithmetic_expression:
+
 Representing an arithmetic Expression with Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -1174,6 +1176,7 @@ No other operations are involved in the iterator's creation, and notably, there 
 	}
 
 
+.. _delegation_comparator:
 
 Delegation 
 ===========
@@ -1399,7 +1402,7 @@ The *Observer Design Pattern* is a pattern that we can use to have a loose coupl
 We will first show how to use observers in the context of GUI development (Graphical User Interface), then will show how to implement observers.
 
 
-.. _awt:
+.. _awt_swing:
 
 Observer pattern on GUI components
 ------------------------------------

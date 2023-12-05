@@ -954,7 +954,8 @@ Like array variables, string variables are references to the content of the stri
 +-----------------------+-------------------------------------------------+
 
 
- 
+.. _enumerations:
+
 Enumerations
 ============
 
