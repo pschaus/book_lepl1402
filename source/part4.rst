@@ -734,6 +734,8 @@ since each node is visited exactly once.
 We show next two practical examples using binary trees data-structures.
 
 
+.. _arithmetic_expression:
+
 Representing an arithmetic Expression with Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -1174,6 +1176,7 @@ No other operations are involved in the iterator's creation, and notably, there 
 	}
 
 
+.. _delegation_comparator:
 
 Delegation 
 ===========
