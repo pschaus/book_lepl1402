@@ -7,13 +7,24 @@ Part 6: Functional Programming
 
 Functional programming refers to a programming paradigm that emphasizes the **use of functions and immutable data** to create applications. This paradigm promotes writing code that is easier to reason about, and that allows for better handling of concurrency.
 
-While Java is not a pure functional language like Haskell, it offers many features that can be used to write more functional-style code. Functional programming in Java encourages the use of pure functions that do not have side effects, i.e., that avoids changing state of the program. Java 8 introduced features to support functional programming, primarily through the addition of lambda expressions, the ``Stream`` API, and functional interfaces.
+While Java is not a pure functional language like Haskell, it offers many features that can be used to write more functional-style code. Functional programming in Java encourages the use of pure functions that do not have side effects, i.e., that avoids changing state of the program. Java 8 introduced features to support functional programming, primarily through the addition of lambda expressions, of the ``Stream`` API, and of functional interfaces.
 
 
-Nested classes
-==============
+Inner classes
+=============
 
-To begin our study of functional programming, we will first go back to the concept of inner classes that has previously been :ref:`briefly encountered <arithmetic_expression>`. An inner class is simply a **class that is defined within another class**.
+.. NOTE:
+
+   "Terminology: Nested classes are divided into two categories:
+   non-static and static. Non-static nested classes are called inner
+   classes. Nested classes that are declared static are called static
+   nested classes."
+
+   From the official Oracle tutorial on Java:
+   https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html
+
+
+To begin our study of functional programming, we will first go back to the concept of nested classes that has previously been :ref:`briefly encountered <arithmetic_expression>`. A nested class is simply a **class that is defined within another class**. Note that a nested class can also define its own nested classes, just like Matryoshka dolls.
 
 Let us consider the task of creating a spreadsheet application. A spreadsheet document is composed of a number of rows. Each row is made of several columns with string values. A data structure to represent a single row can be modeled as follows:
 
@@ -35,7 +46,7 @@ Let us consider the task of creating a spreadsheet application. A spreadsheet do
         }
     }
     
-The ``Row`` class uses an associative array that maps integers (the index of the columns) to strings (the value of the columns). The standard ``HashMap<K,V>`` class of Java is used to this end: `<https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html>`_
+The ``Row`` class uses an `associative array <https://en.wikipedia.org/wiki/Associative_array>`_ that maps integers (the index of the columns) to strings (the value of the columns). The use of an associated array allows to account for columns with a missing value. The standard ``HashMap<K,V>`` class of Java is used to this end: `<https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html>`_
 
 A basic spreadsheet application can then be created on the top of this ``Row`` class. Let us define a spreadsheet document as a list of rows:
     
@@ -121,7 +132,7 @@ We are now interested in the task of sorting the rows according to the values th
         }
     }
     
-The ``MyComparator1`` class is located outside the ``Spreadsheet`` class. This is not a real issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
+The ``MyComparator1`` class is called an **external class** because it is located outside the ``Spreadsheet`` class. This is not a real issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
 
 ..  code-block:: java
 
@@ -148,9 +159,11 @@ The ``MyComparator1`` class is located outside the ``Spreadsheet`` class. This i
         }
     }
 
-In this code, ``MyComparator2`` is a static nested class, and ``Spreadsheet`` is called its **outer class**. Static nested classes are a way to logically group classes together, improve code organization, and encapsulate functionality within a larger class, promoting a more modular and structured design. Importantly, static nested classes have access to the private static members of the outer class (which was not the case of the external class ``MyComparator1``): This can for instance be useful to take advantage of :ref:`private enumerations or constants that would be defined in the outer class <enumerations>`.
+In this code, ``MyComparator2`` is the static nested class, and ``Spreadsheet`` is called its **outer class**. Static nested classes are a way to logically group classes together, improve code organization, and encapsulate functionality within a larger class, promoting a more modular and structured design. Note that ``MyComparator2`` could have been tagged with a :ref:`public visibilty <visibility>` to make it accessible outside of ``Spreadsheet``.
 
-The latter code has however a redundancy: The value of ``sortOnColumn`` must be copied to a private ``column`` variable of ``MyComparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of **inner classes**. Java allows writing:
+Importantly, static nested classes have access to the private static members of the outer class (which was not the case of the external class ``MyComparator1``): This can for instance be useful to take advantage of :ref:`private enumerations or constants that would be defined in the outer class <enumerations>`.
+
+The latter code has however a redundancy: The value of ``sortOnColumn`` must be manually copied to a private ``column`` variable of ``MyComparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of non-static nested classes, that are also known as **inner classes**. Java allows writing:
 
 ..  code-block:: java
 
@@ -173,13 +186,13 @@ The latter code has however a redundancy: The value of ``sortOnColumn`` must be 
                  
 This is much more compact! In this code, ``MyComparator3`` was defined as an inner class of the outer class ``Spreadsheet``, which grants its ``sort()`` method a direct access to the ``sortOnColumn`` member variable.
 
-Inner classes look very similar to static nested classes, but they don't have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods) of the outer class, including private members.
+Inner classes look very similar to static nested classes, but they don't have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods) of the outer class, including private members. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
 
 
 
 
-Inner classes and lambda functions
-==================================
+Lambda functions
+================
 
 
 Functional interfaces 

@@ -739,14 +739,29 @@ We show next two practical examples using binary trees data-structures.
 Representing an arithmetic Expression with Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
+.. NOTE:
+
+   "Terminology: Nested classes are divided into two categories:
+   non-static and static. Non-static nested classes are called inner
+   classes. Nested classes that are declared static are called static
+   nested classes."
+
+   From the official Oracle tutorial on Java:
+   https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html
+
+   In this section, "OperatorExpressionTree" are
+   "ValueExpressionTree", are static nested classes. So SJO replaced
+   "inner class" by "static nested class" for uniformity with part 6.
+
+
 The ``BinaryExpressionTree`` class in the provided code is an abstract representation of a binary expression tree, 
 a data structure commonly used in computer science for representing expressions with binary operators (like ``+, -, *, /``).
 
 The set of expression methods (``mul()``, ``div()``, ``plus()``, ``minus()``) allows to build easily expressions from other expressions.
 These methods return a new ``OperatorExpressionTree`` object, which is a subclass of ``BinaryExpressionTree``. 
 Each method takes another ``BinaryExpressionTree`` as an operand to the right of the operator.
-The private inner class ``OperatorExpressionTree`` represents an operator node in the tree with left and right children, which are also BinaryExpressionTree instances.
-The private inner class ``ValueExpressionTree``  represents a leaf node in the tree that contains a value.
+The private static nested class ``OperatorExpressionTree`` represents an operator node in the tree with left and right children, which are also BinaryExpressionTree instances.
+The private static nested class ``ValueExpressionTree``  represents a leaf node in the tree that contains a value.
 A convenience static method ``value()`` allows creating a ``ValueExpressionTree`` with a given integer value.
 An example is provided in the main method for creating tree representation of the expression ``(2 * ((5+7)-3)) / 3``.
 
@@ -1053,6 +1068,8 @@ In conclusion, while they are closely related and often used together, ``Iterabl
 ``Iterable`` is about the ability to produce an ``Iterator``, while ``Iterator`` is the mechanism that actually facilitates the traversal.
 
 
+.. _custom_iterators:
+
 Implementing your own iterators
 ---------------------------------
 
@@ -1069,7 +1086,7 @@ This count will be incremented whenever there's a structural modification to the
 The iterator will then capture this count when it is created and compare its own captured count to the stack's modification count during iteration. 
 If they differ, the iterator will throw a ``ConcurrentModificationException``.
 The ``LinkedStack`` class has an inner ``LinkedStackIterator`` class that checks the modification count every time it is asked if there's a next item or when retrieving the next item.
-It is important to understand that this is a non static inner class. An inner class cannot be instantiated without first instantiating the outer class and it is tied to a specific instance of the outer class. This is why, the instance variables of the ``Iterator`` inner class can be initialized using the instance variables of the outer class.
+It is important to understand that ``LinkedStackIterator`` is an inner class, *not* a static nested class. An inner class cannot be instantiated without first instantiating the outer class and it is tied to a specific instance of the outer class. This is why, the instance variables of the ``Iterator`` inner class can be initialized using the instance variables of the outer class.
 
 
 The sample main method demonstrates that trying to modify the stack during iteration (by pushing a new item) results in a

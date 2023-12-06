@@ -2464,6 +2464,9 @@ Packages have two advantages. First of all, with the :code:`public` keyword, you
 
 The second advantage of packages is that they provide separate *namespaces*. This means that a package X and a package Y can both contain a class named ``ABC``. By using the fully classified names (or an ``import`` statement), we can exactly tell the compiler whether we want to use class :code:`X.ABC` or class :code:`Y.ABC`. This becomes important when you write larger applications and you want to use packages written by other people. Thanks to the different packages, you don't have to worry about classes with identical names.
 
+
+.. _visibility:
+
 Access control
 --------------
 
