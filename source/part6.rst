@@ -66,10 +66,16 @@ A basic spreadsheet application can then be created on the top of this ``Row`` c
     
         public void add(Row row) {
             rows.add(row);
+            sort();
         }
     
         public void setSortOnColumn(int sortOnColumn) {
             this.sortOnColumn = sortOnColumn;
+            sort();
+        }
+
+        private void sort() {
+            // TODO
         }
     
         static private void fillWithSongs(Spreadsheet spreadsheet) {
@@ -105,7 +111,9 @@ This Java application creates a spreadsheet with 3 rows and 3 columns that are f
   :align: center
   :alt: Spreadsheet
 
-We are now interested in the task of sorting the rows according to the values that are present in the columns. To this end, the ``Spreadsheet`` class contains the member variable ``sortOnColumn`` that specifies on which column the sorting must be applied. The ``sortOnColumn`` variable is useful to preserve the same ordering if new rows are added to the spreadsheet. We already know that this task can be solved using a :ref:`delegation to a dedicated comparator <delegation_comparator>`:
+We are now interested in the task of continuously sorting the rows according to the values that are present in the columns, as new rows are added to the spreadsheet.
+
+To this end, the ``Spreadsheet`` class contains the member variable ``sortOnColumn`` that specifies on which column the sorting must be applied, and can be set using the ``setSortOnColumn()`` setter method. We already know that the task of sorting the rows can be solved using a :ref:`delegation to a dedicated comparator <delegation_comparator>`:
     
 ..  code-block:: java
 
@@ -127,7 +135,7 @@ We are now interested in the task of sorting the rows according to the values th
         private int sortOnColumn;
         // ...
 
-        public void sort() {
+        private void sort() {
             Collections.sort(rows, new MyComparator1(sortOnColumn));
         }
     }
@@ -154,16 +162,16 @@ The ``MyComparator1`` class is called an **external class** because it is locate
             }
         }
 
-        public void sort() {
+        private void sort() {
             Collections.sort(rows, new MyComparator2(sortOnColumn));
         }
     }
 
 In this code, ``MyComparator2`` is the static nested class, and ``Spreadsheet`` is called its **outer class**. Static nested classes are a way to logically group classes together, improve code organization, and encapsulate functionality within a larger class, promoting a more modular and structured design. Note that ``MyComparator2`` could have been tagged with a :ref:`public visibilty <visibility>` to make it accessible outside of ``Spreadsheet``.
 
-Importantly, static nested classes have access to the private static members of the outer class (which was not the case of the external class ``MyComparator1``): This can for instance be useful to take advantage of :ref:`private enumerations or constants that would be defined in the outer class <enumerations>`.
+Importantly, static nested classes have access to the private static members of the outer class, which was not the case of the external class ``MyComparator1``: This can for instance be useful to take advantage of :ref:`private enumerations or constants <enumerations>` that would be defined inside the outer class.
 
-The latter code has however a redundancy: The value of ``sortOnColumn`` must be manually copied to a private ``column`` variable of ``MyComparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of non-static nested classes, that are also known as **inner classes**. Java allows writing:
+The latter code has however a redundancy: The value of ``sortOnColumn`` must be manually copied to a private ``column`` variable of ``MyComparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of non-static nested classes, that are formally known as **inner classes**. Java allows writing:
 
 ..  code-block:: java
 
@@ -179,20 +187,106 @@ The latter code has however a redundancy: The value of ``sortOnColumn`` must be 
             }
         }
 
-        public void sort() {
+        private void sort() {
             Collections.sort(rows, new MyComparator3());
         }
     }
                  
-This is much more compact! In this code, ``MyComparator3`` was defined as an inner class of the outer class ``Spreadsheet``, which grants its ``sort()`` method a direct access to the ``sortOnColumn`` member variable.
+This is much more compact! In this code, ``MyComparator3`` was defined as an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
 
-Inner classes look very similar to static nested classes, but they don't have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods) of the outer class, including private members. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
+Inner classes look very similar to static nested classes, but they don't have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods, including private members) of the object that created them. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
 
+The fact that ``compare()`` has access to ``sortOnColumn`` might seem magic. This is actually an example of **syntactic sugar**. Syntactic sugar refers to language features or constructs that do not introduce new functionality but provide a more convenient or expressive way of writing code. These features make the code more readable or concise without fundamentally changing how it operates. In essence, syntactic sugar is a shorthand or a more user-friendly syntax for expressing something that could be written in a longer or more explicit manner.
 
+Syntactic sugar constructions were already encountered in this course. :ref:`Autoboxing <boxing>` is such a syntactic sugar. Indeed, the code:
+
+..  code-block:: java
+                 
+    Integer num = 42;  // Autoboxing (from primitive type to wrapper)
+    int value = num;   // Auto unboxing (from wrapper to primitive type)
+
+is semantically equivalent to the more explicit code:
+
+..  code-block:: java
+                 
+    Integer num = Integer.valueOf(42);
+    int value = num.intValue();
+
+Thanks to its knowledge about the standard ``Integer`` class, the compiler can automatically "fill the dots" by adding the constructor and selecting the proper conversion method. The :ref:`enhanced for-each loop for iterators <iterators>` is another example of syntactic sugar, because writing:
+
+..  code-block:: java
+
+    List<Integer> a = new ArrayList<>();
+    a.add(-1);
+    a.add(10);
+    a.add(42);
+
+    for (Integer item: a) {
+        System.out.println(item);
+    }
+
+is semantically equivalent to:
+
+..  code-block:: java
+
+    Iterator<Integer> it = a.iterator();
+    
+    while (it.hasNext()) {
+        Integer item = it.next();
+        System.out.println(item);
+    }
+
+Once the compiler comes across some ``for()`` loop on a collection that implements the standard ``Iterable<T>`` interface, it can automatically instantiate the iterator and traverse the collection using this iterator.
+
+In the context of inner classes, the syntactic sugar consists in including a reference to the outer object that created the instance of the inner object. In our example, the compiler automatically transforms the ``MyComparator3`` class into the following static nested class:
+
+..  code-block:: java
+
+    public class Spreadsheet {
+        private List<Row> rows;
+        private int sortOnColumn;
+        // ...
+
+        private static class MyComparator4 implements Comparator<Row> {
+            private Spreadsheet outer;  // Reference to the outer object
+    
+            MyComparator4(Spreadsheet outer) {
+                this.outer = outer;
+            }
+        
+            @Override
+            public int compare(Row a, Row b) {
+                return a.get(outer.sortOnColumn).compareTo(b.get(outer.sortOnColumn));
+            }
+        }
+    
+        private void sort() {
+            Collections.sort(rows, new MyComparator4(this));
+        }
+    }
+
+So far, we have seen three different constructions to define classes:
+
+* External classes are the default way of defining classes, i.e. separately from any other class.
+
+* Static nested classes are members of an outer class and have access to the static members of the outer class.
+
+* Inner classes are members of an outer class and keep a reference to the object that created them through syntactic sugar.
 
 
 Lambda functions
 ================
+
+
+Other example of syntactic sugar:
+
+
+..  code-block:: java
+                 
+    list.forEach(item -> System.out.println(item));
+
+    // Method reference (syntactic sugar for the above)
+    list.forEach(System.out::println);
 
 
 Functional interfaces 

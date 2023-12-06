@@ -1891,6 +1891,8 @@ For loops on ArrayList
     }
 
 
+.. _boxing:
+
 Boxing and unboxing
 -------------------
 
@@ -1930,7 +1932,7 @@ This trick is called *boxing* because we put the primitive-type value 3 in a sma
 
 The :code:`java.lang` package also contains equivalent classes :code:`Long`, :code:`Float`, etc. for the other primitive types.
 
-Note that boxing is quite cumbersome and it is only needed in Java because primitive types are not subclasses of :code:`Object`. However, we get a little bit of help from the compiler. In fact, the compiler can do the boxing for you. This is called *autoboxing*. You can just write:
+Note that boxing is quite cumbersome and it is only needed in Java because primitive types are not subclasses of :code:`Object`. However, we get a little bit of help from the compiler. In fact, the compiler can do the boxing for you. This is called **autoboxing**. You can just write:
 
 .. code-block:: java
 

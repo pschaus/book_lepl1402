@@ -988,6 +988,7 @@ Representing a set with a tree
 
 
 
+.. _iterators:
 
 Iterators
 ===========
