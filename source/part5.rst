@@ -727,7 +727,7 @@ You can obtain the result of the futures with their ``get()`` method:
     T result4 = future4.get();
     // ...
 
-If the task is not yet finished, the method ``get()`` will wait. This contrast with the ``executor.submit()`` method that always returns immediately.
+If the task is not finished yet, the method ``get()`` will wait. This contrast with the ``executor.submit()`` method that always returns immediately.
 
 At the end of the program or when you do not need the thread pool anymore, you have to shut it down explicitly to stop all its threads, otherwise the software might not properly exit:
 
@@ -816,8 +816,8 @@ The ``throws`` construction is needed because the ``get()`` method of futures ca
 
 .. _pool_multiple_blocks:
 
-Dividing the array input multiple blocks
-----------------------------------------
+Dividing the array into multiple blocks
+---------------------------------------
 
 So far, we have divided the array ``values`` into 2 or 4 blocks, because we were guided by the number of CPU cores. In practice, it is a better idea to divide the array into blocks of a fixed size to become agnostic of the underlying number of cores. A thread pool can be used in this situation to manage the computations, while preventing the number of threads to exceed the CPU capacity.
 
