@@ -2210,6 +2210,8 @@ If you want to know more about how other programming languages handle multiple i
 However, Java has another concept, the :code:`interface`, which can be used as a substitute for multiple inheritance in many situations. You will learn more about interfaces later.
 
 
+.. _final_keyword:
+
 The final keyword
 =================
 
@@ -2346,6 +2348,8 @@ Note that a variable that cannot be modified after initialization can be also ac
 
 Organizing your classes
 =======================
+
+.. _packages:
 
 Creating packages
 -----------------

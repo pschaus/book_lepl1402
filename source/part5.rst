@@ -1321,6 +1321,8 @@ The downside of this source code is that the classes ``MinMaxResult`` and ``Shar
     }
 
 
+.. _matrix_multiplication:
+
 Application to matrix multiplication
 ------------------------------------
 

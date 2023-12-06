@@ -111,16 +111,20 @@ This Java application creates a spreadsheet with 3 rows and 3 columns that are f
   :align: center
   :alt: Spreadsheet
 
+
+Static nested classes
+---------------------
+
 We are now interested in the task of continuously sorting the rows according to the values that are present in the columns, as new rows are added to the spreadsheet.
 
 To this end, the ``Spreadsheet`` class contains the member variable ``sortOnColumn`` that specifies on which column the sorting must be applied, and can be set using the ``setSortOnColumn()`` setter method. We already know that the task of sorting the rows can be solved using a :ref:`delegation to a dedicated comparator <delegation_comparator>`:
     
 ..  code-block:: java
 
-    class MyComparator1 implements Comparator<Row> {
+    class RowRomparator1 implements Comparator<Row> {
         private int column;
 
-        MyComparator1(int column) {
+        RowRomparator1(int column) {
             this.column = column;
         }
 
@@ -136,11 +140,11 @@ To this end, the ``Spreadsheet`` class contains the member variable ``sortOnColu
         // ...
 
         private void sort() {
-            Collections.sort(rows, new MyComparator1(sortOnColumn));
+            Collections.sort(rows, new RowRomparator1(sortOnColumn));
         }
     }
     
-The ``MyComparator1`` class is called an **external class** because it is located outside the ``Spreadsheet`` class. This is not a real issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
+The ``RowRomparator1`` class is called an **external class** because it is located outside the ``Spreadsheet`` class. This is not a real issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
 
 ..  code-block:: java
 
@@ -149,10 +153,10 @@ The ``MyComparator1`` class is called an **external class** because it is locate
         private int sortOnColumn;
         // ...
 
-        private static class MyComparator2 implements Comparator<Row> {
+        private static class RowRomparator2 implements Comparator<Row> {
             private int column;
 
-            MyComparator2(int column) {
+            RowRomparator2(int column) {
                 this.column = column;
             }
 
@@ -163,15 +167,21 @@ The ``MyComparator1`` class is called an **external class** because it is locate
         }
 
         private void sort() {
-            Collections.sort(rows, new MyComparator2(sortOnColumn));
+            Collections.sort(rows, new RowRomparator2(sortOnColumn));
         }
     }
 
-In this code, ``MyComparator2`` is the static nested class, and ``Spreadsheet`` is called its **outer class**. Static nested classes are a way to logically group classes together, improve code organization, and encapsulate functionality within a larger class, promoting a more modular and structured design. Note that ``MyComparator2`` could have been tagged with a :ref:`public visibilty <visibility>` to make it accessible outside of ``Spreadsheet``.
+In this code, ``RowRomparator2`` is the static nested class, and ``Spreadsheet`` is called its **outer class**. Note that ``RowRomparator2`` could have been tagged with a :ref:`public visibility <visibility>` to make it accessible outside of ``Spreadsheet``.
 
-Importantly, static nested classes have access to the private static members of the outer class, which was not the case of the external class ``MyComparator1``: This can for instance be useful to take advantage of :ref:`private enumerations or constants <enumerations>` that would be defined inside the outer class.
+Static nested classes are a way to logically group classes together, improve code organization, and encapsulate functionality within a larger class, promoting a more modular and structured design. Note that it is allowed for two different classes to use the same name for a nested class, which can prevent collisions between class names in large applications, in a way that is similar to :ref:`packages <packages>`.
 
-The latter code has however a redundancy: The value of ``sortOnColumn`` must be manually copied to a private ``column`` variable of ``MyComparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of non-static nested classes, that are formally known as **inner classes**. Java allows writing:
+Importantly, static nested classes have access to the private static members of the outer class, which was not the case of the external class ``RowRomparator1``: This can for instance be useful to take advantage of :ref:`private enumerations or constants <enumerations>` that would be defined inside the outer class.
+
+
+Inner classes
+-------------
+
+The previous code has however a redundancy: The value of ``sortOnColumn`` must be manually copied to a private ``column`` variable of ``RowRomparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of non-static nested classes, that are formally known as **inner classes**. Java allows writing:
 
 ..  code-block:: java
 
@@ -180,7 +190,7 @@ The latter code has however a redundancy: The value of ``sortOnColumn`` must be 
         private int sortOnColumn;
         // ...
 
-        private class MyComparator3 implements Comparator<Row> {
+        private class RowRomparator3 implements Comparator<Row> {
             @Override
             public int compare(Row a, Row b) {
                 return a.get(column).compareTo(b.get(sortOnColumn));
@@ -188,13 +198,17 @@ The latter code has however a redundancy: The value of ``sortOnColumn`` must be 
         }
 
         private void sort() {
-            Collections.sort(rows, new MyComparator3());
+            Collections.sort(rows, new RowRomparator3());
         }
     }
                  
-This is much more compact! In this code, ``MyComparator3`` was defined as an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
+This is much more compact! In this code, ``RowRomparator3`` was defined as an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
 
 Inner classes look very similar to static nested classes, but they don't have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods, including private members) of the object that created them. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
+
+
+Syntactic sugar
+---------------
 
 The fact that ``compare()`` has access to ``sortOnColumn`` might seem magic. This is actually an example of **syntactic sugar**. Syntactic sugar refers to language features or constructs that do not introduce new functionality but provide a more convenient or expressive way of writing code. These features make the code more readable or concise without fundamentally changing how it operates. In essence, syntactic sugar is a shorthand or a more user-friendly syntax for expressing something that could be written in a longer or more explicit manner.
 
@@ -238,7 +252,7 @@ is semantically equivalent to:
 
 Once the compiler comes across some ``for()`` loop on a collection that implements the standard ``Iterable<T>`` interface, it can automatically instantiate the iterator and traverse the collection using this iterator.
 
-In the context of inner classes, the syntactic sugar consists in including a reference to the outer object that created the instance of the inner object. In our example, the compiler automatically transforms the ``MyComparator3`` class into the following static nested class:
+In the context of inner classes, the syntactic sugar consists in including a reference to the outer object that created the instance of the inner object. In our example, the compiler automatically transforms the ``RowRomparator3`` class into the following static nested class:
 
 ..  code-block:: java
 
@@ -247,10 +261,10 @@ In the context of inner classes, the syntactic sugar consists in including a ref
         private int sortOnColumn;
         // ...
 
-        private static class MyComparator4 implements Comparator<Row> {
+        private static class RowRomparator4 implements Comparator<Row> {
             private Spreadsheet outer;  // Reference to the outer object
     
-            MyComparator4(Spreadsheet outer) {
+            RowRomparator4(Spreadsheet outer) {
                 this.outer = outer;
             }
         
@@ -261,21 +275,160 @@ In the context of inner classes, the syntactic sugar consists in including a ref
         }
     
         private void sort() {
-            Collections.sort(rows, new MyComparator4(this));
+            Collections.sort(rows, new RowRomparator4(this));
         }
     }
 
+
+Local inner classes
+-------------------
+    
 So far, we have seen three different constructions to define classes:
 
 * External classes are the default way of defining classes, i.e. separately from any other class.
 
-* Static nested classes are members of an outer class and have access to the static members of the outer class.
+* Static nested classes are members of an outer class. They have access to the static members of the outer class.
 
-* Inner classes are members of an outer class and keep a reference to the object that created them through syntactic sugar.
+* Inner classes are non-static members of an outer class. They are connected to the object that created them through syntactic sugar.
+
+Inner classes are great, but code readability would still be improved if the ``RowComparator3`` class could somehow be brought *inside* the ``sort()`` method, because it is presumably the only location where this comparator would made sense in the application. This would make the one-to-one relation between the method and its comparator immediately apparent. This is the objective of **local inner classes**:
+
+..  code-block:: java
+
+    private void sort() {
+        class RowComparator5 implements Comparator<Row> {
+            @Override
+            public int compare(Row a, Row b) {
+                return a.get(sortOnColumn).compareTo(b.get(sortOnColumn));
+            }
+        }
+
+        Collections.sort(rows, new RowComparator5());
+    }
+
+In this new version of the ``sort()`` method, the comparator was defined within the scope of the method. The ``RowComparator5`` class is entirely local to ``sort()``, and cannot be used in another method or class.
 
 
+Anonymous inner classes
+-----------------------
+
+Because local inner classes are typically used at one single point of the method, it is generally not useful to give a name to local inner classes. Consequently, Java features the **anonymous inner class** construction:
+
+..  code-block:: java
+
+    private void sort() {
+        Comparator<Row> comparator = new Comparator<Row>() {
+            @Override
+            public int compare(Row a, Row b) {
+                return a.get(sortOnColumn).compareTo(b.get(sortOnColumn));
+            }
+        };
+
+        Collections.sort(rows, comparator);
+    }
+
+As can be seen in this example, an anonymous inner class is a class that is defined without a name inside a method and that instantiated at the same place where it is defined. This construction is often used for implementing interfaces or extending classes on-the-fly. To make this more apparent, note that we could have avoided the introduction of temporary variable ``comparator`` by directly writing:
+
+..  code-block:: java
+
+    private void sort() {
+        Collections.sort(rows, new Comparator<Row>() {
+            @Override
+            public int compare(Row a, Row b) {
+                return a.get(sortOnColumn).compareTo(b.get(sortOnColumn));
+            }
+        });
+    }
+
+Anonymous inner classes also correspond to a syntactic sugar construction, because an anonymous inner class can easily be converted into a local inner class.
+
+
+Access to method variables
+--------------------------
+
+Importantly, both local inner classes and anonymous inner classes have **access to the variables of their enclosing method**.
+
+To illustrate this point, let us consider the task of filling a matrix with a constant value using multiple threads. We could create one thread that fills the upper part of the matrix, and another thread that fills the lower part of the matrix. Using a :ref:`thread pool <thread_pools>` and the ``SynchronizedMatrix`` class that was defined to :ref:`demonstrate multithreading <matrix_multiplication>`, the corresponding implementation could be:
+
+..  code-block:: java
+                 
+    public static void fill1(ExecutorService threadPool,
+                             SynchronizedMatrix m,
+                             float value) throws ExecutionException, InterruptedException {
+        
+        class Filler implements Runnable {
+            private int startRow;
+            private int endRow;
+
+            Filler(int startRow,
+                   int endRow) {
+                this.startRow = startRow;
+                this.endRow = endRow;
+            }
+
+            @Override
+            public void run() {
+                for (int row = startRow; row < endRow; row++) {
+                    for (int column = 0; column < m.getColumns(); column++) {
+                        // The inner class has access to the "m" and "value" variables!
+                        m.setValue(row, column, value);
+                    }
+                }
+            }
+        }
+
+        Future upperPart = threadPool.submit(new Filler(0, m.getRows() / 2));
+        Future lowerPart = threadPool.submit(new Filler(m.getRows() / 2, m.getRows()));
+
+        upperPart.get();
+        lowerPart.get();
+    }
+    
+As can be seen in this example, it is not necessary for the inner class ``Filler`` to explicitly store a copy of ``m`` and ``value``. Indeed, because those two variables are part of the scope of method ``fill1()``, the ``run()`` method has direct access to ``m`` and ``value``. Actually, this is again syntactic sugar: The compiler automatically gives inner classes a copy of all the local variables of the surrounding method.
+
+The method ``fill1()`` creates exactly two threads, one for each part of the matrix. One could want to take advantage of a higher number of CPU cores by reducing this granularity. According to this idea, here is an alternative implementation that introduces parallelism at the level of the individual rows of the matrix:
+
+..  code-block:: java
+                 
+    public static void fill2(ExecutorService threadPool,
+                             SynchronizedMatrix m,
+                             float value) throws ExecutionException, InterruptedException {
+        Stack<Future> pendingRows = new Stack<>();
+        
+        for (int row = 0; row < m.getRows(); row++) {
+            final int myRow = row;
+            
+            pendingRows.add(threadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    for (int column = 0; column < m.getColumns(); column++) {
+                        m.setValue(myRow, column, value);
+                    }                    
+                }
+            }));
+        }
+
+        while (!pendingRows.isEmpty()) {
+            pendingRows.pop().get();
+        }
+    }
+
+Contrarily to ``fill1()`` that used a *local* inner class, the ``fill2()`` method uses an *anonymous* inner class an instance of which is created for each row. This is because the first implementation had to separately track exactly two futures using two variables, whereas the second implementation tracks multiple futures using a stack.
+
+There is however a caveat associated with ``fill2()``: One could expect to have access to the ``row`` variable inside the ``run()`` method, because ``row`` is part of the scope of the enclosing method. However, the inner class might continue to exist and be used even after the loop has finished executing and the variable ``row`` has disappeared. To prevent potential issues arising from changes to variables after the start of the execution of a method, an inner class is actually only allowed to access the **final variables** in the scope of method (or variables that could have been tagged as ``final``). Remember that a final variable means that it is :ref:`not allowed to change its value later <final_keyword>`.
+
+In the ``fill2()`` example, ``m`` and ``value`` could have been tagged as ``final``, because their value does not change in the method. Adding a line like ``value = 10;`` inside the method would break the compilation. One could argue that the *content* of ``m`` changes because of the calls to ``m.setValue()``, however the *reference* to the object ``m`` that was originally provided as argument to the method never changes. Finally, the variable ``row`` cannot be declared as ``final``, because its value changes during the loop. Storing a copy of ``row`` inside the variable ``myRow`` is a workaround to solve this issue.
+
+.. admonition:: Remark
+   :class: remark
+
+   The example of filling a matrix using multithreading is a bit academic, because for such an operation, the bottleneck will be the RAM, not the CPU. As a consequence, adding more CPU threads will probably never improve performance, and might even be detrimental because of the overhead associated with thread management. Furthermore, our class ``SynchronizedMatrix`` implements mutual exclusion for the access to the individual cells (i.e. the ``setValue()`` is tagged with the ``synchronized`` keyword), which will dramatically reduce the performance.
+
+    
 Lambda functions
 ================
+
+
 
 
 Other example of syntactic sugar:
@@ -287,6 +440,8 @@ Other example of syntactic sugar:
 
     // Method reference (syntactic sugar for the above)
     list.forEach(System.out::println);
+
+
 
 
 Functional interfaces 
