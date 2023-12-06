@@ -1449,7 +1449,7 @@ On the next example we have a solitary button that, when clicked, responds with 
 
 	class ButtonActionListener implements ActionListener {
 	    @Override
-	    public void actionPerformed(ActionEvent e){
+	    public void actionPerformed(ActionEvent e) {
 	        JOptionPane.showMessageDialog(null,"Thank you!");
 	    }
 	}

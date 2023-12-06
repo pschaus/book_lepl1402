@@ -204,7 +204,7 @@ The previous code has however a redundancy: The value of ``sortOnColumn`` must b
                  
 This is much more compact! In this code, ``RowRomparator3`` was defined as an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
 
-Inner classes look very similar to static nested classes, but they don't have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods, including private members) of the object that created them. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
+Inner classes look very similar to static nested classes, but they do not have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods, including private members) of the object that created them. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
 
 
 Syntactic sugar
@@ -308,6 +308,8 @@ Inner classes are great, but code readability would still be improved if the ``R
 
 In this new version of the ``sort()`` method, the comparator was defined within the scope of the method. The ``RowComparator5`` class is entirely local to ``sort()``, and cannot be used in another method or class.
 
+
+.. _anonymous_inner_classes:
 
 Anonymous inner classes
 -----------------------
@@ -425,27 +427,112 @@ In the ``fill2()`` example, ``m`` and ``value`` could have been tagged as ``fina
    The example of filling a matrix using multithreading is a bit academic, because for such an operation, the bottleneck will be the RAM, not the CPU. As a consequence, adding more CPU threads will probably never improve performance, and might even be detrimental because of the overhead associated with thread management. Furthermore, our class ``SynchronizedMatrix`` implements mutual exclusion for the access to the individual cells (i.e. the ``setValue()`` is tagged with the ``synchronized`` keyword), which will dramatically reduce the performance.
 
     
-Lambda functions
-================
+Functional interfaces and lambda functions
+==========================================
 
+Since the beginning of our :ref:`exploration of object-oriented programming <part4>`, a recurrent pattern keeps appearing:
 
+* During the :ref:`delegation to comparators of objects <delegation_comparator>`:
 
+  ..  code-block:: java
 
-Other example of syntactic sugar:
+      public class TitleComparator implements Comparator<Book> {
+          @Override
+          public int compare(Book b1, Book b2) {
+              return b1.getTitle().compareTo(b2.getTitle());
+          }
+      }
 
+* Inside the :ref:`Observer Design Pattern <observer>`:
+
+  ..  code-block:: java
+
+      class ButtonActionListener implements ActionListener {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+              JOptionPane.showMessageDialog(null,"Thank you!");
+          }
+      }
+
+* For :ref:`specifying operations to be done by threads <runnable>`:
+
+  ..  code-block:: java
+
+      class Computation implements Runnable {
+          @Override
+          public void run() {
+              expensiveComputation();
+          }
+      }
+
+This recurrent pattern corresponds to simple classes that implement **one single abstract method** and that have **no member**.
+
+The presence of a single method stems from the fact that these classes implement **one functional interface**. In Java, a functional interface is defined as an :ref:`interface <interfaces>` that contains only one abstract method. It is also known as a Single Abstract Method (SAM) interface. Functional interfaces are a key component of functional programming support introduced in Java 8. The interfaces ``Comparator<T>``, ``ActionListener``, ``Runnable``, and ``Callable<T>`` are all examples of functional interfaces.
+
+.. admonition:: Advanced remarks
+   :class: remark
+
+   A functional interface can have multiple ``default`` methods or ``static`` methods without violating the rule of having a single abstract method. This course has not covered ``default`` methods, but it is sufficient to know that a ``default`` method provides a default implementation within an interface that the classes implementing the interface can choose to inherit or overwrite. For instance, the interface ``Comparator<T>`` comes with multiple ``default`` and ``static`` methods, as can be seen in the Java documentation: `<https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html>`_
+
+   In Java 8 and later, the ``@FunctionalInterface`` annotation helps explicitly mark an interface as a functional interface. If an interface annotated with ``@FunctionalInterface`` contains more than one abstract method, the compiler generates an error to indicate that it does not meet the criteria of a functional interface. Nonetheless, pay attention to the fact that not all the functional interfaces of Java are annotated with ``@FunctionalInterface``. This is notably the case of ``ActionListener``.
+
+A **lambda expression** is an expression that creates an instance of an :ref:`anonymous inner class <anonymous_inner_classes>` that has no member and that implements a functional interface. Thanks to lambda expressions, the ``sort()`` method for our spreadsheet application can be shortened as a single line of code:
 
 ..  code-block:: java
-                 
-    list.forEach(item -> System.out.println(item));
 
-    // Method reference (syntactic sugar for the above)
-    list.forEach(System.out::println);
+    private void sort() {
+        Collections.sort(rows, (a, b) -> a.get(sortOnColumn).compareTo(b.get(sortOnColumn)));
+    }
+
+As can be seen in this example, a lambda expression only specifies the name of the arguments and the body of the unique abstract method of the functional interface it implements. A lambda expression can only appear in a context that expects a value whose type is a functional interface. Once the Java compiler has determined which functional interface is expected for this context, it transparently instantiates a suitable anonymous inner class that implements the expected functional interface with the expected single method.
+
+Concretely, in this example, the compiler notices the construction :code:`Collections.sort(rows, lambda)`. Because ``rows`` has type ``List<Row>``, the compiler looks for a static method in the ``Collections`` class that is named ``sort()`` and that takes as arguments a value of type ``List<Row>`` and a functional interface. As can be seen in the `Java documentation <https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html>`_, the only matching method is :code:`Collections.sort(List<T> list, Comparator<? super T> c)`, with ``T`` corresponding to class ``Row``. The compiler deduces that the functional interface of interest is ``Comparator<Row>``, and it accordingly creates an anonymous inner class as follows:
+
+..  code-block:: java
+
+    private void sort() {
+        // The "Comparator<Row>" is the functional interface that matches the lambda expression
+        Collections.sort(rows, new Comparator<Row>() {
+            @Override
+            // The name of the single abstract method and the types of the arguments
+            // are derived from the functional interface. The name of the arguments
+            // are taken from the lambda expression.
+            public int compare(Row a, Row b) {
+                // This is the body of the lambda expression
+                return a.get(sortOnColumn).compareTo(b.get(sortOnColumn)));
+            }
+        }
+    }
+
+So, again, lambda expressions are syntactic sugar! Very importantly, functional interfaces provide a clear contract for the signature of the method that the matching lambda expression must implement, which is needed for the syntactic sugar to work.
+
+The general form of a lambda expression is:
+
+..  code-block::
+
+    (A a, B b, C c /* ...possibly more arguments */ ) -> {
+      /* Body */
+      return /* result */;
+    }
+
+This general form can be lightened in different situations:
+
+* If the compiler can deduce the types of the arguments, which is most commonly the case, you do not have to provide the types (e.g., ``(A a, B b)`` can be reduced as ``(a, b)``).
+
+* If the lambda expression takes one single argument, the parentheses can be removed (e.g., ``a -> ...`` is a synonym for ``(a) -> ...``).
+
+* If the body of the lambda expression only contains the ``return`` instruction, the curly brackets and the ``return`` can be removed.
+
+* If the lambda expression returns ``void`` and if its body contains a single line, the curly brackets can be removed as well, for instance:
+
+  .. code-block:: java
+                  
+     i -> System.out.println(i)
+  
+
+     
 
 
-
-
-Functional interfaces 
-======================
 
 Higher order functions 
 =======================
@@ -456,4 +543,12 @@ Streams
 Immutable collections
 =====================
 
+
+Other example of syntactic sugar:
+
+
+..  code-block:: java
+                 
+    list.forEach(item -> System.out.println(item));
+    list.forEach(System.out::println);
 
