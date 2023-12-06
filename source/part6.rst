@@ -10,8 +10,8 @@ Functional programming refers to a programming paradigm that emphasizes the **us
 While Java is not a pure functional language like Haskell, it offers many features that can be used to write more functional-style code. Functional programming in Java encourages the use of pure functions that do not have side effects, i.e., that avoids changing state of the program. Java 8 introduced features to support functional programming, primarily through the addition of lambda expressions, of the ``Stream`` API, and of functional interfaces.
 
 
-Inner classes
-=============
+Nesting classes
+===============
 
 .. NOTE:
 
@@ -528,14 +528,59 @@ This general form can be lightened in different situations:
   .. code-block:: java
                   
      i -> System.out.println(i)
+
+
+General purpose functional interfaces
+=====================================
+
+Lambda expressions can only be used in a context that expects a value whose type is a functional interface. It is therefore useful to have a number of such interfaces available, covering the main use cases.
+
+This motivates the introduction of the ``java.util.function`` package that provides standard definitions for:
+
+* Unary functions (with one argument) and binary functions (with two arguments),
+
+* Unary and binary operators (functions whose return type is identical to the type of the argument), and
   
-
-     
-
+* Unary and binary predicates (functions whose return type is Boolean).
 
 
-Higher order functions 
-=======================
+Unary functions
+---------------
+
+The ``Function`` interface represents a function with one argument. The type ``T`` of this argument and the return type ``R`` of the function are the type parameters of this interface:
+
+.. code-block:: java
+
+    public interface Function<T,R> {
+        public R apply(T x);
+    }
+
+The input type ``T`` and the return type ``R`` can be different. Together, they define the **domain** of the function. In mathematical notation, the corresponding function :math:`F` would be defined as :math:`F:T \rightarrow R`.
+
+For instance, the following program firstly uses a lambda expression to define a function that computes the length of a string, then applies the function to a string:
+
+.. code-block:: java
+
+    public static void main(String args[]) {
+        Function<String, Integer> f = s -> s.length();
+        System.out.println(f.apply("Hello"));  // Displays: 5
+    }
+
+    
+
+Operators
+---------
+
+Predicates
+----------
+
+
+Higher order functions
+----------------------
+
+In Java, higher-order functions are methods that can accept other functions as arguments, return functions as results, or both. They treat the general purpose functions seen above as first-class citizens, allowing these functions to be manipulated, passed around, and used as data.
+
+  
 
 Streams 
 ========
