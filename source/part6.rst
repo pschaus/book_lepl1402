@@ -121,10 +121,10 @@ To this end, the ``Spreadsheet`` class contains the member variable ``sortOnColu
     
 ..  code-block:: java
 
-    class RowRomparator1 implements Comparator<Row> {
+    class RowComparator1 implements Comparator<Row> {
         private int column;
 
-        RowRomparator1(int column) {
+        RowComparator1(int column) {
             this.column = column;
         }
 
@@ -140,11 +140,11 @@ To this end, the ``Spreadsheet`` class contains the member variable ``sortOnColu
         // ...
 
         private void sort() {
-            Collections.sort(rows, new RowRomparator1(sortOnColumn));
+            Collections.sort(rows, new RowComparator1(sortOnColumn));
         }
     }
     
-The ``RowRomparator1`` class is called an **external class** because it is located outside of the ``Spreadsheet`` class. This is not an issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
+The ``RowComparator1`` class is called an **external class** because it is located outside of the ``Spreadsheet`` class. This is not an issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
 
 ..  code-block:: java
 
@@ -153,10 +153,10 @@ The ``RowRomparator1`` class is called an **external class** because it is locat
         private int sortOnColumn;
         // ...
 
-        private static class RowRomparator2 implements Comparator<Row> {
+        private static class RowComparator2 implements Comparator<Row> {
             private int column;
 
-            RowRomparator2(int column) {
+            RowComparator2(int column) {
                 this.column = column;
             }
 
@@ -167,21 +167,21 @@ The ``RowRomparator1`` class is called an **external class** because it is locat
         }
 
         private void sort() {
-            Collections.sort(rows, new RowRomparator2(sortOnColumn));
+            Collections.sort(rows, new RowComparator2(sortOnColumn));
         }
     }
 
-In this code, ``RowRomparator2`` is the static nested class, and ``Spreadsheet`` is called its **outer class**. Note that ``RowRomparator2`` could have been tagged with a :ref:`public visibility <visibility>` to make it accessible outside of ``Spreadsheet``, in the case the developer felt like sorting collections of ``Row`` objects could make sense in other parts of the application.
+In this code, ``RowComparator2`` is the static nested class, and ``Spreadsheet`` is called its **outer class**. Note that ``RowComparator2`` could have been tagged with a :ref:`public visibility <visibility>` to make it accessible outside of ``Spreadsheet``, in the case the developer felt like sorting collections of ``Row`` objects could make sense in other parts of the application.
 
 Static nested classes are a way to logically group classes together, to improve code organization, and to encapsulate functionality within a larger class. This promotes a more modular and structured design, in a way that is similar to :ref:`packages <packages>`, but at a finer granularity. Note that it is allowed for two different classes to use the same name for a nested class, which can prevent collisions between class names in large applications.
 
-Importantly, static nested classes have access to the private static members of the outer class, which was not the case of the external class ``RowRomparator1``: This can for instance be useful to take advantage of :ref:`private enumerations or constants <enumerations>` that would be defined inside the outer class.
+Importantly, static nested classes have access to the private static members of the outer class, which was not the case of the external class ``RowComparator1``: This can for instance be useful to take advantage of :ref:`private enumerations or constants <enumerations>` that would be defined inside the outer class.
 
 
 Inner classes
 -------------
 
-The previous code has however a redundancy: The value of ``sortOnColumn`` must be manually copied to a private ``column`` variable of ``RowRomparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of non-static nested classes, that are formally known as **inner classes**. Java allows writing:
+The previous code has however a redundancy: The value of ``sortOnColumn`` must be manually copied to a private ``column`` variable of ``RowComparator2`` so that it can be used inside the ``compare()`` method. Can we do better? The answer is "yes", thanks to the concept of non-static nested classes, that are formally known as **inner classes**. Java allows writing:
 
 ..  code-block:: java
 
@@ -190,7 +190,7 @@ The previous code has however a redundancy: The value of ``sortOnColumn`` must b
         private int sortOnColumn;
         // ...
 
-        private class RowRomparator3 implements Comparator<Row> {
+        private class RowComparator3 implements Comparator<Row> {
             @Override
             public int compare(Row a, Row b) {
                 return a.get(column).compareTo(b.get(sortOnColumn));
@@ -198,11 +198,11 @@ The previous code has however a redundancy: The value of ``sortOnColumn`` must b
         }
 
         private void sort() {
-            Collections.sort(rows, new RowRomparator3());
+            Collections.sort(rows, new RowComparator3());
         }
     }
                  
-This is much more compact! This derives from the fact that in this code, ``private static class`` was replaced by ``private class``. This means that ``RowRomparator3`` is as an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
+This is much more compact! This derives from the fact that in this code, ``private static class`` was replaced by ``private class``. This means that ``RowComparator3`` is as an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
 
 Inner classes look very similar to static nested classes, but they do not have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods, including private members) of the object that created them. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
 
@@ -255,7 +255,7 @@ is semantically equivalent to:
 
 Once the compiler comes across some ``for()`` loop on a collection that implements the standard ``Iterable<T>`` interface, it can automatically instantiate the iterator and traverse the collection using this iterator.
 
-In the context of inner classes, the syntactic sugar consists in including a reference to the outer object that created the instance of the inner object. In our example, the compiler automatically transforms the ``RowRomparator3`` class into the following static nested class:
+In the context of inner classes, the syntactic sugar consists in including a reference to the outer object that created the instance of the inner object. In our example, the compiler automatically transforms the ``RowComparator3`` class into the following static nested class:
 
 ..  code-block:: java
 
@@ -264,10 +264,10 @@ In the context of inner classes, the syntactic sugar consists in including a ref
         private int sortOnColumn;
         // ...
 
-        private static class RowRomparator4 implements Comparator<Row> {
+        private static class RowComparator4 implements Comparator<Row> {
             private Spreadsheet outer;  // Reference to the outer object
     
-            RowRomparator4(Spreadsheet outer) {
+            RowComparator4(Spreadsheet outer) {
                 this.outer = outer;
             }
         
@@ -278,7 +278,7 @@ In the context of inner classes, the syntactic sugar consists in including a ref
         }
     
         private void sort() {
-            Collections.sort(rows, new RowRomparator4(this));
+            Collections.sort(rows, new RowComparator4(this));
         }
     }
 
@@ -569,6 +569,30 @@ This general form can be lightened in different situations:
                   
      i -> System.out.println(i)
 
+* It often happens that you want to write a lambda expression that simply calls a method and passes it the arguments it has received. In such situations, Java offers the notion of **method reference**. For instance, the following lambda expression that calls a static method:
+
+  .. code-block:: java
+                  
+     i -> System.out.println(i)
+
+  can be shortened as:
+  
+  .. code-block:: java
+                  
+     System.out::println
+
+  Similarly, the following lambda expression that calls a non-static method on a list of integers:
+
+  ..  code-block:: java
+
+     (List<Integer> a) -> a.size()
+
+  can be rewritten as:
+     
+  ..  code-block:: java
+
+     List<Integer>::size
+     
 
 General-purpose functional interfaces
 =====================================
@@ -870,13 +894,4 @@ Programming without side effects
 
 Immutable collections
 =====================
-
-
-Other example of syntactic sugar:
-
-
-..  code-block:: java
-                 
-    list.forEach(item -> System.out.println(item));
-    list.forEach(System.out::println);
 
