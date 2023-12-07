@@ -734,10 +734,10 @@ Here is an example of composition:
 
 .. code-block:: java
                 
-    UnaryOperator<Double> f = (d) -> d / 2.5;
-    Function<Integer, Double> g = (i) -> Math.sqrt(i);
-    Function<Integer, Double> h = f.compose(g);
-    
+    Function<Integer, Double> f = (i) -> Math.sqrt(i);
+    UnaryOperator<Double> g = (d) -> d / 2.5;
+    Function<Integer, Double> h = g.compose(f);
+
     System.out.println(h.apply(25));  // Displays: 2.0, which corresponds to "sqrt(25) / 2.5"
 
 In the example above, we have used the built-in ``compose()`` method that is part of Java. We could have implemented a similar functionality by ourselves thanks to the expressiveness of lambda expressions. Indeed, the following program would have produced exactly the same result as above:
