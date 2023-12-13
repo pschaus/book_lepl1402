@@ -1059,15 +1059,27 @@ A stream containing a **predefined list of values** can be constructed using the
 
     Stream<Character> vowels = Stream.of('a', 'e', 'i', 'o', 'u', 'y');
 
-Note that the type ``T`` can also be a custom class. For instance, the following code is perfectly valid and creates a stream of complex objects:
+Note that the type ``T`` can also be a custom class. For instance, the following code is perfectly valid and creates a stream of complex objects of class ``Account``:
 
 ..  code-block:: java
 
     class Account {
+        private String name;
         private int value;
             
-        public Account(int value) {
+        public Account(String name,
+                       int value) {
+            this.name = name;
             this.value = value;
+        }
+            
+        public Account(int value) {
+            this.name = "";
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
         }
             
         public int getValue() {
@@ -1110,6 +1122,9 @@ Intermediate methods
 
 Once an instance of ``Stream<T>`` is created using one of the :ref:`source methods <stream_source_methods>`, various intermediate operations can be applied to it.
 
+Map
+...
+
 The method ``map(Function<T,R> f)`` is particularly important, and very frequently used, as it allows you to **transform the values of a stream** to obtain a new one. The ``map()`` method is a higher-order function that takes as argument an :ref:`unary function <unary_function>` ``f`` that is generally expressed as a :ref:`lambda expression <lambda_expressions>`. This unary function ``f`` is applied to the elements of the stream, which leads to the creation of an output stream. As an example, here is how to increment each value in a stream of integers:
 
 ..  code-block:: java
@@ -1132,13 +1147,29 @@ The ``map()`` method evidently supports user-defined classes. For instance, it i
     Stream<Account> accounts = Stream.of(new Account(100), new Account(200));
     Stream<Integer> values = accounts.map(i -> i.getValue());  // => [ 100, 200 ]
     // Note that we could have written: accounts.map(Account::getValue);
-                 
+
+Interestingly, the ``map()`` method can also be used to create objects by calling their constructor given the elements from a stream. For instance:
+
+..  code-block:: java
+
+    Stream<Integer> values = Stream.of(100, 300, 600);
+    Stream<Account> accounts = values.map(x -> new Account(x));
+    // Note that we could have written: values.map(Account::new);
+
+
+Filter
+......
+
 Another significant method on streams is ``filter(Predicate<T> p)``. This method is a higher-order function that takes as a argument an :ref:`unary predicate <fp_predicate>` ``p``, and that creates a new stream that **only contains the objects from the input stream that verify the predicate**. As an example, here is how to filter a stream of integers to keep only the values that are integer multiples of 4:
     
 ..  code-block:: java
 
     Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
     Stream<Integer> filtered = stream.filter(i -> i % 4 == 0);  // [ 20, 40 ]
+
+
+Other intermediate methods
+..........................
 
 The ``map()`` and ``filter()`` methods are extremely important higher-order functions that also exist in Python to manipulate lists. Besides ``map()`` and ``filter()``, let us also highlight the existence of the following intermediate methods:
 
@@ -1171,15 +1202,15 @@ The ``map()`` and ``filter()`` methods are extremely important higher-order func
       Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
       Stream<Integer> limited = stream.limit(2);  // => [ 10, 20 ]
     
-
+  
 Terminal methods
 ----------------
 
-In a stream pipeline, the last operation is usually an operation that returns some result that is not a stream. It is possible to distinguish between three different cases:
+In a stream pipeline, the last operation is usually an operation that returns some result that is not a stream. This last operation must **get the data out of the stream**. It is possible to distinguish between three different cases:
 
 * Stream pipelines whose terminal method does something with each element (consumer methods),
 
-* Stream pipelines whose terminal method creates a Java collection from the stream (collecting methods), and
+* Stream pipelines whose terminal method creates a Java collection from the stream (collector methods), and
 
 * Stream pipelines whose terminal method extracts a single value from the stream (reduction methods).
 
@@ -1187,7 +1218,7 @@ In a stream pipeline, the last operation is usually an operation that returns so
 Consumer methods
 ................
 
-The ``forEach()`` terminal method is a higher-order function that takes as input a :ref:`consumer function <fp_consumer>` ``c``. This method applies the ``c`` function to all the elements of the stream. This is similar to the ``map()`` :ref:`intermediate method <stream_intermediate_methods>`, but since consumers do not produce an output value, the ``forEach()`` operation yields no result.
+The ``forEach()`` terminal method of the ``Stream<T>`` class is a higher-order function that takes as input a :ref:`consumer function <fp_consumer>` ``c``. This method applies the ``c`` function to all the elements of the stream. This is similar to the ``map()`` :ref:`intermediate method <stream_intermediate_methods>`, but since consumers do not produce an output value, the ``forEach()`` operation yields no result.
 
 Typical usages of ``forEach()`` includes printing the content of the stream, writing it to a file, sending it to a network connection, or saving it to a database. The most common pattern consists in calling the standard ``System.out.println()`` method for each element in the stream:
 
@@ -1204,16 +1235,140 @@ By virtue of the :ref:`method reference <lambda_expressions>` construction, the 
     stream.forEach(System.out::println);
 
 
-Collection methods
-..................
+.. _stream_collector_methods:
+
+Collector methods
+.................
+
+Another possibility for a terminal method consists in collecting the elements of the stream into a Java data structure. This is the role of the ``collect()`` method that is available in the ``Stream<T>`` class, and takes as argument an object that implements the ``Collector`` interface.
+
+The ``Collector`` interface represents a very generic construction that is quite complex to master. Fortunately, Java proposes a set of predefined, concrete implementations of the ``Collector`` interface that can be directly instantiated using the static methods of the ``java.util.stream.Collectors`` class: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html>`_
+
+In what follows, the return type of the static methods of ``Collectors`` is never shown, as it tends to be complicated and understanding it is not necessary for the use of the predefined collectors. In practice, the result of the static methods is always passed directly to the ``collect()`` method of a stream.
+
+Here are some of the most useful predefined collectors to create Java containers from streams:
+
+* ``Collectors.toList()`` returns a collector that **stores the elements of the stream into a list**. If the stream is of type ``Stream<T>``, the output list will be of type ``List<T>``. For instance:
+
+  ..  code-block:: java
+                 
+      Stream<Integer> stream = Stream.of(10, 20, 30);
+      List<Integer> lst = stream.collect(Collectors.toList());  // => List: [ 10, 20, 30 ]
+
+* ``Collectors.toSet()`` returns a collector that **stores the elements of the stream into a set**. If the stream is of type ``Stream<T>``, the output list will be of type ``List<T>``. For instance:
+
+  ..  code-block:: java
+                 
+      Stream<Integer> stream = Stream.of(10, 20, 20, 10);
+      Set<Integer> lst = stream.collect(Collectors.toSet());  // => Set: { 10, 20 }
+
+* ``Collectors.toMap(Function<T,K> keyMapper, Function<T,U> valueMapper)`` returns a collector that **stores the elements of the stream into an associate array**. The function ``keyMapper`` is used to generate the key corresponding to each element in the stream, and the function ``valueMapper`` is used to generate the value corresponding to each element. If the stream is of type ``Stream<T>``, the output list will be of type ``Map<K,V>``. For instance:
+
+  ..  code-block:: java
+                 
+      Stream<Account> accounts = Stream.of(new Account("Dupont", 100),
+                                           new Account("Dupond", 200));
+      Map<String, Integer> nameToValue =
+          accounts.collect(Collectors.toMap(x -> x.getName(),
+                                            x -> x.getValue()));
+      // The associative array will contain: { "Dupont" : 100, "Dupond" : 200 }
+
+If the stream is of type ``Stream<String>``, the following predefined containers can be used to combine the successive strings from the stream:
+
+* ``Collectors.joining()`` returns a collector that **concatenates the individual strings from a stream of strings**. For instance:
+
+  ..  code-block:: java
+                 
+      Stream<String> stream = Stream.of("one", "two", "three");
+      String joined = stream.collect(Collectors.joining());
+      System.out.println(joined);  // Displays: onetwothree
+
+* ``Collectors.joining(String delimiter)`` works similarly to ``Collectors.joining()``, but it adds the ``delimiter`` between each individual string:
+
+  ..  code-block:: java
+                 
+      Stream<String> stream = Stream.of("one", "two", "three");
+      String joined = stream.collect(Collectors.joining(", "));
+      System.out.println(joined);  // Displays: one, two, three
+  
+* ``Collectors.joining(String delimiter, String prefix, String suffix)`` works similarly to ``Collectors.joining(delimiter)``, but it also add a prefix and a suffix:
+
+  ..  code-block:: java
+
+      Stream<String> stream = Stream.of("one", "two", "three");
+      String joined = stream.collect(Collectors.joining(", ", "{ ", " }"));
+      System.out.println(joined);  // Displays: { one, two, three }
+
+Finally, note that the ``Stream<T>`` class also contains the ``toArray()`` collector method. This method create an array of ``Object`` from a stream:
+
+..  code-block:: java
+
+    Stream<Integer> stream = Stream.of(100, 200);
+    Object[] a = stream.toArray();
+    System.out.println((Integer) a[0]);  // Displays: 100
+    System.out.println((Integer) a[1]);  // Displays: 200
+
+The downside of ``toArray()`` is that the generic type ``T`` is lost and replaced by type ``Object``, i.e., the root of the class hierarchy. This opens a huge risk of :ref:`bad casts <generics>`. It is therefore generally better to use the predefined collectors instead of ``toArray()``.
 
   
 Reduction methods
 .................
 
+As explained above, consumer methods execute an operation on every element of a stream, while collector methods create a new Java data structure that combines all the elements of a stream. This contrasts with reduction methods, that produce **one single value from the entire stream**.
+
+The simplest reduction method consists in **counting the number of elements** in the stream. The ``count()`` method can be used to this end:
+
+..  code-block:: java
+                 
+    Stream<String> stream = Stream.of("one", "two", "three");
+    System.out.println(stream.count());  // Displays: 3
+
+Reduction methods also exist to test to which extent the elements of a stream **satisfy a logical condition** expressed as a :ref:`predicate <fp_predicate>`:
+
+* ``allMatch(Predicate<T> p)`` returns ``true`` if and only if all the individual elements in a ``Stream<T>`` satisfy the predicate ``p``.
+
+* ``anyMatch(Predicate<T> p)`` returns ``true`` if and only if at least one of individual elements in a ``Stream<T>`` satisfies the predicate ``p``.
+
+* ``noneMatch(Predicate<T> p)`` returns ``true`` if and only if none of the individual elements in a ``Stream<T>`` satisfies the predicate ``p``.
+
+For instance, the following code tests whether we are given a stream of even integers:
+
+..  code-block:: java
+
+    System.out.println(Stream.of(2, 4, 8, 12).allMatch(x -> x % 2 == 0));  // Displays: true
+    System.out.println(Stream.of(2, 4, 8, 13).allMatch(x -> x % 2 == 0));  // Displays: false
+
+The most generic reduction method is offered by the ``reduce()`` method. There exists multiple variants of this method, but the most commonly used is ``T reduce(T identity, BinaryOperator<T> accumulator)``: This method returns the value resulting from **successive application of the binary operator** ``accumulator`` to the initial value ``identity``, and then to all elements of the stream to which it is applied. If the stream is empty, this method simply returns ``identity``.
+
+As an example, let us consider the task of computing the **sum of the values in a stream of integers**. Zero being the identity element for the addition, the ``reduce()`` method could be used as follows:
+
+..  code-block:: java
+
+    Stream<Integer> stream = Stream.of(2, 5, 8);
+    System.out.println(stream.reduce(0, (a, b) -> a + b));  // Displays: 15
+
+Here are the steps of the computation that is carried on by the ``reduce()`` method:
+
+1. It initializes a temporary variable whose value is given by ``identity`` (i.e., ``0`` in this case).
+
+2. It reads the next element from the stream, for instance ``2``. Using the lambda expression for ``accumulator``, it computes ``0 + 2`` (where ``0`` is the temporary variable), and stores the result ``2`` in the temporary variable.
+
+3. It reads the next element, for instance ``5``. Following ``accumulator``, it computes ``2 + 5`` (where ``2`` is the temporary variable), and stores ``7`` in the temporary variable.
+
+4. It reads the final element, for instance ``8``. Following ``accumulator``, it computes ``7 + 8`` (where ``7`` is the temporary variable), and stores ``15`` in the temporary variable, that is returned to the caller.
+
+As another example, here is how to compute the **product of the values in a stream of double precision numbers**, for which ``1`` is the identity value:
+
+..  code-block:: java
+
+    Stream<Double> stream = Stream.of(-1.0, 2.0, 5.5);
+    System.out.println(stream.reduce(1.0, (a, b) -> a * b));  // Displays: -11.0
 
 
+.. admonition:: Remark
+   :class: remark
 
+   Pay attention to the fact that during a reduction, the order in which the binary operator ``accumulator`` is applied to the various elements is not specified (for instance because parallelism can possibly be used to speed up some computation), so this operator must be associative.
 
 
 .. admonition:: Important remark
@@ -1228,10 +1383,89 @@ Reduction methods
       System.out.println(stream.count());  // => java.lang.IllegalStateException: stream has already been operated upon or closed
 
 
+About laziness
+--------------
+
+Let us consider the following code:
+
+.. code-block:: java
+
+   Stream<Integer> s1 = Stream.of(1, 2, 3, 4, 5);
+   Stream<Integer> s2 = s1.map(i -> { System.out.println(i); return i + 1; });
+
+You could think that the code does the following:
+
+1. A stream with elements ``1``, ``2``, ``3``, ``4``, and ``5`` is created.
+
+2. The lambda expression :code:`i -> { System.out.println(i); return i + 1; }` is applied to each element.
+
+3. The console display the lines ``1``, ``2``, ``3``, ``4``, and ``5``.
+
+4. A new stream containing ``2``, ``3``, ``4``, ``5``, and ``6`` is returned.
+   
+However, this is wrong! The code above does not print anything. Indeed, as written above, **streams are lazy**. The operations are only executed if the result is needed, for example as in:
+
+.. code-block:: java
+
+   Stream<Integer> s1 = Stream.of(1, 2, 3, 4, 5);
+   Stream<Integer> s2 = s1.map(i -> { System.out.println(i); return i + 1; });
+   Object[] a = s2.toArray();  // <- here, all the elements of the stream are needed
+   // "a" contains
+
+This code will actually print all the elements onto the console! Now, let us consider the following example:
+   
+.. code-block:: java
+
+   Stream<Integer> s1 = Stream.of(1, 2, 3, 4, 5);
+   Stream<Integer> s2 = s1.map(i -> { System.out.println(i); return i + 1; });
+   Object[] a = s2.limit(2).toArray();  // <- here, only the two first elements of the stream are needed
+
+This code will only print ``1`` and ``2`` onto the console! This is because the ``limit()`` method stops further processing of its input stream as soon as the maximum number of elements is reached.
+
+It is also interesting to understand that the progression over interdependent streams is **interleaved**. This can be seen in the following example:
+   
+.. code-block:: java
+
+   Stream<Integer> s1 = Stream.of(1, 2, 3);
+   Stream<Integer> s2 = s1.map(i -> { System.out.println("a: " + i); return i + 1; });
+   s2.forEach(j -> System.out.println("b: " + j));
+
+This example prints the following sequence:
+
+.. code-block:: text
+
+   a: 1
+   b: 2
+   a: 2
+   b: 3
+   a: 3
+   b: 4
+
+This is because the reading of streams ``s1`` and ``s2`` is interleaved:
+
+1. ``forEach()`` needs the first element of ``s2``. To obtain this first element, ``map()`` is executed on the first element of ``s1``. So, ``a: 1`` is printed, then ``b: 2``.
+
+2. ``forEach()`` needs the second element of ``s2``. To obtain this second element, ``map()`` is executed on the second element of ``s1``. So, ``a: 2`` is printed, then ``b: 3``.
+
+3. ``forEach()`` needs the third and last element of ``s3``. To obtain this last element, ``map()`` is executed on the last element of ``s1``. So, ``a: 3`` is printed, then ``b: 4``.
+
+Finally, because streams are lazy, they can be also used in situations **where it is not known in advance how long the stream is**. For instance, here is a sample code that prints all the lines of a text file in upper case, by using the ``lines()`` :ref:`source method of a reader <stream_source_methods>`:
+
+.. code-block:: java
+
+   try (FileReader file = new FileReader("somefile.txt")) {
+       BufferedReader reader = new BufferedReader(file);
+       Stream<String> lines = reader.lines();
+       lines.map(String::toUpperCase).forEach(System.out::println);
+   }
+
+This code does *not* read the entire file, then print it. That would use a lot of memory if the file is very big! Instead, this code reads a new line from the file *only when it is needed*. In other words, the code reads the first line, prints it, reads the second line, prints it, and so on.
+   
+
 Specialized streams
 -------------------
 
-So far, we have only been considering the generic interface ``Stream<T>``. For performance reasons, there also exist specialized interfaces representing streams of three primitive types, namely:
+So far, we have only been considering the generic interface ``Stream<T>``. For performance reasons, there also exist **specialized interfaces representing streams of three primitive types**, namely:
 
 * ``IntStream`` for streams of ``int`` numbers: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html>`_
 
@@ -1239,11 +1473,11 @@ So far, we have only been considering the generic interface ``Stream<T>``. For p
 
 * ``DoubleStream`` for streams of double precision numbers (i.e., for the primitive type ``double``): `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/DoubleStream.html>`_
  
-For instance, a stream of ``int`` numbers can be represented either as a generic stream of type ``Stream<Integer>`` (in which each element is an object of type ``Integer``), or as a specialized stream of type ``IntStream`` (in which each element is internally represented as an ``int`` primitive value). Specialized streams are in general more efficient than generic streams, as they avoid the creation of objects, and should be preferred wherever possible when performance is important.
+For instance, a stream of ``int`` numbers can either be represented as a generic stream of type ``Stream<Integer>`` (in which each element is an object of type ``Integer``), or as a specialized stream of type ``IntStream`` (in which each element is internally represented as an ``int`` primitive value). Specialized streams are in general more efficient than generic streams, as they avoid the creation of objects, and should be preferred wherever possible when performance optimization or memory reduction is important.
 
-Note that there is no specialized streams for the other primitive types: It is recommended to use ``IntStream`` to store ``short``, ``char``, ``byte``, and ``boolean`` values. As far as ``float`` are concerned, it is recommended to use ``DoubleStream``.
+Note that there is no specialized streams for the other primitive types: It is recommended to use ``IntStream`` to store ``short``, ``char``, ``byte``, and ``boolean`` values. As far as ``float`` are concerned, it is recommended to use ``DoubleStream`` if a specialized stream is preferable.
 
-The conversions between generic streams and specialized streams are ruled as follows:
+The **conversions between generic streams and specialized streams** are ruled as follows:
 
 * A specialized ``IntStream`` can be constructed from a ``Stream<T>`` using the ``mapToInt()`` method of the generic stream.
 
@@ -1273,7 +1507,7 @@ As another example, here is how to create an ``IntStream`` from the values of a 
     IntStream values = accounts.mapToInt(i -> i.getValue());
     values.forEach(System.out::println); 
 
-Finally, it is worth noticing that ``IntStream`` and ``LongStream`` have two interesting static methods ``range()`` and ``rangeClosed()`` that can be used to easily create a stream that correspond to an interval of integers:
+It is also worth noticing that ``IntStream`` and ``LongStream`` have two interesting static methods ``range()`` and ``rangeClosed()`` that can be used to easily create a **stream that represents an interval of integers**:
 
 .. code-block:: java
 
@@ -1282,6 +1516,21 @@ Finally, it is worth noticing that ``IntStream`` and ``LongStream`` have two int
 
 As can be seen in this example, these two methods only differ with respect to the fact that the last integer in the range is included or not.
 
+Finally, besides their interest for optimization, the specialized streams also provide convenient :ref:`collector methods <stream_collector_methods>` that **directly return Java arrays from a stream**:
+
+* The ``toArray()`` method of ``IntStream`` creates a ``int[]`` value,
+
+* The ``toArray()`` method of ``LongStream`` creates a ``long[]`` value, and
+  
+* The ``toArray()`` method of ``DoubleStream`` creates a ``double[]`` value.
+
+Here is an example of this feature:
+
+.. code-block:: java
+
+   IntStream stream = IntStream.of(10, 20, 30);
+   int[] a = stream.toArray();
+   
     
 An immutable list
 =================
