@@ -433,7 +433,9 @@ In the ``fill2()`` example, ``m`` and ``value`` could have been explicitly tagge
 
    The example of filling a matrix using multithreading is a bit academic, because for such an operation, the bottleneck will be the RAM, not the CPU. As a consequence, adding more CPU threads will probably never improve performance, and might even be detrimental because of the overhead associated with thread management. Furthermore, our class ``SynchronizedMatrix`` implements mutual exclusion for the access to the individual cells (i.e. the ``setValue()`` is tagged with the ``synchronized`` keyword), which will dramatically reduce the performance.
 
-    
+
+.. _lambda_expressions:
+
 Functional interfaces and lambda functions
 ==========================================
 
@@ -612,6 +614,8 @@ This motivates the introduction of the ``java.util.function`` standard package t
 Make sure to have a look at Java documentation about general-purpose functions: `<https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html>`_
 
 
+.. _unary_function:
+
 Unary functions
 ---------------
 
@@ -668,6 +672,8 @@ In the following example, a lambda expression is used to define a binary functio
     System.out.println(f.apply(lst, 1));  // Displays: 20
 
 
+.. _fp_operators:
+    
 Operators
 ---------
 
@@ -745,6 +751,7 @@ Here is an example of composition:
 Evidently, composition is also available for binary functions and binary operators.    
 
 
+.. _fp_predicate:
 
 Predicates
 ----------
@@ -811,6 +818,8 @@ These operations can be used as follows:
     System.out.println(t.test(15));  // Displays: false
     
 
+.. _fp_consumer:
+    
 Consumer
 --------
 
@@ -1021,6 +1030,8 @@ Note that streams are not immutable, in the sense that when the elements of a st
 The main source, intermediate, and terminal methods for stream programming in the Java standard library are now reviewed. Evidently, this list is by no way exhaustive. The full list of the features offered ``Stream<T>`` is available in the online Java documentation: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html>`_
 
 
+.. _stream_source_methods:
+
 Source methods
 --------------
 
@@ -1092,14 +1103,129 @@ Finally, note that the method ``lines()`` of standard class ``BufferedReader`` r
     }
 
 
+.. _stream_intermediate_methods:
+    
 Intermediate methods
 --------------------
 
-Once a stream is created using 
+Once an instance of ``Stream<T>`` is created using one of the :ref:`source methods <stream_source_methods>`, various intermediate operations can be applied to it.
 
+The method ``map(Function<T,R> f)`` is particularly important, and very frequently used, as it allows you to **transform the values of a stream** to obtain a new one. The ``map()`` method is a higher-order function that takes as argument an :ref:`unary function <unary_function>` ``f`` that is generally expressed as a :ref:`lambda expression <lambda_expressions>`. This unary function ``f`` is applied to the elements of the stream, which leads to the creation of an output stream. As an example, here is how to increment each value in a stream of integers:
+
+..  code-block:: java
+
+    Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
+    Stream<Integer> incremented = stream.map(i -> i + 1);  // => [ 11, 21, 31, 41, 51 ]
+
+This is an example that uses an :ref:`unary operator <fp_operators>`, as both streams shared the same data type (i.e., ``Integer``). But the ``map()`` method also accept general functions that change the data type of the streams. As an example, the following code creates a stream that provides the number of characters in each value of a stream of strings:
+    
+..  code-block:: java
+
+    Stream<String> stream = Stream.of("Bonjour", "Hello");
+    Stream<Integer> lengths = stream.map(s -> s.length());  // This unary function goes from String to Integer
+    // Note that we could have written: stream.map(String::length);
+
+The ``map()`` method evidently supports user-defined classes. For instance, it is possible to extract the value of the stream of ``Account`` objects (as introduced in the :ref:`previous section <stream_source_methods>`) as a stream of integers:
+    
+..  code-block:: java
+
+    Stream<Account> accounts = Stream.of(new Account(100), new Account(200));
+    Stream<Integer> values = accounts.map(i -> i.getValue());  // => [ 100, 200 ]
+    // Note that we could have written: accounts.map(Account::getValue);
+                 
+Another significant method on streams is ``filter(Predicate<T> p)``. This method is a higher-order function that takes as a argument an :ref:`unary predicate <fp_predicate>` ``p``, and that creates a new stream that **only contains the objects from the input stream that verify the predicate**. As an example, here is how to filter a stream of integers to keep only the values that are integer multiples of 4:
+    
+..  code-block:: java
+
+    Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
+    Stream<Integer> filtered = stream.filter(i -> i % 4 == 0);  // [ 20, 40 ]
+
+The ``map()`` and ``filter()`` methods are extremely important higher-order functions that also exist in Python to manipulate lists. Besides ``map()`` and ``filter()``, let us also highlight the existence of the following intermediate methods:
+
+* ``sorted()`` returns a stream containing the same elements as the one to which it is applied, but **sorted in ascending natural order**:
+
+  ..  code-block:: java
+
+      Stream<Integer> stream = Stream.of(20, 10, 50, 40, 30);
+      Stream<Integer> sorted = stream.sorted();  // => [ 10, 20, 30, 40, 50 ]
+
+* ``sorted(Comparator<T> c)`` returns a stream containing the same elements as the one to which it is applied, but **sorted by delegation to a comparator**:
+
+  ..  code-block:: java
+
+      Stream<Account> accounts = Stream.of(new Account(500), new Account(100), new Account(800), new Account(200));
+      Stream<Account> sorted = accounts.sorted((a, b) -> a.getValue() - b.getValue());
+      // => [ Account(100), Account(200), Account(500), Account(800) ]
+
+* ``skip(long n)`` **ignores the first "n" elements** from the input stream, and returns the stream of the remaining elements:
+
+  ..  code-block:: java
+
+      Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
+      Stream<Integer> skipped = stream.skip(3);  // => [ 40, 50 ]
+
+* ``limit(long l)`` returns a stream containing the same elements as the stream to which it is applied, but **truncated to have at most "l" elements**:
+
+  ..  code-block:: java
+
+      Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
+      Stream<Integer> limited = stream.limit(2);  // => [ 10, 20 ]
+    
 
 Terminal methods
 ----------------
+
+In a stream pipeline, the last operation is usually an operation that returns some result that is not a stream. It is possible to distinguish between three different cases:
+
+* Stream pipelines whose terminal method does something with each element (consumer methods),
+
+* Stream pipelines whose terminal method creates a Java collection from the stream (collecting methods), and
+
+* Stream pipelines whose terminal method extracts a single value from the stream (reduction methods).
+
+
+Consumer methods
+................
+
+The ``forEach()`` terminal method is a higher-order function that takes as input a :ref:`consumer function <fp_consumer>` ``c``. This method applies the ``c`` function to all the elements of the stream. This is similar to the ``map()`` :ref:`intermediate method <stream_intermediate_methods>`, but since consumers do not produce an output value, the ``forEach()`` operation yields no result.
+
+Typical usages of ``forEach()`` includes printing the content of the stream, writing it to a file, sending it to a network connection, or saving it to a database. The most common pattern consists in calling the standard ``System.out.println()`` method for each element in the stream:
+
+..  code-block:: java
+                 
+    Stream<String> stream = Stream.of("Hello", "World");
+    stream.forEach(s -> System.out.println(s));
+
+By virtue of the :ref:`method reference <lambda_expressions>` construction, the code above can be shortened as:
+
+..  code-block:: java
+                 
+    Stream<String> stream = Stream.of("Hello", "World");
+    stream.forEach(System.out::println);
+
+
+Collection methods
+..................
+
+  
+Reduction methods
+.................
+
+
+
+
+
+
+.. admonition:: Important remark
+   :class: remark
+
+   Note that **you can only go once through the same stream pipeline**. Once an element has been consumed, it is not possible anymore to access the same element again. For instance, this code will *not* work:
+
+   .. code-block:: java
+
+      Stream<Integer> stream = Stream.of(1, 2, 3, 4, 5);
+      System.out.println(stream.count());  // OK
+      System.out.println(stream.count());  // => java.lang.IllegalStateException: stream has already been operated upon or closed
 
 
 Specialized streams
@@ -1139,9 +1265,24 @@ For instance, the :ref:`conversion between miles and kilometers <stream_miles>` 
         .mapToObj(x -> String.valueOf(x))         // (*) From double to string
         .collect(Collectors.toList());            // Construct the list
 
+As another example, here is how to create an ``IntStream`` from the values of a stream of ``Account`` objects (as introduced in the :ref:`previous section <stream_source_methods>`):
 
+..  code-block:: java
 
+    Stream<Account> accounts = Stream.of(new Account(100), new Account(200));
+    IntStream values = accounts.mapToInt(i -> i.getValue());
+    values.forEach(System.out::println); 
 
+Finally, it is worth noticing that ``IntStream`` and ``LongStream`` have two interesting static methods ``range()`` and ``rangeClosed()`` that can be used to easily create a stream that correspond to an interval of integers:
+
+.. code-block:: java
+
+   IntStream s1 = IntStream.range(-3, 3);        // => [ -3, -2, -1, 0, 1, 2 ]
+   IntStream s2 = IntStream.rangeClosed(-3, 3);  // => [ -3, -2, -1, 0, 1, 2, 3 ]    
+
+As can be seen in this example, these two methods only differ with respect to the fact that the last integer in the range is included or not.
+
+    
 An immutable list
 =================
 
