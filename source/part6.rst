@@ -253,7 +253,7 @@ is semantically equivalent to:
         System.out.println(item);
     }
 
-Once the compiler comes across some ``for()`` loop on a collection that implements the standard ``Iterable<T>`` interface, it can transparently instantiate the iterator and traverse the collection using this iterator.
+Once the compiler comes across some ``for()`` loop on a collection that implements the standard ``Iterable<E>`` interface, it can transparently instantiate the iterator and traverse the collection using this iterator.
 
 In the context of inner classes, the syntactic sugar consists in including a reference to the outer object that created the instance of the inner object. In our example, the compiler automatically transforms the ``RowComparator3`` class into the following static nested class:
 
@@ -393,7 +393,7 @@ To illustrate this point, let us consider the task of filling a matrix with a co
         lowerPart.get();
     }
     
-As can be seen in this example, it is not necessary for the inner class ``Filler`` to explicitly store a copy of ``m`` and ``value``. Indeed, because those two variables are part of the scope of method ``fill1()``, the ``run()`` method has direct access to the ``m`` and ``value`` variables. Actually, this is again :ref:`syntactic sugar <syntactic_sugar>`: The compiler automatically gives a **copy of all the local variables of the surrounding method** to the contructor of the inner class.
+As can be seen in this example, it is not necessary for the inner class ``Filler`` to explicitly store a copy of ``m`` and ``value``. Indeed, because those two variables are part of the scope of method ``fill1()``, the ``run()`` method has direct access to the ``m`` and ``value`` variables. Actually, this is again :ref:`syntactic sugar <syntactic_sugar>`: The compiler automatically gives a **copy of all the local variables of the surrounding method** to the constructor of the inner class.
 
 The method ``fill1()`` creates exactly two threads, one for each part of the matrix. One could want to take advantage of a higher number of CPU cores by reducing this granularity. According to this idea, here is an alternative implementation that introduces parallelism at the level of the individual rows of the matrix:
 
@@ -860,9 +860,9 @@ The :ref:`composition of two functions <composition>` is an example of higher-or
 
 Composition is an example of higher-order function that *outputs* new functions. The standard Java classes also contains methods that take functions as their *inputs*. This is notably the case of the standard Java collections (most notably lists), that include several methods taking operators and predicates as arguments, for instance:
 
-* ``forEach(c)`` applies a consumer to all the elements of the collection (this is part of the ``Iterable<T>`` interface),
+* ``forEach(c)`` applies a consumer to all the elements of the collection (this is part of the ``Iterable<E>`` interface),
 
-* ``removeIf(p)`` removes all of the elements of this collection that satisfy the given predicate (this is part of the ``Collection<T>`` interface), and
+* ``removeIf(p)`` removes all of the elements of this collection that satisfy the given predicate (this is part of the ``Collection<E>`` interface), and
 
 * ``replaceAll(f)`` replaces each element of the collection with the result of applying the operator to that element (this is specific to the ``List<T>`` interface).
 
@@ -906,10 +906,12 @@ In this figure:
 
 1. A ``Stream`` object is first created from a collection of source objects of type ``T`` (the circles).
 
-2. Zero or more intermediate operations are then successively applied to the invidual objects that are part of the input ``Stream`` object, which generates a new output ``Stream`` object. These operations can change the content of the input objects, can create new objects (possibly of a different type), or can discard objects.
+2. Zero or more intermediate operations are then successively applied to the individual objects that are part of the input ``Stream`` object, which generates a new output ``Stream`` object. These operations can change the content of the input objects, can create new objects (possibly of a different type), or can discard objects.
 
 3. Finally, a terminal operation is applied to collect the results of the stream pipeline. In the figure above, the terminal operation consists in creating an output collection of objects of type ``U`` (the triangles), which may or may not be the same type as ``T``. Other terminal operations are possible, such as counting the number of objects that are produced by the stream pipeline.
 
+
+.. _stream_miles:
    
 Example: From miles to kilometers
 ---------------------------------
@@ -932,7 +934,6 @@ Using the classes and methods we will be examining, this conversion can be trans
 
     import java.util.List;
     import java.util.stream.Collectors;
-    import java.util.stream.Stream;
     
     public class Miles {
         static public void main(String args[]) {
@@ -964,9 +965,181 @@ This source code defines a stream pipeline that works as follows:
 
 As can be seen, this syntax is very compact and intuitive because it adopts a **declarative** approach. The intermediate operations are expressed using functional-style programming thanks to the :ref:`general-purpose functional interfaces <general_purpose_functional_interfaces>`. The intermediate operations are then chained together by using the output of one operation as the input of the next.
 
-Importantly, streams are **immutable**. Indeed, the intermediate operations are not allowed to modify the data they operate on. Each intermediate operation creates a new stream, without modifying its own input stream. This is totally different from the ``removeIf()`` and ``replaceAll()`` methods of the :ref:`higher-order function of the Java collections <higher_order_functions>`, because the latter methods modify their data source (i.e., the collection). In other words, stream pipelines have **no side effects**, as long as the intermediate operations do not modify the state of the program (which is the main assumption of functional programming).
+Importantly, the intermediate operations are not allowed to modify the data they operate on: Each intermediate operation creates a new stream, without modifying its own input stream. This is totally different from the ``removeIf()`` and ``replaceAll()`` methods of the :ref:`higher-order function of the Java collections <higher_order_functions>`, because the latter methods do modify their data source (i.e., the collection). In other words, stream pipelines have **no side effects**, as long as the intermediate operations do not modify the state of the program (which is the main assumption of functional programming).
 
 Stream pipelines are **lazy**, meaning that the intermediate operations are not evaluated until a terminal operation is encountered. In the code above, nothing is computed until the ``collect()`` method is called. This laziness allows for potential optimization in processing only the necessary elements, as well as in exploiting parallelism.
+
+
+Java streams
+------------
+
+Stream programming in Java is built on the top of the following generic interface:
+
+..  code-block:: java
+
+    package java.util.stream;
+
+    public interface Stream<T> {
+        // Member methods
+    }
+                 
+This interface represents a stream of values of type ``T``. In our :ref:`previous example <stream_miles>`, the streams of string values are of type ``Stream<String>``, whereas the streams of floating-point values are of type ``Stream<Float>``. We could have made this more explicit by splitting the chain of the intermediate operations as distinct streams, which would have led to the equivalent (but less elegant) code:
+
+..  code-block:: java
+
+    import java.util.List;
+    import java.util.stream.Collectors;
+    import java.util.stream.Stream;
+    
+    public class Miles {
+        static public void main(String args[]) {
+            List<String> miles = List.of("15", "", "3.5", "");
+    
+            Stream<String> s1 = miles.stream();
+            Stream<String> s2 = s1.filter(l -> !l.isEmpty());
+            Stream<Float>  s3 = s2.map(Float::parseFloat);
+            Stream<Float>  s4 = s3.map(f -> f * 1609.344f);
+            Stream<Float>  s5 = s4.map(f -> f / 1000.0f);
+            Stream<String> s6 = s5.map(String::valueOf);
+    
+            List<String> kilometers = s6.collect(Collectors.toList());
+        }
+    }
+
+Methods that work on streams belong to exactly one of the following three categories:
+
+* **Source methods**, which produce a stream of values from a source (such as a collection, a file, a database...),
+
+* **Intermediate methods**, which transform the values from an input stream to produce a new stream, and
+
+* **Terminal methods**, which consume the values in the stream (for instance, to print them on screen, to write them into a file, to store them in a Java collection, or to reduce them as a single value).
+
+In the miles-to-kilometers conversion, the ``stream()`` method is the source method, the ``filter()`` and ``map()`` methods are the intermediate methods, and the ``collect()`` method is the terminal method. Altogether, these methods define the stream pipeline.
+
+Note that streams are not immutable, in the sense that when the elements of a stream are consumed by a terminal method, they disappear and the stream is then empty. In this respect, streams are similar to :ref:`iterators <iterators>`, which are also modified as they are traversed.
+
+The main source, intermediate, and terminal methods for stream programming in the Java standard library are now reviewed. Evidently, this list is by no way exhaustive. The full list of the features offered ``Stream<T>`` is available in the online Java documentation: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html>`_
+
+
+Source methods
+--------------
+
+As already shown in the :ref:`miles-to-kilometers example <stream_miles>`, **streams are frequently created out of one of the standard Java collections** (such as ``List`` or ``Set``). This stems from the fact that the ``Collection<E>`` interface contains the following method:
+
+..  code-block:: java
+
+    public interface Collection<E> {
+        // Other members
+        
+        default Stream<E> stream();
+    }
+
+This source method provides a bridge between the world of Java collections and the world of Java streams. As already outlined before, the resulting stream uses the collection as its data source, but it keeps the source collection immutable.
+
+It is also possible to directly create a stream without using a collection. For instance, the ``Stream<T> empty()`` method creates an **empty stream** of ``String`` values:
+
+..  code-block:: java
+
+    Stream<String> s = Stream.empty();
+
+A stream containing a **predefined list of values** can be constructed using the ``Stream<T> of(T... values)`` method. For instance, here is how to define a stream containing the vowels in French:
+
+..  code-block:: java
+
+    Stream<Character> vowels = Stream.of('a', 'e', 'i', 'o', 'u', 'y');
+
+Note that the type ``T`` can also be a custom class. For instance, the following code is perfectly valid and creates a stream of complex objects:
+
+..  code-block:: java
+
+    class Account {
+        private int value;
+            
+        public Account(int value) {
+            this.value = value;
+        }
+            
+        public int getValue() {
+            return value;
+        }
+    }
+
+    Stream<Account> accounts = Stream.of(new Account(100), new Account(200));
+
+Streams can also be **constructed out of arrays** using the ``Arrays.stream()`` static method. For instance:
+
+..  code-block:: java
+
+    Float[] a = new Float[] { 1.0f, 2.0f, 3.0f };
+    Stream<Float> b = Arrays.stream(a);
+
+Finally, note that the method ``lines()`` of standard class ``BufferedReader`` returns a stream that scans the lines of a :ref:`Java reader <file_reader>`. This notably enables the creation of a **stream that reads the lines of a file**:
+
+..  code-block:: java
+
+    import java.io.BufferedReader;
+    import java.io.FileReader;
+    import java.io.IOException;
+    import java.util.stream.Stream;
+    
+    public class FileToStream {
+        static public void main(String args[]) throws IOException {
+            try (FileReader file = new FileReader("somefile.txt")) {
+                BufferedReader reader = new BufferedReader(file);
+                Stream<String> lines = reader.lines();
+            }
+        }
+    }
+
+
+Intermediate methods
+--------------------
+
+Once a stream is created using 
+
+
+Terminal methods
+----------------
+
+
+Specialized streams
+-------------------
+
+So far, we have only been considering the generic interface ``Stream<T>``. For performance reasons, there also exist specialized interfaces representing streams of three primitive types, namely:
+
+* ``IntStream`` for streams of ``int`` numbers: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html>`_
+
+* ``LongStream`` for streams of ``long`` numbers: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/LongStream.html>`_
+
+* ``DoubleStream`` for streams of double precision numbers (i.e., for the primitive type ``double``): `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/DoubleStream.html>`_
+ 
+For instance, a stream of ``int`` numbers can be represented either as a generic stream of type ``Stream<Integer>`` (in which each element is an object of type ``Integer``), or as a specialized stream of type ``IntStream`` (in which each element is internally represented as an ``int`` primitive value). Specialized streams are in general more efficient than generic streams, as they avoid the creation of objects, and should be preferred wherever possible when performance is important.
+
+Note that there is no specialized streams for the other primitive types: It is recommended to use ``IntStream`` to store ``short``, ``char``, ``byte``, and ``boolean`` values. As far as ``float`` are concerned, it is recommended to use ``DoubleStream``.
+
+The conversions between generic streams and specialized streams are ruled as follows:
+
+* A specialized ``IntStream`` can be constructed from a ``Stream<T>`` using the ``mapToInt()`` method of the generic stream.
+
+* A specialized ``LongStream`` can be constructed from a ``Stream<T>`` using the ``mapToLong()`` method of the generic stream.
+
+* A specialized ``DoubleStream`` can be constructed from a ``Stream<T>`` using the ``mapToDouble()`` method of the generic stream.
+
+* Conversely, a generic ``Stream<T>`` can be constructed from an ``IntStream``, from a ``LongStream``, or from an ``DoubleStream`` using the ``mapToObj()`` method of the specialized stream.
+
+For instance, the :ref:`conversion between miles and kilometers <stream_miles>` could have been implemented as follows using the specialized ``DoubleStream`` (the two modified lines are highlighted by asterisks):
+
+..  code-block:: java
+
+    List<String> kilometers = miles.stream()
+        .filter(s -> !s.isEmpty())                // Skip empty strings
+        .mapToDouble(s -> Double.parseDouble(s))  // (*) From string to double
+        .map(x -> x * 1609.344)                   // From miles to meters
+        .map(x -> x / 1000.0)                     // From meters to kilometers
+        .mapToObj(x -> String.valueOf(x))         // (*) From double to string
+        .collect(Collectors.toList());            // Construct the list
+
+
 
 
 An immutable list

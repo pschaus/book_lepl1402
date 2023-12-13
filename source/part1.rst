@@ -2779,6 +2779,9 @@ Just by reading these two lines, it is not obvious that the second call to :code
     
 For this reason, exceptions should only be used sparingly. Fortunately, in many program, you don't need to throw your own exceptions, and often the only place you need to catch an exception is when using the existing I/O classes of the JDK. We will show an example in the next section.
 
+
+.. _file_reader:
+
 Exceptions and I/O operations
 -----------------------------
 
