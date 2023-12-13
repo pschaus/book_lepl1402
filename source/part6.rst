@@ -594,6 +594,8 @@ This general form can be lightened in different situations:
      List<Integer>::size
      
 
+.. _general_purpose_functional_interfaces:
+
 General-purpose functional interfaces
 =====================================
 
@@ -831,7 +833,9 @@ For instance, the following code defines a consumer to print the result of a fun
 
     c.accept(f.apply(5));  // Displays: 50
     
-                
+
+.. _higher_order_functions:
+   
 Higher-order functions
 ----------------------
 
@@ -882,15 +886,90 @@ Here is a full example combining all these three methods:
     lst.forEach(x -> System.out.println(x));
 
 
-
-
-
 Streams 
 ========
 
+In computer science, the term "stream" generally refers to a **sequence of values accessed one after the other**, from the first to the last.
+
+"Stream programming" in Java refers to the use of the ``Stream`` API, which was introduced in Java 8 in the ``java.util.stream`` package. Streams in Java provide a **declarative way to perform computations on sequences of objects**. They enable you to express complex data processing queries more concisely and efficiently than traditional iteration using loops.
+
+Contrarily to Java collections such as ``List``, ``Set``, or ``Map``, streams are *not* a data structure that stores elements in the RAM of the computer. They are a sequence of elements that originate from a data source. This data source can correspond to a Java collection, but it might as well correspond to objects that are progressively read from a database, from the filesystem, or from a network communication, possibly without ever being entirely stored inside the RAM of the computer.
+
+In stream programming, the computations to be applied to the individual objects of a stream are declared as a **chain of simple operations** that is called a **stream pipeline**. Lambda expressions are in general used to concisely express these operations. A stream pipeline can be represented as follows:
+
+.. image:: _static/images/part6/stream.svg
+  :width: 75%
+  :align: center
+  :alt: Stream pipeline
+
+In this figure:
+
+1. A ``Stream`` object is first created from a collection of source objects of type ``T`` (the circles).
+
+2. Zero or more intermediate operations are then successively applied to the invidual objects that are part of the input ``Stream`` object, which generates a new output ``Stream`` object. These operations can change the content of the input objects, can create new objects (possibly of a different type), or can discard objects.
+
+3. Finally, a terminal operation is applied to collect the results of the stream pipeline. In the figure above, the terminal operation consists in creating an output collection of objects of type ``U`` (the triangles), which may or may not be the same type as ``T``. Other terminal operations are possible, such as counting the number of objects that are produced by the stream pipeline.
+
+   
+Example: From miles to kilometers
+---------------------------------
+
+To illustrate the benefits of stream programming, let us consider the task of converting a list of strings containing `distances expressed in miles <https://en.wikipedia.org/wiki/Mile>`_, into a list of strings containing the distances expressed in kilometers, ignoring empty strings. For instance, the list containing:
+
+..  code-block::
+
+    [ "15", "", "", "3.5", "" ]
+
+should be converted to the list (by definition, 1 mile equals 1609.344 meters):
+
+..  code-block::
+
+    [ "24.14016", "5.6327043" ]
+
+Using the classes and methods we will be examining, this conversion can be translated very directly into a Java program:
+
+..  code-block:: java
+
+    import java.util.List;
+    import java.util.stream.Collectors;
+    import java.util.stream.Stream;
+    
+    public class Miles {
+        static public void main(String args[]) {
+            List<String> miles = List.of("15", "", "3.5", "");
+    
+            List<String> kilometers = miles.stream()
+                .filter(s -> !s.isEmpty())      // Skip empty strings
+                .map(s -> Float.parseFloat(s))  // From string to float
+                .map(x -> x * 1609.344f)        // From miles to meters
+                .map(x -> x / 1000.0f)          // From meters to kilometers
+                .map(x -> String.valueOf(x))    // From float to string
+                .collect(Collectors.toList());  // Construct the list
+        }
+    }
+
+This source code defines a stream pipeline that works as follows:
+
+1. Get a stream from the input list of strings by calling ``miles.stream()``.
+
+2. Filter the input stream by removing the empty strings.
+
+3. Convert the strings into floating-point numbers that contain the miles.
+
+4. Convert miles into meters, then convert meters into kilometers.
+
+5. Convert the floating-point numbers that contain the kilometers into strings.
+
+6. Collect all the output strings into a list. This is the terminal operation.
+
+As can be seen, this syntax is very compact and intuitive because it adopts a **declarative** approach. The intermediate operations are expressed using functional-style programming thanks to the :ref:`general-purpose functional interfaces <general_purpose_functional_interfaces>`. The intermediate operations are then chained together by using the output of one operation as the input of the next.
+
+Importantly, streams are **immutable**. Indeed, the intermediate operations are not allowed to modify the data they operate on. Each intermediate operation creates a new stream, without modifying its own input stream. This is totally different from the ``removeIf()`` and ``replaceAll()`` methods of the :ref:`higher-order function of the Java collections <higher_order_functions>`, because the latter methods modify their data source (i.e., the collection). In other words, stream pipelines have **no side effects**, as long as the intermediate operations do not modify the state of the program (which is the main assumption of functional programming).
+
+Stream pipelines are **lazy**, meaning that the intermediate operations are not evaluated until a terminal operation is encountered. In the code above, nothing is computed until the ``collect()`` method is called. This laziness allows for potential optimization in processing only the necessary elements, as well as in exploiting parallelism.
+
+
+An immutable list
+=================
+
 Programming without side effects
-
-
-Immutable collections
-=====================
-
