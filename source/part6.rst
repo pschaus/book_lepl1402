@@ -48,7 +48,7 @@ Let us consider the task of creating a spreadsheet application. A spreadsheet do
     
 The ``Row`` class uses an `associative array <https://en.wikipedia.org/wiki/Associative_array>`_ that maps integers (the index of the columns) to strings (the value of the columns). The use of an associated array allows to account for columns with a missing value. The standard ``HashMap<K,V>`` class is used to this end: `<https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html>`_
 
-A basic spreadsheet application can then be created on the top of this ``Row`` class. Let us define a spreadsheet document as a list of rows:
+A basic spreadsheet application can then be created on the top of this ``Row`` class. Let us define a spreadsheet document as an ordered list of rows:
     
 ..  code-block:: java
 
@@ -202,9 +202,9 @@ The previous code has however a redundancy: The value of ``sortOnColumn`` must b
         }
     }
                  
-This is much more compact! This derives from the fact that in this code, ``private static class`` was replaced by ``private class``. This means that ``RowComparator3`` is as an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
+This is much more compact! In this code, ``private static class`` was simply replaced by ``private class``. Thanks to this modification, ``RowComparator3`` becomes an inner class of the outer class ``Spreadsheet``, which grants its ``compare()`` method a direct access to the ``sortOnColumn`` member variable.
 
-Inner classes look very similar to static nested classes, but they do not have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access all members (variables and methods, including private members) of the object that created them. Inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
+Inner classes look very similar to static nested classes, but they do not have the ``static`` keyword. As can be seen, the methods of inner classes can not only access the static member variables of the outer class, but they can also transparently access any member of the object that constructed them (variables and methods, including private members). Note that inner classes were previously encountered in this course when the :ref:`implementation of custom iterators <custom_iterators>` was discussed.
 
 It is tempting to systematically use inner classes instead of static nested classes. But pay attention to the fact that inner classes induce a much closer coupling with their outer classes, which can make it difficult to refactor the application, and which can quickly lead to the so-called `Feature Envy <https://refactoring.guru/fr/smells/feature-envy>`_ "code smell" (i.e. the `opposite of a good design pattern <https://en.wikipedia.org/wiki/Anti-pattern>`_). Use an inner class only when you need access to the instance members of the outer class. Use a static nested class when there is no need for direct access to the outer class instance or when you want clearer namespacing and better code organization.
 
@@ -213,7 +213,7 @@ It is tempting to systematically use inner classes instead of static nested clas
 Syntactic sugar
 ---------------
 
-The fact that ``compare()`` has access to ``sortOnColumn`` might seem magic. This is actually an example of **syntactic sugar**. Syntactic sugar refers to language features or constructs that do not introduce new functionality but provide a more convenient or expressive way of writing code. These features make the code more readable or concise without fundamentally changing how it operates. In essence, syntactic sugar is a shorthand or a more user-friendly syntax for expressing something that could be written in a longer or more explicit manner.
+The fact that ``compare()`` has access to ``sortOnColumn`` might seem magic. This is actually an example of **syntactic sugar**. Syntactic sugar refers to language features or constructs that do not introduce new functionality but provide a more convenient or expressive way of writing code. These features make the code more readable or more concise without fundamentally changing how it operates. In essence, syntactic sugar is a shorthand or a more user-friendly syntax for expressing something that could be written in a longer or more explicit manner.
 
 Syntactic sugar constructions were already encountered in this course. :ref:`Autoboxing <boxing>` is such a syntactic sugar. Indeed, the code:
 
@@ -229,7 +229,7 @@ is semantically equivalent to the more explicit code:
     Integer num = Integer.valueOf(42);
     int value = num.intValue();
 
-Thanks to its knowledge about the internals of the standard ``Integer`` class, the compiler can automatically "fill the dots" by adding the constructor and selecting the proper conversion method. The :ref:`enhanced for-each loop for iterators <iterators>` is another example of syntactic sugar, because writing:
+Thanks to its knowledge about the internals of the standard ``java.lang.Integer`` class, the compiler can automatically "fill the dots" by adding the constructor and selecting the proper conversion method. The :ref:`enhanced for-each loop for iterators <iterators>` is another example of syntactic sugar, because writing:
 
 ..  code-block:: java
 
@@ -253,7 +253,7 @@ is semantically equivalent to:
         System.out.println(item);
     }
 
-Once the compiler comes across some ``for()`` loop on a collection that implements the standard ``Iterable<T>`` interface, it can automatically instantiate the iterator and traverse the collection using this iterator.
+Once the compiler comes across some ``for()`` loop on a collection that implements the standard ``Iterable<T>`` interface, it can transparently instantiate the iterator and traverse the collection using this iterator.
 
 In the context of inner classes, the syntactic sugar consists in including a reference to the outer object that created the instance of the inner object. In our example, the compiler automatically transforms the ``RowComparator3`` class into the following static nested class:
 
@@ -290,7 +290,7 @@ Local inner classes
     
 So far, we have seen three different constructions to define classes:
 
-* External classes are the default way of defining classes, i.e. separately from any other class.
+* External classes are the default way of defining classes, i.e., separately from any other class.
 
 * Static nested classes are members of an outer class. They have access to the static members of the outer class.
 
@@ -349,7 +349,7 @@ This construction is often used for implementing interfaces or extending classes
         });
     }
 
-Anonymous inner classes also correspond to another :ref:`syntactic sugar <syntactic_sugar>` construction, because an anonymous inner class can easily be converted into a local inner class by giving them a meaningless name.
+Anonymous inner classes also correspond to another :ref:`syntactic sugar <syntactic_sugar>` construction, because an anonymous inner class can easily be converted into a local inner class by giving it a meaningless name.
 
  
 Access to method variables
@@ -393,7 +393,7 @@ To illustrate this point, let us consider the task of filling a matrix with a co
         lowerPart.get();
     }
     
-As can be seen in this example, it is not necessary for the inner class ``Filler`` to explicitly store a copy of ``m`` and ``value``. Indeed, because those two variables are part of the scope of method ``fill1()``, the ``run()`` method has direct access to the ``m`` and ``value`` variables. Actually, this is again :ref:`syntactic sugar <syntactic_sugar>`: The compiler automatically gives inner classes a copy of all the local variables of the surrounding method.
+As can be seen in this example, it is not necessary for the inner class ``Filler`` to explicitly store a copy of ``m`` and ``value``. Indeed, because those two variables are part of the scope of method ``fill1()``, the ``run()`` method has direct access to the ``m`` and ``value`` variables. Actually, this is again :ref:`syntactic sugar <syntactic_sugar>`: The compiler automatically gives a **copy of all the local variables of the surrounding method** to the contructor of the inner class.
 
 The method ``fill1()`` creates exactly two threads, one for each part of the matrix. One could want to take advantage of a higher number of CPU cores by reducing this granularity. According to this idea, here is an alternative implementation that introduces parallelism at the level of the individual rows of the matrix:
 
@@ -422,7 +422,7 @@ The method ``fill1()`` creates exactly two threads, one for each part of the mat
         }
     }
 
-Contrarily to ``fill1()`` that used a *local* inner class, the ``fill2()`` method uses an *anonymous* inner class, an instance of which is created for each row. This is because the first implementation had to separately track exactly two futures using two variables, whereas the second implementation tracks multiple futures using a stack.
+Contrarily to ``fill1()`` that used a *local* inner class, the ``fill2()`` method uses an *anonymous* inner class, an instance of which is created for each row. This construction was not possible in the first implementation, because it had to separately track exactly two futures using two variables, which needed to share the definition of the inner class between the two separate runnables. However, in the second implementation, thanks to the fact that the multiple futures are tracked in a uniform way using a stack, the definition of the inner class can occur at a single place.
 
 There is however a caveat associated with ``fill2()``: One could expect to have access to the ``row`` variable inside the ``run()`` method, because ``row`` is part of the scope of the enclosing method. However, the inner class might continue to exist and be used even after the loop has finished executing and the variable ``row`` has disappeared. To prevent potential issues arising from changes to variables after the start of the execution of a method, an inner class is actually only allowed to access the **final variables** in the scope of method (or variables that could have been tagged as ``final``). Remember that a final variable means that it is :ref:`not allowed to change its value later <final_keyword>`.
 
@@ -713,7 +713,7 @@ The function computing the sum of two integers can be defined as:
 
    .. code-block:: java
                    
-      public interface UnaryOperator<T> extends Function<T, T> { }
+      public interface UnaryOperator<T> extends Function<T,T> { }
       public interface BinaryOperator<T> extends BiFunction<T,T,T> { }
 
    This construction implies that a ``UnaryOperator`` (resp. ``BinaryOperator``) can be used as a placeholder for a ``Function`` (resp. ``BiFunction``). However, the construction is more involved, which explains why we preferred defining the operators as separate interfaces.
@@ -740,24 +740,8 @@ Here is an example of composition:
 
     System.out.println(h.apply(25));  // Displays: 2.0, which corresponds to "sqrt(25) / 2.5"
 
-In the example above, we have used the built-in ``compose()`` method that is part of Java. We could have implemented a similar functionality by ourselves thanks to the expressiveness of lambda expressions. Indeed, the following program would have produced exactly the same result as above:
-
-.. code-block:: java
-                
-    public static <X,Y,Z> Function<X,Z> myCompose(Function<Y,Z> g,
-                                                  Function<X,Y> f) {
-        return x -> g.apply(f.apply(x));
-    }
-
-    public static void main(String[] args) {
-        UnaryOperator<Double> f = (d) -> d / 2.5;
-        Function<Integer, Double> g = (i) -> Math.sqrt(i);
-        Function<Integer, Double> h = myCompose(f, g);
-        
-        System.out.println(h.apply(25));  // Display: 2.0
-    }
-    
 Evidently, composition is also available for binary functions and binary operators.    
+
 
 
 Predicates
@@ -828,7 +812,7 @@ These operations can be used as follows:
 Consumer
 --------
 
-Finally, a **consumer** is a general-purpose functional interface whose result type is ``Void``, i.e., that does not produce any value. It is defined as:
+Finally, a **consumer** is a general-purpose functional interface whose result type is void, i.e., that does not produce any value. It is defined as:
 
 .. code-block:: java
                 
@@ -836,7 +820,7 @@ Finally, a **consumer** is a general-purpose functional interface whose result t
         public void accept(T x);
     }
 
-Consumers are typically encountered as the "terminal block" of a chain of functions. They can notably be used to print the result of a function, to store this result into a file, or to send this result into another data structure.
+Consumers are typically encountered as the "terminal block" of a chain of functions. They can notably be used to print the result of a function, to write this result onto a file, or to store this result into another data structure.
 
 For instance, the following code defines a consumer to print the result of a function:
 
@@ -853,9 +837,24 @@ Higher-order functions
 
 In Java, **higher-order functions** are methods that can **accept other functions as arguments, return functions as results, or both**. They treat the general-purpose functions seen above as first-class citizens, allowing these functions to be manipulated, passed around, and used as data.
 
-The ``myCompose()`` method that was introduced to :ref:`compose two functions <composition>` is an example of a higher-order function: It takes two ``Function`` as arguments, and generates one ``Function`` as its result.
+The :ref:`composition of two functions <composition>` is an example of higher-order function: It takes two ``Function`` as arguments, and generates one ``Function`` as its result. We have already seen that Java already provides built-in support for function composition. However, we could have implemented composition by ourselves thanks to the expressiveness of lambda expressions. Indeed, the following program would have produced exactly the same result as the standard ``compose()`` method of the ``Function`` class:
 
-Very interestingly, the standard Java collections (most notably lists) include several methods that take operators and predicates as arguments, for instance:
+.. code-block:: java
+
+    public static <X,Y,Z> Function<X,Z> myCompose(Function<Y,Z> g,
+                                                  Function<X,Y> f) {
+        return x -> g.apply(f.apply(x));
+    }
+
+    public static void main(String[] args) {
+        UnaryOperator<Double> f = (d) -> d / 2.5;
+        Function<Integer, Double> g = (i) -> Math.sqrt(i);
+        Function<Integer, Double> h = myCompose(f, g);
+
+        System.out.println(h.apply(25));  // Display: 2.0
+    }
+
+Composition is an example of higher-order function that *outputs* new functions. The standard Java classes also contains methods that take functions as their *inputs*. This is notably the case of the standard Java collections (most notably lists), that include several methods taking operators and predicates as arguments, for instance:
 
 * ``forEach(c)`` applies a consumer to all the elements of the collection (this is part of the ``Iterable<T>`` interface),
 
