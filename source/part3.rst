@@ -206,6 +206,7 @@ You can also use these inclusion relations to simplify:
 As a general rule of thumb, when speaking about the time complexity of an algorithm using Big-Oh notations, you must simplify if possible to get rid of numerical coefficients.
 
 
+.. _recursivity:
 
 Recursive Algorithms
 ----------------------

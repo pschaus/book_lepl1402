@@ -313,6 +313,8 @@ The primary operations of a ``Stack`` are ``push()``, ``pop()``, and ``peek()``,
 Let us now see some possible concrete implementations of this interface.
 
 
+.. _linked_stack_adt:
+
 Implementing a Stack With a Linked Structure
 """"""""""""""""""""""""""""""""""""""""""""
 

@@ -895,7 +895,7 @@ Here is a full example combining all these three methods:
     lst.forEach(x -> System.out.println(x));
 
 
-Streams 
+Streams
 =======
 
 In computer science, the term "stream" generally refers to a **sequence of elements accessed one after the other**, from the first to the last.
@@ -978,6 +978,8 @@ Importantly, the intermediate operations are not allowed to modify the data they
 
 Stream pipelines are also **lazy**, which means that the intermediate operations are not evaluated until a terminal operation is encountered. In the code above, nothing is computed until the ``collect()`` method is called. This laziness allows for potential optimization by processing only the necessary elements (which is for instance useful if the data source corresponds to a large file), and by opening the path to the exploitation of multiple threads to separately process successive elements in a stream.
 
+
+.. _java_streams:
 
 Java streams
 ------------
@@ -1280,6 +1282,8 @@ In a stream pipeline, the last operation is usually an operation that returns so
 * Stream pipelines whose terminal method extracts a single value out of the stream (**reduction methods**).
 
 
+.. _stream_foreach:
+  
 Consumer methods
 ................
 
@@ -1584,7 +1588,241 @@ Here is an example of this feature:
    int[] a = stream.toArray();
    
     
-An immutable list
-=================
-
 Programming without side effects
+================================
+
+Side effects
+------------
+
+Remember that :ref:`lambda expressions <lambda_expressions>` in Java are implemented as anonymous inner classes. As a consequence, they are allowed to access members of the outer class:
+
+.. code-block:: java
+                
+    import java.util.function.Function;
+    
+    public class SideEffect {
+        private int sum = 0;
+    
+        public Function<Integer, Integer> createAddition() {
+            return i -> {
+                sum++;           // Side effect!
+                return i + sum;
+            };
+        }
+            
+        public static void main(String[] args) {
+            Function<Integer,Integer> add = new SideEffect().createAddition();
+    
+            System.out.println(add.apply(3));  // Displays: 4
+            System.out.println(add.apply(3));  // Displays: 5
+        }
+    }
+
+This is an extremely counter-intuitive behavior: Any developer that has not implemented the ``createAddition()`` method would expect that multiple applications of the same ``Function`` should always give the same result. In mathematics, we indeed expect that a function always gives the same result for the same argument!
+
+For this reason, this kind of code should be avoided, even if it fully respects the Java syntax. **A good function should have no side effect**. A function should never change existing objects and variables. The code of a function or method is easier to understand if the result *only* depends on its arguments. Furthermore, a function that has side effect can result in severe concurrency issues if executed in a multithreaded context.
+
+
+Immutable objects
+-----------------
+
+In order to enforce the absence of side effects and to ensure thread safety, functional programming promotes the use of **immutable objects**. Immutable objects are objects whose state cannot be changed after they are created.
+
+For instance, **strings in Java are immutable**. Once a ``String`` object is created, its value cannot be changed. Operations that appear to modify a string actually create a new ``String`` object.
+
+On the other hand, primitive types in Java *are* mutable (for instance, you can change the value of a ``int`` variable after its declaration). However, the **wrapper classes associated with primitive types are immutable**. Indeed, classes like ``Integer``, ``Long``, ``Float``, ``Double``, ``Byte``, ``Short``, ``Character``, or ``Boolean``, which are used to wrap the primitive data types, are all immutable: The primitive value they store can never be changed after their construction. In the same vein, :ref:`Java enums <enumerations>` are implicitly immutable. Once the enum constants are created, their values cannot be modified.
+
+
+An immutable list
+-----------------
+
+We already know that the standard ``List<T>`` interface offers the ``removeIf()`` and ``replaceAll()`` methods to apply :ref:`higher-order functions <higher_order_functions>` onto their content. Because of the presence such methods, the standard Java lists are mutable objects, which contrasts with the philosophy of functional programming. Can we design a list without side effect, in a way that is similar to streams? The answer is "yes", and this section explains how to **create an immutable generic list**.
+
+The basic idea is similar to the :ref:`linked list abstract data structure <linked_stack_adt>`. It consists in creating the following class hierarchy:
+
+.. image:: _static/images/part6/immutable-list-1.svg
+  :width: 50%
+  :align: center
+  :alt: Class hierarchy to create an immutable list
+
+In this hierarchy:
+
+* ``T`` is a generic type that must correspond to an immutable type, such as ``Integer`` or ``Float``.
+
+* ``Nil<T>`` represents the end of an immutable list. This data structure contains no information, it is simply a terminal node.
+
+* ``Cons<T>`` stores a non-empty value of the list, together with a link to the next element in the list. The name ``Cons`` originates from the fundamental ``cons`` function that is used in most dialects of the Lisp programming language to `construct memory objects <https://en.wikipedia.org/wiki/Cons>`_.
+
+* ``ImmutableList<T>`` is an :ref:`interface <interfaces>` that represents a reference to the immutable list itself.
+
+This class hierarchy would store the immutable list containing the 10, 20, and 30 integer values as follows:
+
+.. image:: _static/images/part6/immutable-list-2.svg
+  :width: 80%
+  :align: center
+  :alt: An immutable list of integers
+
+Here is the corresponding Java code to define this hierarchy:
+
+.. code-block:: java
+                
+    public interface ImmutableList<T> {
+    }
+
+    public static final class Nil<T> implements ImmutableList<T> {
+        public Nil() {
+        }
+    }
+
+    public static final class Cons<T> implements ImmutableList<T> {
+        private final T value;
+        private final ImmutableList<T> next;
+
+        public Cons(T value,
+                    ImmutableList<T> next) {
+            if (next == null) {
+                throw new IllegalArgumentException();
+            }
+            this.value = value;
+            this.next = next;
+        }
+    }
+
+And our sample immutable list containing 10, 20, and 30 can then be constructed from its last element to its first element:
+
+.. code-block:: java
+
+    // Create the terminal node that represent the empty list
+    ImmutableList<Integer> empty = new Nil<Integer>();
+
+    // Create the node containing "30" that represents the list: [ 30 ]
+    ImmutableList<Integer> list1 = new Cons<Integer>(30, empty);
+
+    // Create the node containing "20" that represents the list: [ 20, 30 ]
+    ImmutableList<Integer> list2 = new Cons<Integer>(20, list1);
+
+    // Create the node containing "10" that represents the list: [ 10, 20, 30 ]
+    ImmutableList<Integer> myList = new Cons<Integer>(10, list2);
+
+Note that ``list1`` and ``list2`` are always the same lists: We can add an element to the head of a list without changing the tail of the list. This demonstrates that **this data structure is immutable**. It cannot be changed after creation.
+
+
+Consuming an immutable list
+---------------------------
+
+Because our ``ImmutableList<T>`` data structure is immutable, we do not provide a public access to the values it stores.
+
+If we want to execute an operation on each element of the immutable list according to the functional programming paradigm, we would use a :ref:`consumer <fp_consumer>`. A consumer can be applied to our immutable list by adding a ``forEach()`` higher-order method in the ``ImmutableList<T>`` interface, which mimics :ref:`streams <stream_foreach>`:
+
+.. code-block:: java
+
+    public interface ImmutableList<T> {
+        public void forEach(Consumer<T> consumer);
+    }
+
+The implementation of ``forEach()`` in the concrete classes ``Nil<T>`` and ``Cons<T>`` follows a :ref:`recursive algorithm <recursivity>`. The base case of the recursion corresponds to the handling of an empty list, which simply does nothing:
+    
+.. code-block:: java
+
+    public static final class Nil<T> implements ImmutableList<T> {
+        // ...
+
+        public void forEach(Consumer<T> consumer) {
+        }
+    }
+
+As far as a non-empty node is concerned, the concrete class first applies the consumer to the value that it stores, then it forwards the consumer to the next item in the list:
+    
+.. code-block:: java
+
+    public static final class Cons<T> implements ImmutableList<T> {
+        private final T value;
+        private final ImmutableList<T> next;
+        // ...
+
+        public void forEach(Consumer<T> consumer) {
+            consumer.accept(value);
+            next.forEach(consumer);
+        }
+    }
+
+Thanks to this ``forEach()`` method, it becomes possible to print the elements of the immutable list:
+
+.. code-block:: java
+
+    myList.forEach(i -> System.out.println(i));
+
+
+Map and filter on an immutable list
+-----------------------------------
+
+Since an immutable list cannot be changed, we have to create a new immutable list if we want to change the content of the list. To this end, let us implement the ``map()`` and ``filter()`` methods that are :ref:`the most common intermediate operations in a stream pipeline <stream_intermediate_methods>`. We first add the two abstract methods to our ``ImmutableList<T>`` interface:
+
+.. code-block:: java
+
+    public interface ImmutableList<T> {
+        public void forEach(Consumer<T> consumer);
+
+        public ImmutableList<T> map(UnaryOperator<T> operator);
+
+        public ImmutableList<T> filter(Predicate<T> predicate);
+    }
+
+In the base case of an empty immutable list, both ``map()`` and ``filter()`` simply have to return a new empty list:
+
+.. code-block:: java
+
+    public static final class Nil<T> implements ImmutableList<T> {
+        // ...
+        
+        public ImmutableList<T> map(UnaryOperator<T> operator) {
+            return new Nil<T>();
+        }
+
+        public ImmutableList<T> filter(Predicate<T> predicate) {
+            return new Nil<T>();
+        }
+    }
+
+As far as a non-empty node is concerned, the concrete class is implemented as follows:
+
+.. code-block:: java
+
+
+    public static final class Cons<T> implements ImmutableList<T> {
+        private final T value;
+        private final ImmutableList<T> next;
+        // ...
+        
+        public ImmutableList<T> map(UnaryOperator<T> operator) {
+            // Create a new list with the transformed current value, followed by the transformed tail of the list
+            return new Cons<T>(operator.apply(value), next.map(operator));
+        }
+
+        public ImmutableList<T> filter(Predicate<T> predicate) {
+            if (predicate.test(value)) {
+                return new Cons<T>(value, next.filter(predicate));
+            } else {
+                return next.filter(predicate);
+            }
+        }
+    }
+
+Let us for instance consider the operation ``myList.map(x -> x + 3)`` on our immutable list containing 10, 20, and 30. If we expand the recursive calls, we get the following sequence of operations:
+
+.. code-block:: text
+
+   myList.map(x -> x + 3)
+   <=> new Cons(10 + 3, list2.map(x -> x + 3))
+   <=> new Cons(10 + 3, new Cons(20 + 3, list3.map(x -> x + 3)))
+   <=> new Cons(10 + 3, new Cons(20 + 3, new Cons(30 + 3, empty.map(x -> x + 3))))
+   <=> new Cons(10 + 3, new Cons(20 + 3, new Cons(30 + 3, new Nil())))
+   <=> ImmutableList<Integer> containing: [ 13, 23, 33 ]
+
+Thanks to those ``map()`` and ``filter()`` methods, we can chain operations to create more complex pipelines, for instance:
+    
+.. code-block:: java
+
+    myList.filter(x -> x > 2).map(x -> 2 * x).forEach(System.out::println);
+
+Evidently, our ``ImmutableList<T>`` data structure could be further improved by replicating all the methods that are available to design :ref:`stream pipelines <java_streams>`.
