@@ -946,7 +946,7 @@ Using the Java classes and methods for stream programming, this conversion can b
     
     public class Miles {
         static public void main(String args[]) {
-            List<String> miles = List.of("15", "", "3.5", "");
+            List<String> miles = List.of("15", "", "", "3.5", "");
     
             List<String> kilometers = miles.stream()
                 .filter(s -> !s.isEmpty())      // Skip empty strings
