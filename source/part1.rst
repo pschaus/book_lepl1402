@@ -20,7 +20,7 @@ Installing IntelliJ
 
 You might have already used an Integrated Development Environment (IDE) to write Python programs. In this course, we will do the same for programming in Java: We will use the free "Community Edition" of IntelliJ IDEA (we will just call it "IntelliJ" in the following). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
 
-The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/en/java/javase/20/docs/api/index.html>`_.
+The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/javase/8/docs/api/index.html>`_.
 
 Fortunately, IntelliJ can automatically download the JDK for you when you create a new project, so you don't have to worry about the JDK now. But if one day you want to write a Java application on a computer without IntelliJ, you have to manually download the JDK from `<https://openjdk.org/>`_ and install it.
 
@@ -324,7 +324,7 @@ The Java class :code:`Math` provides a large set of methods to work with numbers
     System.out.println("Area of disk: " + area);
     System.out.println("Radius of disk: " + radius);
 
-The complete documentation of the :code:`Math` class can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Math.html>`_.
+The complete documentation of the :code:`Math` class can be found at `<https://docs.oracle.com/javase/8/docs/api/java/lang/Math.html>`_.
  
 What is a variable? A mental model
 ----------------------------------
@@ -909,7 +909,7 @@ Variables holding string values have the type :code:`String`. Strings can be con
     String s3 = s1 + "---" + s2 + 12345;
     System.out.println(s3);
     
-The :code:`String` class defines many interesting methods that you can use to work with strings. If you check the documentation at  `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html>`_, you will notice that some methods of the :code:`String` class are static and some are not.
+The :code:`String` class defines many interesting methods that you can use to work with strings. If you check the documentation at  `<https://docs.oracle.com/javase/8/docs/api/java/lang/String.html>`_, you will notice that some methods of the :code:`String` class are static and some are not.
 For example, the static method :code:`valueOf` transforms a number value into a string:
 
 .. code-block:: java
@@ -936,7 +936,7 @@ There are also some methods for strings that are located in other classes. The m
 
     int i = Integer.parseInt("1234");
     
-Similar methods exist in the classes :code:`Long`, :code:`Float`, :code:`Double`, etc. for the other primitive types. All these classes are defined in the package :code:`java.lang`, for which you can find the documentation at `<https://docs.oracle.com/javase/20/docs/api/java/lang/package-summary.html>`_.
+Similar methods exist in the classes :code:`Long`, :code:`Float`, :code:`Double`, etc. for the other primitive types. All these classes are defined in the package :code:`java.lang`, for which you can find the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/lang/package-summary.html>`_.
 
 
 Mental model for strings
@@ -1090,7 +1090,7 @@ There is also an :code:`equals()` method to compare the content of two arrays, b
         }
     }
 
-The :code:`Arrays` class contains many useful methods to work with arrays, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Arrays.html>`_.
+The :code:`Arrays` class contains many useful methods to work with arrays, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html>`_.
 
 You might wonder why we need the line :code:`import java.util.Arrays` but we didn't need to import the classes :code:`Math`, :code:`Integer` or :code:`String` in our other examples. That's because those classes are in the package :code:`java.lang`, which is the only package that is automatically imported by the Java compiler.
 
@@ -1735,7 +1735,7 @@ The class :code:`Object` that is above our :code:`Weapon` class was not defined 
     o = new int[]{1,2,3};                       // okay, too
     o = new MagicSword("Elven sword", 7, 3);    // still okay!
 
-The documentation of :code:`Object` can be found at `<https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Object.html>`_.
+The documentation of :code:`Object` can be found at `<https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html>`_.
 The class defines several interesting methods that can be used on all objects.
 One of them is the :code:`toString()` method. This method is very useful because it is called by frequently used methods like :code:`String.valueOf()` and :code:`System.out.println()` when you call them with an object as parameter. Therefore, if we override this method in our own class, we will get a nice output:
 
