@@ -208,12 +208,12 @@ As a general rule of thumb, when speaking about the time complexity of an algori
 
 .. _recursivity:
 
-Recursive Algorithms
-----------------------
+..Recursive Algorithms
+.. ----------------------
 
 .. TODO
 
-Say something about recurrence equation + Graphical Method.
+.. Say something about recurrence equation + Graphical Method.
 
 
 
