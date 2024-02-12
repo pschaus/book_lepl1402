@@ -29,19 +29,19 @@ Creating a new project
 
 Start IntelliJ. A window will open where you can create a new project. Click on the corresponding button and you should see a window like this one:
 
-.. image:: _static/images/part1/new_project_screenshot.png
+.. image:: _static/images/part1/new_project_screen.png
   :width: 90%
   :alt: Starting a new project
 
 To create a new project, you have to enter a project name (in the field ``Name``) and a location on your disk where you want to store the project (in the field ``Location``). Keep the other fields ``Language``, ``Build system``, and ``Add sample code`` as shown in the above picture. But there is something to do for the field ``JDK``: As you can see in the picture, there was already JDK version 20 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose ``Download JDK...`` as shown in the picture below:
 
-.. image:: _static/images/part1/select_jdk_screenshot.png
+.. image:: _static/images/part1/select_jdk_screen.svg
   :width: 90%
   :alt: Selecting a JDK
 
 A small window should appear where you can select which JDK version to download and install:
 
-.. image:: _static/images/part1/download_jdk_screenshot.png
+.. image:: _static/images/part1/download_jdk_screen.png
   :alt: Downloading a JDK
 
 Select version 20 from the vendor ``Oracle OpenJDK`` (actually, any version newer than 17 is fine for this book). You can keep the location proposed by IntelliJ. Click the ``Download`` button and complete the JDK installation. Once everything is ready, you can finally create your first Java project. IntelliJ will normally automatically open the new project and show you the main window:
@@ -54,7 +54,7 @@ In the left part of the window, you see the project structure. Since we have sel
 
 Click on the right triangle in the upper right corner to start the program. A new view should appear at the bottom of the window with the output of the program:
 
-.. image:: _static/images/part1/program_output_screenshot.png
+.. image:: _static/images/part1/program_output_screen.png
   :width: 90%
   :alt: Output of the program
 
