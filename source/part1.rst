@@ -46,7 +46,7 @@ A small window should appear where you can select which JDK version to download 
 
 Select version 20 from the vendor ``Oracle OpenJDK`` (actually, any version newer than 17 is fine for this book). You can keep the location proposed by IntelliJ. Click the ``Download`` button and complete the JDK installation. Once everything is ready, you can finally create your first Java project. IntelliJ will normally automatically open the new project and show you the main window:
 
-.. image:: _static/images/part1/first_project_screenshot.png
+.. image:: _static/images/part1/first_project_screen.png
   :width: 90%
   :alt: The new project
 
