@@ -7,7 +7,7 @@ Part 1: From Python to Java
 Part 1 of this book is intended for students and hobbyists who are already familiar with the basics of Python programming, i.e., they know how to use variables, lists, functions, and plain data objects.
 A deeper knowledge of object-oriented programming is not required.
 
-The goal of the following sections is to make you quickly familiar with the important differences between Python and Java and with the basic object oriented mechanisms of Java. More advanced topics, such as interfaces, abstract classes, or lambda functions, will be seen in the other parts of the book.
+The goal of the following sections is to make you quickly familiar with the important differences between Python and Java and with the basic object oriented mechanisms of Java. More advanced topics, such as interfaces, abstract classes, or lambda functions, will be seen in the subsequent parts of the book.
 
 
 Your first Java program with IntelliJ
@@ -18,11 +18,11 @@ Your first Java program with IntelliJ
 Installing IntelliJ
 -------------------
 
-You might have already used an Integrated Development Environment (IDE) to write Python programs. In this course, we will do the same for programming in Java: We will use the free "Community Edition" of IntelliJ IDEA (we will just call it "IntelliJ" in the following). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
+You might have already used an Integrated Development Environment (IDE) to write Python programs. In this course, we will do the same for programming in Java: we will use the free "Community Edition" of IntelliJ IDEA (simply referred to as "IntelliJ" hereafter). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
 
-The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/javase/8/docs/api/index.html>`_.
+The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/javase/8/docs/api/index.html>`_. %https://docs.oracle.com/en/java/javase/21/docs/api/index.html New link for Java21, shoud we update ?
 
-Fortunately, IntelliJ can automatically download the JDK for you when you create a new project, so you don't have to worry about the JDK now. But if one day you want to write a Java application on a computer without IntelliJ, you have to manually download the JDK from `<https://openjdk.org/>`_ and install it.
+Fortunately, IntelliJ can automatically download the JDK for you when you create a new project, so you don't have to worry about the JDK for now. But if later on you wish to write a Java application on a computer without IntelliJ, you have to manually download the JDK from `<https://openjdk.org/>`_ and install it.
 
 Creating a new project
 -----------------------
@@ -33,7 +33,7 @@ Start IntelliJ. A window will open where you can create a new project. Click on 
   :width: 90%
   :alt: Starting a new project
 
-To create a new project, you have to enter a project name (in the field ``Name``) and a location on your disk where you want to store the project (in the field ``Location``). Keep the other fields ``Language``, ``Build system``, and ``Add sample code`` as shown in the above picture. But there is something to do for the field ``JDK``: As you can see in the picture, there was already JDK version 20 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose ``Download JDK...`` as shown in the picture below:
+To create a new project, you have to enter a project name (in the field ``Name``) and a location on your disk where you want to store the project (in the field ``Location``). Keep the other fields ``Language``, ``Build system``, and ``Add sample code`` as shown in the above picture. But there is something to do for the field ``JDK``: As you can see in the picture, there was already JDK version 11 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose ``Download JDK...`` as shown in the picture below:
 
 .. image:: _static/images/part1/select_jdk_screen.svg
   :width: 90%
@@ -44,7 +44,7 @@ A small window should appear where you can select which JDK version to download 
 .. image:: _static/images/part1/download_jdk_screen.png
   :alt: Downloading a JDK
 
-Select version 20 from the vendor ``Oracle OpenJDK`` (actually, any version newer than 17 is fine for this book). You can keep the location proposed by IntelliJ. Click the ``Download`` button and complete the JDK installation. Once everything is ready, you can finally create your first Java project. IntelliJ will normally automatically open the new project and show you the main window:
+Select version 21 from the vendor ``Oracle OpenJDK`` (actually, any version newer than 17 is fine for this book). You can keep the location proposed by IntelliJ. Click the ``Download`` button and complete the JDK installation. Once everything is ready, you can finally create your first Java project. IntelliJ will normally automatically open the new project and show you the main window:
 
 .. image:: _static/images/part1/first_project_screen.png
   :width: 90%
