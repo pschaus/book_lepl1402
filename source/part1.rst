@@ -62,9 +62,9 @@ Click on the right triangle in the upper right corner to start the program. A ne
 .. _java_main:
 
 How do Java programs look like?
-===============================
+-------------------------------
 
-Here is source code of the example program automatically created by IntelliJ in your project:
+Here is the source code of the example program automatically created by IntelliJ in your project:
 
 ..  code-block:: java
 
@@ -135,7 +135,7 @@ A ``.java`` file can contain more than one class, however only one of these clas
 You can access the static content of a class from another class by using the name of the class, as demonstrated in the line :code:`MyOtherClass.printHello()` in the example.
 
 Types
-=====
+-----
 
 You might already know that Python is a *strongly typed* language. That means that all "things" in Python have a specific type. You can see that by entering the following statements in the Python prompt:
 
@@ -239,11 +239,11 @@ IntelliJ runs the Java compiler and starts the JVM for you when you press the gr
     > java Main         # this command starts the JVM with your Main class
 
 
-Primitive Types
-===============
+Basics
+======
 
-Many primitive types...
------------------------
+Primitive Types
+---------------
 
 As explained, Java requires that you specify the type of all variables (including method parameters) and the return types of all methods.
 Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are used for numbers (integers and real numbers), for Boolean values (``true`` and ``false``) and for single characters (``a``, ``b``, etc.). However, there are several different number types. The below table shows all primitive types:
@@ -469,10 +469,7 @@ In general, you should try to avoid shadowing because it is easy to make mistake
   
 
 Arrays (*fr.* tableaux)
-=======================
-
-Working with arrays
--------------------
+-----------------------
 
 If you need a certain number of variables of the same primitive type, it can be useful to use an array type instead. Arrays are similar to lists in Python. One big difference is that when you create a new array you have to specify its size, i.e., the number of elements in it:
 
@@ -650,13 +647,11 @@ Array variables can be class variables (with the :code:`static` keyword), too. I
 You can think of the value :code:`null` as representing an invalid reference.
 
 
-Loops
-=====
 
-The two most common loop constructs in Java are the :code:`while` loop and the :code:`for` loop.
 
 "While" loops
 -------------
+The two most common loop constructs in Java are the :code:`while` loop and the :code:`for` loop.
 
 The :code:`while` loop in Java is very similar to its namesake in Python. It repeats one or more statements (we call them the *body* of the loop) as long a condition is met. Here is an example calculating the sum of the numbers from 0 to 9 (again, the surrounding :code:`main()` method is not shown):
 
@@ -777,8 +772,6 @@ But you should only use :code:`break` and :code:`continue` if they make your pro
     }
 
 
-Conditional Statements
-======================
 
 "If/else" statements
 --------------------
@@ -895,10 +888,8 @@ Since Java 8 is still widely used, you should familiarize yourself with both ver
 
  
 Strings
-=======
+-------
 
-Working with strings
---------------------
 
 Variables holding string values have the type :code:`String`. Strings can be concatenated to other strings with the + operator. This also works for primitive types:
 
@@ -953,7 +944,63 @@ Like array variables, string variables are references to the content of the stri
 |                       |                                                 |
 +-----------------------+-------------------------------------------------+
 
+Comparing things
+----------------
 
+Primitive-type values can be tested for equality with the :code:`==` operator:
+
+.. code-block:: java
+
+    int i = 3;
+    if( i==3 ) {
+        System.out.println("They are the same!");
+    }
+
+However, **this will not work for arrays or strings**. Indeed, since array and string variables only contain references, the :code:`==` operator will compare the *references*, not the *content* of the arrays or strings! The following example shows the difference:
+
+.. code-block:: java
+    
+    int i = 3;
+    System.out.println( i==3 );     // true. Primitive type.
+    
+    int[] a = {1,2,3};
+    int[] b = {1,2,3};
+    System.out.println( a==b );     // false. Two different arrays.
+
+    int[] c = a;
+    System.out.println( a==c );     // true. Same reference.
+    
+    String s1 = "Hello" + String.valueOf(1234);
+    String s2 = "Hello1234";
+    System.out.println( s1==s2 );   // false. Two different strings.
+
+**Comparing arrays or strings with == is a very common mistake in Java. Be careful!**
+
+To compare the *content* of two strings, you must use their :code:`equals()` method:
+
+.. code-block:: java
+
+    String s1 = "Hello" + String.valueOf(1234);
+    String s2 = "Hello1234";
+    System.out.println( s1.equals(s2) );   // true
+
+There is also an :code:`equals()` method to compare the content of two arrays, but it is a static method of the class :code:`Arrays` in the package :code:`java.util`. To use this class, you have to import it into your program. Here is the complete code:
+
+.. code-block:: java
+
+    import java.util.Arrays;
+
+    public class Main {
+        public static void main(String[] args) {
+            int[] a = {1,2,3};
+            int[] b = {1,2,3};
+            System.out.println( Arrays.equals(a,b) );  // true
+        }
+    }
+
+The :code:`Arrays` class contains many useful methods to work with arrays, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html>`_.
+
+You might wonder why we need the line :code:`import java.util.Arrays` but we didn't need to import the classes :code:`Math`, :code:`Integer` or :code:`String` in our other examples. That's because those classes are in the package :code:`java.lang`, which is the only package that is automatically imported by the Java compiler.
 .. _enumerations:
 
 Enumerations
@@ -1036,63 +1083,7 @@ Therefore we don't have to deal with the possibility of an unknown direction in 
     }
 
 
-Comparing things
-================
 
-Primitive-type values can be tested for equality with the :code:`==` operator:
-
-.. code-block:: java
-
-    int i = 3;
-    if( i==3 ) {
-        System.out.println("They are the same!");
-    }
-
-However, **this will not work for arrays or strings**. Indeed, since array and string variables only contain references, the :code:`==` operator will compare the *references*, not the *content* of the arrays or strings! The following example shows the difference:
-
-.. code-block:: java
-    
-    int i = 3;
-    System.out.println( i==3 );     // true. Primitive type.
-    
-    int[] a = {1,2,3};
-    int[] b = {1,2,3};
-    System.out.println( a==b );     // false. Two different arrays.
-
-    int[] c = a;
-    System.out.println( a==c );     // true. Same reference.
-    
-    String s1 = "Hello" + String.valueOf(1234);
-    String s2 = "Hello1234";
-    System.out.println( s1==s2 );   // false. Two different strings.
-
-**Comparing arrays or strings with == is a very common mistake in Java. Be careful!**
-
-To compare the *content* of two strings, you must use their :code:`equals()` method:
-
-.. code-block:: java
-
-    String s1 = "Hello" + String.valueOf(1234);
-    String s2 = "Hello1234";
-    System.out.println( s1.equals(s2) );   // true
-
-There is also an :code:`equals()` method to compare the content of two arrays, but it is a static method of the class :code:`Arrays` in the package :code:`java.util`. To use this class, you have to import it into your program. Here is the complete code:
-
-.. code-block:: java
-
-    import java.util.Arrays;
-
-    public class Main {
-        public static void main(String[] args) {
-            int[] a = {1,2,3};
-            int[] b = {1,2,3};
-            System.out.println( Arrays.equals(a,b) );  // true
-        }
-    }
-
-The :code:`Arrays` class contains many useful methods to work with arrays, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html>`_.
-
-You might wonder why we need the line :code:`import java.util.Arrays` but we didn't need to import the classes :code:`Math`, :code:`Integer` or :code:`String` in our other examples. That's because those classes are in the package :code:`java.lang`, which is the only package that is automatically imported by the Java compiler.
 
 
 
