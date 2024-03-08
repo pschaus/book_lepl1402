@@ -1,7 +1,7 @@
 .. _part4:
 
 ********************************************************************************
-Part 4: Object Oriented Programming: Data Structures and Design Patterns
+Part 4: Data Structures and Design Patterns
 ********************************************************************************
 
 

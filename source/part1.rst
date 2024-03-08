@@ -1004,7 +1004,7 @@ You might wonder why we need the line :code:`import java.util.Arrays` but we did
 .. _enumerations:
 
 Enumerations
-============
+------------
 
 Enums in Java are a type that represents a group of constants (unchangeable variables, like final variables). 
 They are a powerful mechanism for defining a set of named values, which you can use in a type-safe way. 
@@ -1091,7 +1091,7 @@ Therefore we don't have to deal with the possibility of an unknown direction in 
     TODO - Create a new chapter entitled "Object-oriented programming" at this point?
 
 
-Classes and Objects
+Object-oriented programming
 ===================
 
 Creating your own objects
@@ -1224,7 +1224,7 @@ Like for class variables, we have to be careful with shadowing. Without :code:`t
 
 
 Mental model
-============
+------------
 
 Like array variables and ``String`` variables, object variables contain a reference to the object in your computer's main memory. The object itself contains the instance variables. Note that an instance variable can be again a reference. For our employee ``Peter``, we get the following structure:
 
@@ -1250,7 +1250,7 @@ Because of this, what we have already said about array variables and ``String`` 
     System.out.println( person1==person3 );      // true. Same object.
 
 Working with objects
-====================
+--------------------
 
 Many things that you can do with primitive types and strings, you can also do them with objects. For example, you can create arrays of objects. The elements of a new array of objects are automatically initialized to :code:`null`, as shown in this example:
 
@@ -1296,7 +1296,7 @@ Exercise for you: Take a sheet of paper and draw the mental model graph for the 
 Question: In the above example, what value do we give to the :code:`boss` instance variable of an employee who has no boss?
 
 Methods
-=======
+-------
 
 In the following example, we define a static method :code:`increaseSalary()` to increase the salary of an employee:
 
@@ -1440,10 +1440,8 @@ Unfortunately, that's a bit annoying because it also means that we cannot access
 .. _inheritance:
     
 Inheritance
-===========
+-----------
 
-Creating subclasses
--------------------
 
 Let's say we are writing a computer game, for example an RPG (role-playing game). We implement weapons as objects of the class :code:`Weapon`. The damage that a weapon can inflict depends on its level. The price of a weapon also depends on its level. The code could look like this:
 
@@ -1681,7 +1679,7 @@ However, be careful with type casts. The compiler will accept them but if you do
     System.out.println(((MagicSword) weapon).getMagicDamage());  // oh oh...
 
 Polymorphism
-============
+------------
 
 The three rules make it possible to write code and data structures that can be used with objects of different classes. For example, thanks to rule 1, you can define an array that contains different types of weapons:
 
@@ -1710,7 +1708,7 @@ The conclusion is that there is a difference between what the compiler sees in t
 
 
 The class hierarchy
-===================
+-------------------
 
 If we take all the different weapon classes that we created in the previous examples, we get a so-called "class hierarchy" that shows the subclass-superclass relationships between them:
 
@@ -1816,8 +1814,6 @@ If all those tests pass we can finally compare the name and birth year of :code:
 Note that there are some other difficulties with :code:`equals()` that we will not discuss here. They are related to the :code:`hashCode()` method that you have to always override together with :code:`equals()`, as shown above.
 
 
-ArrayList and Boxing 
-====================
 
 ArrayList
 ---------
@@ -1999,10 +1995,9 @@ The :code:`E` that you can see in the first line and in the method definitions i
 we are telling the compiler that it should assume that :code:`E = String`, and accordingly the methods :code:`add()` and :code:`get()` will be understood as :code:`void add(String obj)` and :code:`String get(int index)`.
 
 
-Method overloading
-==================
 
-Overloading with different parameters
+
+Method overloading with different parameters
 -------------------------------------
 
 In Java, it is allowed to have two methods with the same name as long as they have different parameters. This is called *method overloading*. Here is an example:
@@ -2145,7 +2140,7 @@ Which one of the two :code:`giveWeapon()` will be called if the argument is a :c
 .. _multiple_inheritance:
 
 Multiple Inheritance
-====================
+--------------------
 
 If we look back at our examples with the Weapon subclasses :code:`ExpensiveWeapon` and :code:`MightySword`, we might be tempted to create a new class :code:`ExpensiveMightySword` that inherits from both subclasses:
 
@@ -2204,7 +2199,7 @@ However, Java has another concept, the :code:`interface`, which can be used as a
 .. _final_keyword:
 
 The final keyword
-=================
+-----------------
 
 Like the :code:`private` keyword, the :code:`final` keyword does not change the behavior of your program. Its job is to prevent you from making mistakes in your code (you will later see other situations where the :code:`final` keyword is important).
 
@@ -2337,12 +2332,11 @@ Note that a variable that cannot be modified after initialization can be also ac
     }
 
 
-Organizing your classes
-=======================
+
 
 .. _packages:
 
-Creating packages
+Packages
 -----------------
 
 In all our small examples so far, we have put all classes in one single ``.java`` file. This is not very practical in larger projects consisting of dozens or hundreds of classes.
