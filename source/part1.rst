@@ -998,9 +998,10 @@ There is also an :code:`equals()` method to compare the content of two arrays, b
         }
     }
 
-The :code:`Arrays` class contains many useful methods to work with arrays, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html>`_.
+The :code:`Arrays` class contains many useful methods to work with arrays, such as methods to set all elements of an array to a certain value, to make copies of arrays, or to transform an array into a string. See the documentation at `<https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Arrays.html>`_.
 
 You might wonder why we need the line :code:`import java.util.Arrays` but we didn't need to import the classes :code:`Math`, :code:`Integer` or :code:`String` in our other examples. That's because those classes are in the package :code:`java.lang`, which is the only package that is automatically imported by the Java compiler.
+
 .. _enumerations:
 
 Enumerations
