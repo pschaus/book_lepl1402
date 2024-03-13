@@ -20,9 +20,9 @@ Installing IntelliJ
 
 You might have already used an Integrated Development Environment (IDE) to write Python programs. In this course, we will do the same for programming in Java: we will use the free "Community Edition" of IntelliJ IDEA (simply referred to as "IntelliJ" hereafter). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
 
-The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/javase/8/docs/api/index.html>`_. %https://docs.oracle.com/en/java/javase/21/docs/api/index.html New link for Java21, shoud we update ?
+The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/en/java/javase/21/docs/api/index.html>`_. 
 
-Fortunately, IntelliJ can automatically download the JDK for you when you create a new project, so you don't have to worry about the JDK for now. But if later on you wish to write a Java application on a computer without IntelliJ, you have to manually download the JDK from `<https://openjdk.org/>`_ and install it.
+Fortunately, IntelliJ can automatically download the JDK for you when you create a new project, so you don't have to worry about the JDK for now. But if later on you wish to write a Java application on a computer without IntelliJ, you'll have to manually download the JDK from `<https://openjdk.org/>`_ and install it.
 
 Creating a new project
 -----------------------
@@ -33,7 +33,7 @@ Start IntelliJ. A window will open where you can create a new project. Click on 
   :width: 90%
   :alt: Starting a new project
 
-To create a new project, you have to enter a project name (in the field ``Name``) and a location on your disk where you want to store the project (in the field ``Location``). Keep the other fields ``Language``, ``Build system``, and ``Add sample code`` as shown in the above picture. But there is something to do for the field ``JDK``: As you can see in the picture, there was already JDK version 11 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose ``Download JDK...`` as shown in the picture below:
+To create a new project, you have to enter a project name (in the field ``Name``) and a location on your disk where you want to store the project (in the field ``Location``). Keep the other fields ``Language``, ``Build system``, and ``Add sample code`` as shown in the above picture. But there is something to do for the field ``JDK``: as you can see in the picture, there was already JDK version 21 (and some other JDK versions) installed on my computer. If you have not already installed a JDK on your computer, open the dropdown list and choose ``Download JDK...`` as shown in the picture below:
 
 .. image:: _static/images/part1/select_jdk_screen.svg
   :width: 90%
@@ -324,7 +324,7 @@ The Java class :code:`Math` provides a large set of methods to work with numbers
     System.out.println("Area of disk: " + area);
     System.out.println("Radius of disk: " + radius);
 
-The complete documentation of the :code:`Math` class can be found at `<https://docs.oracle.com/javase/8/docs/api/java/lang/Math.html>`_.
+The complete documentation of the :code:`Math` class can be found at `<https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html>`_.
  
 What is a variable? A mental model
 ----------------------------------
@@ -688,7 +688,7 @@ This is also true for other types of loops and for if/else statements.
 Simple "for" loops
 ------------------
 
-There are two different ways how :code:`for` loops can be used. The simple :code:`for` loop is often used to do something with each element of an array or list (We will learn more about lists later):
+There are two different ways :code:`for` loops can be used. The simple :code:`for` loop is often used to do something with each element of an array or list (We will learn more about lists later):
 
 ..  code-block:: java
 
@@ -900,7 +900,7 @@ Variables holding string values have the type :code:`String`. Strings can be con
     String s3 = s1 + "---" + s2 + 12345;
     System.out.println(s3);
     
-The :code:`String` class defines many interesting methods that you can use to work with strings. If you check the documentation at  `<https://docs.oracle.com/javase/8/docs/api/java/lang/String.html>`_, you will notice that some methods of the :code:`String` class are static and some are not.
+The :code:`String` class defines many interesting methods that you can use to work with strings. If you check the documentation at  `<https://docs.oracle.com/en/java/javase/21/docs//api/java.base/java/lang/String.html>`_, you will notice that some methods of the :code:`String` class are static and some are not.
 For example, the static method :code:`valueOf` transforms a number value into a string:
 
 .. code-block:: java
@@ -927,7 +927,7 @@ There are also some methods for strings that are located in other classes. The m
 
     int i = Integer.parseInt("1234");
     
-Similar methods exist in the classes :code:`Long`, :code:`Float`, :code:`Double`, etc. for the other primitive types. All these classes are defined in the package :code:`java.lang`, for which you can find the documentation at `<https://docs.oracle.com/javase/8/docs/api/java/lang/package-summary.html>`_.
+Similar methods exist in the classes :code:`Long`, :code:`Float`, :code:`Double`, etc. for the other primitive types. All these classes are defined in the package :code:`java.lang`, for which you can find the documentation at `<https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/package-summary.html>`_.
 
 
 Mental model for strings
