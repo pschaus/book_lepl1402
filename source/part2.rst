@@ -127,8 +127,8 @@ If we call the above method with two numbers *a* and *b* where *a<b* (for exampl
 
 We can visualize this by the *Control Flow Graph* (CFG) of the above code:
 
-.. image:: _static/images/part1/control_flow_min.svg
-  :width: 35%
+.. image:: _static/images/part1/control_flow_minn.svg
+  :width: 50%
 
 In the above control flow graph the node 0 represents the beginning of the method, the node 1 and 2 represent the two assignments in the if-else statement, and node 3 represents the :code:`return` statement of the method.
 
@@ -155,7 +155,7 @@ While 100% node coverage is an important goal in testing, it does not necessaril
 
 Here is the CFG of the method:
 
-.. image:: _static/images/part1/control_flow_min2.svg
+.. image:: _static/images/part1/control_flow_min2n.svg
   :width: 35%
 
 If we test this method with the test values *a=3* and *b=5*, the program will go through the nodes 0, 1, and 2, and we have achieved 100% node coverage without finding the bug! The bug only becomes visible if we use test values that force the program to go directly from node 0 to 2.
@@ -180,7 +180,7 @@ Unfortunately, 100% edge coverage is still not enough to find all bugs. The foll
         return sum;
     }
 
-.. image:: _static/images/part1/control_flow_loop.svg
+.. image:: _static/images/part1/control_flow_loopn.svg
   :width: 50%
   
 A test with *n=0* covers the edges :math:`0 \to 1` and :math:`1 \to 3` and we get the correct result 0. A test with *n=1* covers the edges :math:`0 \to 1`, :math:`1 \to 2`, :math:`2 \to 1`, and :math:`1 \to 3` and we get the correct result 1. With these two tests, we have covered all edges, but we have not found the bug.

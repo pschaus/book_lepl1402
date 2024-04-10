@@ -54,7 +54,7 @@ In the left part of the window, you see the project structure. Since we have sel
 
 Click on the right triangle in the upper right corner to start the program. A new view should appear at the bottom of the window with the output of the program:
 
-.. image:: _static/images/part1/program_output_screen.png
+.. image:: _static/images/part1/program_output_screen.svg
   :width: 90%
   :alt: Output of the program
 
@@ -498,8 +498,8 @@ There is an important difference between array variables and primitive-type vari
 +-----------------------+------------------------------------------------------------+
 | Java code             | In memory during execution                                 |
 +=======================+============================================================+
-| .. code::             |  .. image:: _static/images/part1/array.svg                 |
-|                       |     :width: 40%                                            |
+| .. code::             |  .. image:: _static/images/part1/arrayn.svg                |
+|                       |     :width: 50%                                            |
 |  int[] a = new int[4];|                                                            |
 +-----------------------+------------------------------------------------------------+
 
@@ -508,8 +508,8 @@ This difference becomes important when you assign an array variable to another a
 +-----------------------+------------------------------------------------------------+
 | Java code             | In memory during execution                                 |
 +=======================+============================================================+
-| .. code::             |  .. image:: _static/images/part1/array2.svg                |
-|                       |     :width: 40%                                            |
+| .. code::             |  .. image:: _static/images/part1/array2n.svg               |
+|                       |     :width: 50%                                            |
 |  int[] a = new int[4];|                                                            |
 |  int[] b = a;         |                                                            |
 +-----------------------+------------------------------------------------------------+
@@ -583,7 +583,7 @@ Arrays can have more than one dimension. For example, two-dimensional arrays are
 
 You can imagine a two-dimensional array as an array where each element is again a reference to an array:
 
-.. image:: _static/images/part1/arrayarray.svg
+.. image:: _static/images/part1/arrayarrayn.svg
    :width: 40%                            
 
 An :code:`int[3][5]` is therefore an array of three arrays containing five elements each. The following code illustrates this:
@@ -1239,7 +1239,7 @@ Like array variables and ``String`` variables, object variables contain a refere
 |                                          |                                                 |
 +------------------------------------------+-------------------------------------------------+
 
-Because of this, what we have already said about array variables and ``String`` variables also holds for object variables: Assigning an object variable to another object variable only copies the reference. Comparing two object variables will only compare the references, not the content of the objects:
+Because of this, what we have already said about array variables and ``String`` variables also holds for object variables: assigning an object variable to another object variable only copies the reference. Comparing two object variables will only compare the references, not the content of the objects:
 
 .. code-block:: java
 
@@ -1517,7 +1517,7 @@ At first glance, there seems to be a mistake in the above ``main()`` method. Why
 
     weapon = new MightySword("Magic sword", 3);
     
-not a type error? On the left, we have the variable :code:`weapon` of type :code:`Weapon` and on the right we have a new object of :code:`MightySword`. But this is acceptable for the compiler because, Java has the following rule:
+not a type error? On the left, we have the variable :code:`weapon` of type :code:`Weapon` and on the right we have a new object of :code:`MightySword`. But this is acceptable for the compiler because Java has the following rule:
 
 **Rule 1: A variable of type X can hold a reference to an object of class X or to an object of a subclass of X**.
 
@@ -1579,7 +1579,7 @@ There is one thing left in our :code:`MightySword` class that we have not yet ex
      
 In the constructor, the keyword :code:`super` stands for the constructor of the superclass of :code:`MightySword`, that is :code:`Weapon`. Therefore, the line :code:`super(name,level)` simply calls the constructor as defined in :code:`Weapon`.
 
-:code:`super` can be also used in methods. Imagine we want to define a new weapon type *Expensive Weapon* that costs exactly 100 more than a normal weapon. We can implement it as follows:
+:code:`super` can also be used in methods. Imagine we want to define a new weapon type *Expensive Weapon* that costs exactly 100 more than a normal weapon. We can implement it as follows:
 
 .. code-block:: java
 
@@ -1705,7 +1705,7 @@ And thanks to rule 2 and 3, you can write methods that work for different types 
 
 Although the above method :code:`getPriceOfInventory()` looks like it is only meant for objects of class :code:`Weapon`, it also works for all subclasses of :code:`Weapon`. This is called *Subtype Polymorphism*. If you have for example an object of class :code:`ExpensiveWeapon` in the array, rule 3 will guarantee that :code:`weapon.getPrice()` will call the method defined in :code:`ExpensiveWeapon`.
 
-The conclusion is that there is a difference between what the compiler sees in the source code and what actually happens when the program is executed. When the compiler sees a method call like :code:`weapon.getPrice()` in your source code it only checks whether the method exists in the declared type of the variable. But during program execution, what is important is which object is actually referenced by the variable. We say that **type checking by the compiler is static**, but **method calls by the JVM are dynamic**.
+The conclusion is that there is a difference between what the compiler sees in the source code and what actually happens when the program is executed. When the compiler sees a method call like :code:`weapon.getPrice()` in your source code, it only checks whether the method exists in the declared type of the variable. But during program execution, what is important is which object is actually referenced by the variable. We say that **type checking by the compiler is static**, but **method calls by the JVM are dynamic**.
 
 
 The class hierarchy
@@ -1713,7 +1713,7 @@ The class hierarchy
 
 If we take all the different weapon classes that we created in the previous examples, we get a so-called "class hierarchy" that shows the subclass-superclass relationships between them:
 
-.. image:: _static/images/part1/classhierarchy.svg
+.. image:: _static/images/part1/classhierarchyn.svg
    :width: 35%                                 
 
 The class :code:`Object` that is above our :code:`Weapon` class was not defined by us. It is automatically created by Java and is the superclass of *all* non-primitive types in Java, even of arrays and strings! A variable of type :code:`Object` therefore can refer to any non-primitive value:
