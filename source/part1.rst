@@ -938,7 +938,7 @@ Like array variables, string variables are references to the content of the stri
 +-----------------------+-------------------------------------------------+
 | Java code             | In memory during execution                      |
 +=======================+=================================================+
-| .. code::             | .. image:: _static/images/part1/string.svg      |
+| .. code::             | .. image:: _static/images/part1/stringn.svg     |
 |                       |    :width: 60%                                  |
 |    String a = "Hello";|                                                 |
 |                       |                                                 |
@@ -1232,7 +1232,7 @@ Like array variables and ``String`` variables, object variables contain a refere
 +------------------------------------------+-------------------------------------------------+
 | Java code                                | In memory during execution                      |
 +==========================================+=================================================+
-| .. code::                                | .. image:: _static/images/part1/object.svg      |
+| .. code::                                | .. image:: _static/images/part1/objectn.svg     |
 |                                          |    :width: 70%                                  |
 |    Employee person1 =                    |                                                 |
 |       new Employee("Peter", 42000);      |                                                 |
@@ -2145,7 +2145,7 @@ Multiple Inheritance
 
 If we look back at our examples with the Weapon subclasses :code:`ExpensiveWeapon` and :code:`MightySword`, we might be tempted to create a new class :code:`ExpensiveMightySword` that inherits from both subclasses:
 
-.. image:: _static/images/part1/multi_inheritance.svg
+.. image:: _static/images/part1/multi_inheritancen.svg
    :width: 35%  
 
 Unfortunately, inheriting from two (or more) classes is **not allowed** in Java. The reason for this is the *diamond problem* that occurs when a class inherits from two classes that are subclasses of the same class (the problem is named after the diamond shape of the resulting class hierarchy). The following illegal Java program illustrates the problem:
@@ -2556,7 +2556,7 @@ What makes exceptions interesting is that the caller method can decide to not ca
 
 In the above example, the :code:`main()` method calls the :code:`setBossOfTeam()` method which then calls the :code:`setBoss()` method. The :code:`setBossOfTeam()` method does not catch any exceptions. This means that if an exception is thrown in :code:`setBoss()`, the exception will be passed to :code:`main()` where it is caught, as shown below:
 
-.. image:: _static/images/part1/exception.svg
+.. image:: _static/images/part1/exceptionn.svg
   :width: 30%
 
 Using Exception subclasses
@@ -2684,7 +2684,7 @@ As you can see in the above example, no :code:`throws` declaration or :code:`try
 
 Unchecked exceptions are either instances of the class :code:`Error` or of the class :code:`RuntimeException` (or of a subclass of these classes). :code:`RuntimeException` is a subclass of :code:`Exception`, and :code:`Error` and :code:`Exception` are subclasses of the class :code:`Throwable`. All instances of :code:`Throwable` (or of a subclass of that class) can be thrown with a :code:`throw` statement. The class hierarchy for these classes is shown below:
 
-.. image:: _static/images/part1/exception_classes.svg
+.. image:: _static/images/part1/exception_classesn.svg
   :width: 30%
 
 
