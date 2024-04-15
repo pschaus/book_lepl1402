@@ -820,24 +820,24 @@ Imagine a program where you test a variable for different values:
 
     // two integer variables that represent our position on a map
     int x = 0, y = 0;
-    
+
     // the directions in which we want to go
     char[] directions = new char[]{'N', 'S', 'S', 'E', 'E', 'W'};
-    
+
     // let's go!
     for (char c : directions) {
-        if(c=='N') {
+        if (c == 'N') {
             y++;            // we go North
-        }
-        else if(c=='S') {
+        } 
+        else if (c == 'S') {
             y--;            // we go South
-        }
-        else if(c=='W') {
+        } 
+        else if (c == 'W') {
             x--;            // we go West
-        }
-        else if(c=='E') {
+        } 
+        else if (c == 'E') {
             x++;            // we go East
-        }
+        } 
         else {
             System.out.println("Unknown direction");
         }
@@ -952,7 +952,7 @@ Primitive-type values can be tested for equality with the :code:`==` operator:
 .. code-block:: java
 
     int i = 3;
-    if( i==3 ) {
+    if(i == 3) {
         System.out.println("They are the same!");
     }
 
@@ -961,18 +961,18 @@ However, **this will not work for arrays or strings**. Indeed, since array and s
 .. code-block:: java
     
     int i = 3;
-    System.out.println( i==3 );     // true. Primitive type.
-    
-    int[] a = {1,2,3};
-    int[] b = {1,2,3};
-    System.out.println( a==b );     // false. Two different arrays.
+    System.out.println(i == 3);     // true. Primitive type.
+
+    int[] a = {1, 2, 3};
+    int[] b = {1, 2, 3};
+    System.out.println(a == b);     // false. Two different arrays.
 
     int[] c = a;
-    System.out.println( a==c );     // true. Same reference.
-    
+    System.out.println(a == c);     // true. Same reference.
+
     String s1 = "Hello" + String.valueOf(1234);
     String s2 = "Hello1234";
-    System.out.println( s1==s2 );   // false. Two different strings.
+    System.out.println(s1 == s2);   // false. Two different strings.
 
 **Comparing arrays or strings with == is a very common mistake in Java. Be careful!**
 
@@ -982,7 +982,7 @@ To compare the *content* of two strings, you must use their :code:`equals()` met
 
     String s1 = "Hello" + String.valueOf(1234);
     String s2 = "Hello1234";
-    System.out.println( s1.equals(s2) );   // true
+    System.out.println(s1.equals(s2));   // true
 
 There is also an :code:`equals()` method to compare the content of two arrays, but it is a static method of the class :code:`Arrays` in the package :code:`java.util`. To use this class, you have to import it into your program. Here is the complete code:
 
@@ -992,9 +992,9 @@ There is also an :code:`equals()` method to compare the content of two arrays, b
 
     public class Main {
         public static void main(String[] args) {
-            int[] a = {1,2,3};
-            int[] b = {1,2,3};
-            System.out.println( Arrays.equals(a,b) );  // true
+            int[] a = {1, 2, 3};
+            int[] b = {1, 2, 3};
+            System.out.println(Arrays.equals(a, b));  // true
         }
     }
 
@@ -1233,7 +1233,7 @@ Like array variables and ``String`` variables, object variables contain a refere
 | Java code                                | In memory during execution                      |
 +==========================================+=================================================+
 | .. code::                                | .. image:: _static/images/part1/objectn.svg     |
-|                                          |    :width: 70%                                  |
+|                                          |    :width: 80%                                  |
 |    Employee person1 =                    |                                                 |
 |       new Employee("Peter", 42000);      |                                                 |
 |                                          |                                                 |
@@ -1245,10 +1245,10 @@ Because of this, what we have already said about array variables and ``String`` 
 
     Employee person1 = new Employee("Peter", 42000);
     Employee person2 = new Employee("Peter", 42000);
-    System.out.println( person1==person2 );      // false. Two different objects.
+    System.out.println(person1 == person2);      // false. Two different objects.
     
     Employee person3 = person1;
-    System.out.println( person1==person3 );      // true. Same object.
+    System.out.println(person1 == person3);      // true. Same object.
 
 Working with objects
 --------------------
@@ -1306,7 +1306,7 @@ In the following example, we define a static method :code:`increaseSalary()` to 
     class Employee {
         String name;
         int salary;
-        
+
         Employee(String name, int salary) {
             this.name = name;
             this.salary = salary;
@@ -1316,11 +1316,11 @@ In the following example, we define a static method :code:`increaseSalary()` to 
     public class Main {
         static void increaseSalary(Employee employee, int raise) {
             // we only raise the salary if the raise is less than 10000
-            if (raise<10000) {
+            if (raise < 10000) {
                 employee.salary += raise;
             }
         }
-    
+
         public static void main(String[] args) {
             Employee anna = new Employee("Anna", 45000);
             Employee peter = new Employee("Peter", 45000);
@@ -1328,9 +1328,9 @@ In the following example, we define a static method :code:`increaseSalary()` to 
             // Anna and Peter get a salary raise
             increaseSalary(anna, 2000);
             increaseSalary(peter, 3000);
-            
-            System.out.println("New salary of Anna is "+anna.salary);
-            System.out.println("New salary of Peter is "+peter.salary);
+
+            System.out.println("New salary of Anna is " + anna.salary);
+            System.out.println("New salary of Peter is " + peter.salary);
         }
     }
 
@@ -1348,7 +1348,7 @@ The above code works. But in Object-Oriented Programming (OOP) languages like Ja
         }
         
         void increaseSalary(int raise) {
-            if (raise<10000) {
+            if (raise < 10000) {
                 this.salary += raise;
             }
         }
@@ -1363,8 +1363,8 @@ The above code works. But in Object-Oriented Programming (OOP) languages like Ja
             anna.increaseSalary(2000);
             peter.increaseSalary(3000);
             
-            System.out.println("New salary of Anna is "+anna.salary);
-            System.out.println("New salary of Peter is "+peter.salary);
+            System.out.println("New salary of Anna is "+ anna.salary);
+            System.out.println("New salary of Peter is "+ peter.salary);
         }
     }
 
@@ -1395,7 +1395,7 @@ We can prevent this by declaring the instance variable :code:`salary` as :code:`
         }
         
         void increaseSalary(int raise) {
-            if (raise<10000) {
+            if (raise < 10000) {
                 this.salary += raise;
             }
         }
@@ -1417,7 +1417,7 @@ Unfortunately, that's a bit annoying because it also means that we cannot access
         }
         
         void increaseSalary(int raise) {
-            if (raise<10000) {
+            if (raise < 10000) {
                 this.salary += raise;
             }
         }
@@ -1433,7 +1433,7 @@ Unfortunately, that's a bit annoying because it also means that we cannot access
             
             anna.increaseSalary(2000);
             
-            System.out.println("New salary of Anna is "+anna.getSalary());
+            System.out.println("New salary of Anna is "+ anna.getSalary());
         }
     }
 
@@ -1722,7 +1722,7 @@ The class :code:`Object` that is above our :code:`Weapon` class was not defined 
 
     Object o;
     o = "Hello";                                // okay
-    o = new int[]{1,2,3};                       // okay, too
+    o = new int[]{1, 2, 3};                       // okay, too
     o = new MagicSword("Elven sword", 7, 3);    // still okay!
 
 The documentation of :code:`Object` can be found at `<https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html>`_.
@@ -1772,18 +1772,18 @@ Another interesting method defined by :code:`Object` is :code:`equals()`. We hav
       
         @Override
         public boolean equals(Object obj) {
-            if (this==obj) {
+            if (this == obj) {
                 return true;    // same object!
             }
-            else if (obj==null) {
+            else if (obj == null) {
                 return false;   // null parameter
             }
-            else if (this.getClass()!=obj.getClass()) {
+            else if (this.getClass() != obj.getClass()) {
                 return false;   // different types
             }
             else {
                 Player p = (Player) obj;
-                return p.name.equals(this.name) && p.birthYear==this.birthYear;
+                return p.name.equals(this.name) && p.birthYear == this.birthYear;
             }
         }
         
@@ -1797,9 +1797,9 @@ Another interesting method defined by :code:`Object` is :code:`equals()`. We hav
         public static void main(String[] args) {
             Player peter1 = new Player("Peter", 1993);
             Player peter2 = new Player("Peter", 1993);
-            System.out.println( peter1.equals(peter2) );    // true
-            System.out.println( peter1.equals("Hello") );   // false
-            System.out.println( peter1.equals(null) );      // false
+            System.out.println(peter1.equals(peter2));    // true
+            System.out.println(peter1.equals("Hello"));   // false
+            System.out.println(peter1.equals(null));      // false
         }
     }
 
@@ -1808,7 +1808,7 @@ So, before we can compare the name and the birth year of a :code:`Player` object
 
 .. code-block:: java 
 
-    else if (this.getClass()!=obj.getClass()) {
+    else if (this.getClass() != obj.getClass()) {
     
 If all those tests pass we can finally compare the name and birth year of :code:`this` and the other Player object.
 
@@ -1831,7 +1831,7 @@ Using the class :code:`Object` can be useful in situations where we want to writ
 
             // add two elements to the end of the list
             list.add("Hello");
-            list.add(new int[]{1,2,3});
+            list.add(new int[]{1, 2, 3});
 
             System.out.println( list.size() );    // number of elements
             System.out.println( list.get(0) );    // first element    
@@ -1867,15 +1867,15 @@ For loops on ArrayList
     ArrayList list = new ArrayList();
     list.add("Hello");
     list.add("World");
-    
+
     // simple for loop
     for (Object obj : list) {
         System.out.println(obj);
     }
 
     // complex for loop
-    for (int i=0; i<list.size(); i++) {
-        System.out.println( list.get(i) );
+    for (int i = 0; i < list.size(); i++) {
+        System.out.println(list.get(i));
     }
 
 
@@ -2213,10 +2213,10 @@ If you declare a parameter variable as ``final``, its value cannot be changed in
 
 .. code-block:: java
 
-    // calculate the sum of the numbers 1 to n
-    int calculateSum(final int n) {   // <--- did you see the "final" ?
+     // calculate the sum of the numbers 1 to n
+    int calculateSum ( final int n){   // <--- did you see the "final" ?
         int sum = 0;
-        for (int i=1; i<n; i++) {
+        for (int i = 1; i < n; i++) {
             n += i;      // oops, I wanted to write sum += i
         }
         return sum;
@@ -2239,11 +2239,10 @@ Local variables declared as ``final`` cannot change their value after they have 
 
 .. code-block:: java
 
-    // calculate the sum of the numbers 1 to n*n
     int calculateSumSquare(int n) {
         final int n2 = n * n;       // <--- did you see the "final" ?
         int sum = 0;
-        for (int i=1; i<n2; i++) {
+        for (int i = 1; i < n2; i++) {
             n2 += i;      // oops, I wanted to write sum += i
         }
         return sum;
@@ -2495,7 +2494,7 @@ Exceptions are a mechanism for stopping the execution of a method when an except
         Employee boss;
 
         void setBoss(Employee boss) throws Exception {
-            if(this==boss) {
+            if(this == boss) {
                 throw new Exception("An employee cannot be their own boss");
             }
             else {
@@ -2582,14 +2581,12 @@ By creating subclasses of the :code:`Exception` class, we can help the method th
         Employee boss;
 
         void setBoss(Employee boss) throws SelfBossException, NoBossException {
-            if(this==boss) {
+            if (this == boss) {
                 throw new SelfBossException("An employee cannot be their own boss");
-            }
-            else if (boss==null) {
+            } else if (boss == null) {
                 throw new NoBossException("You cannot take the boss away from an employee");
-            }
-            else {
-                this.boss=boss;
+            } else {
+                this.boss = boss;
             }
         }
     }
@@ -2602,11 +2599,9 @@ By creating subclasses of the :code:`Exception` class, we can help the method th
             try {
                 peter.setBoss(anna);
                 peter.setBoss(null);  // this will throw a NoBossException
-            }
-            catch(SelfBossException e) {
+            } catch (SelfBossException e) {
                 System.out.println("SelfBossException happened: " + e.getMessage());
-            }
-            catch(NoBossException e) {
+            } catch (NoBossException e) {
                 System.out.println("NoBossException happened: " + e.getMessage());
             }
         }
@@ -2652,7 +2647,7 @@ The above code works, because a statement like :code:`catch(XYZ e) { ... }` catc
 Checked vs unchecked exceptions
 -------------------------------
 
-The exceptions that we threw in the above examples are all *checked exceptions*. This means that the compiler verifies that  the exceptions are correctly declared in the :code:`throws` part of the method declaration if the method does not catch them.
+The exceptions that we threw in the above examples are all *checked exceptions*. This means that the compiler verifies that the exceptions are correctly declared in the :code:`throws` part of the method declaration if the method does not catch them.
 
 However, there are some exceptions for which the compiler does not perform this verification. Such exceptions are called *unchecked*. A famous unchecked exception is the :code:`NullPointerException` that is thrown by the JVM when a program tries to access a null reference:
 
@@ -2700,7 +2695,7 @@ Strictly speaking, you *do not need* exceptions. For our example, our :code:`set
         
         // throws an exception if there is an error
         void setBoss(Employee boss) throws Exception {
-            if(this==boss) {
+            if(this == boss) {
                 throw new Exception("An employee cannot be their own boss");
             }
             else {
@@ -2718,7 +2713,7 @@ could be written without exceptions:
 
         // returns false if there is an error
         boolean setBoss(Employee boss) {
-            if(this==boss) {
+            if(this == boss) {
                 return false;
             }
             else {

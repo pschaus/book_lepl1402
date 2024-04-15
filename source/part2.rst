@@ -116,7 +116,7 @@ The following example shows an implementation of the :code:`min()` method that c
     // returns the minimum of "a" and "b"
     static int min(int a, int b) {
         int m;
-        if (a<b)
+        if (a < b)
             m = a;
         else
             m = a;    // oops. That should be "m = b"
@@ -146,9 +146,9 @@ While 100% node coverage is an important goal in testing, it does not necessaril
 ..  code-block:: java
 
     static int min(int a, int b) {
-        int m=0;
-        if (a<b) {
-            m=a;
+        int m = 0;
+        if (a < b) {
+            m = a;
         }              // oops, we forgot the "else"
         return m;
     }
@@ -173,7 +173,7 @@ Unfortunately, 100% edge coverage is still not enough to find all bugs. The foll
     static int sum(int n) {
         int sum = 0;
         int i = 1;
-        while (i<=n){
+        while (i <= n){
             sum = i;       // oops, this should be "sum += i"
             i++;
         }
@@ -201,16 +201,16 @@ Be aware that code can sometimes contain execution paths that are not directly v
 
 ..  code-block:: java
 
-    int r = a/b;
+    int r = a / b;
     
 However, we know that Java programs can throw exceptions, and in this case, the division will throw an exception if *b=0*. Therefore, the code can be better understood as:
 
 ..  code-block:: java
 
-    if (b==0)
+    if (b == 0)
         throw new ArithmeticException();
     else
-        r = a/b;
+        r = a / b;
 
 Thus, if your goal is a test with 100% coverage, you also have to consider the test case *b=0*.
 
@@ -250,13 +250,13 @@ We can write a test program to call this method and verify that the result is co
 
     // test case 1
     int result1 = min(3,5);
-    if (result1!=3) {
+    if (result1 != 3) {
         System.out.println("Test 1 failed: Minimum of 3 and 5 should be 3");
     }
     
     // test case 2
     int result2 = min(5,3);
-    if (result2!=3) {
+    if (result2 != 3) {
         System.out.println("Test 2 failed: Minimum of 5 and 3 should be 3");
     }
 
@@ -295,12 +295,12 @@ In JUnit version 5, the two tests are written slightly differently:
     public class MainTest {
         @Test
         public void testFirstNumberLessThanSecondNumber() {
-            Assertions.assertEquals(3, Main.min(3,5), "Minimum of 3 and 5 should be 3");
+            Assertions.assertEquals(3, Main.min(3, 5), "Minimum of 3 and 5 should be 3");
         }
 
         @Test
         public void testFirstNumberGreaterThanSecondNumber() {
-            Assertions.assertEquals(3, Main.min(5,3), "Minimum of 5 and 3 should be 3");
+            Assertions.assertEquals(3, Main.min(5, 3), "Minimum of 5 and 3 should be 3");
         }
     }
     

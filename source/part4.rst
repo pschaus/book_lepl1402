@@ -1457,18 +1457,18 @@ On the next example we have a solitary button that, when clicked, responds with 
 	}
 
 	public class AppWithActionListener {
-	    public static void main(String[] args) {
-	        JFrame frame=new JFrame("Hello");
-	        frame.setSize(400,200);
-	        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        public static void main(String[] args) {
+            JFrame frame = new JFrame("Hello");
+            frame.setSize(400, 200);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-	        JButton button=new JButton("Press me!");
-	        button.addActionListener(new ButtonActionListener());
-	        frame.add(button);
+            JButton button = new JButton("Press me!");
+            button.addActionListener(new ButtonActionListener());
+            frame.add(button);
 
-	        frame.setVisible(true);
-	    }
-	}
+            frame.setVisible(true);
+        }
+    }
 
 
 
