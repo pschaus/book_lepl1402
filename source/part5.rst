@@ -2,7 +2,7 @@
 
 
 *****************************************************************
-Part 5: Parallel Programming
+Parallel Programming
 *****************************************************************
 
 Parallel programming is a computing technique where multiple tasks are executed simultaneously to achieve faster execution times and to improve resource utilization, compared to sequential execution.

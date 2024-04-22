@@ -2,7 +2,7 @@
 
 
 *****************************************************************
-Part 6: Functional Programming
+Functional Programming
 *****************************************************************
 
 Functional programming refers to a programming paradigm that emphasizes the **use of functions and immutable data** to create applications. This paradigm promotes writing code that is easier to reason about, and that allows for better handling of concurrency.

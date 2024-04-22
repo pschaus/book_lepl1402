@@ -191,7 +191,12 @@ latex_elements = {
 #'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': 'r',
+'preamble': r'''
+\usepackage{anyfontsize}
+\usepackage{array}
+\let\OldTabular\tabular
+\renewcommand{\tabular}{\small\OldTabular}
+''',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples

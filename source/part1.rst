@@ -1,10 +1,10 @@
 .. _part1:
 
 *****************************************************************
-Part 1: From Python to Java
+From Python to Java
 *****************************************************************
 
-Part 1 of this book is intended for students and hobbyists who are already familiar with the basics of Python programming, i.e., they know how to use variables, lists, functions, and plain data objects.
+Chapter 1 of this book is intended for students and hobbyists who are already familiar with the basics of Python programming, i.e., they know how to use variables, lists, functions, and plain data objects.
 A deeper knowledge of object-oriented programming is not required.
 
 The goal of the following sections is to make you quickly familiar with the important differences between Python and Java and with the basic object oriented mechanisms of Java. More advanced topics, such as interfaces, abstract classes, or lambda functions, will be seen in the subsequent parts of the book.
@@ -248,6 +248,9 @@ Primitive Types
 As explained, Java requires that you specify the type of all variables (including method parameters) and the return types of all methods.
 Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are used for numbers (integers and real numbers), for Boolean values (``true`` and ``false``) and for single characters (``a``, ``b``, etc.). However, there are several different number types. The below table shows all primitive types:
 
+
+.. raw:: latex 
+    \fontsize{5pt}{7pt}\selectfont
 ============ ========================================================= ========================
 Type         Possible values                                           Example
 ============ ========================================================= ========================
@@ -261,6 +264,8 @@ Type         Possible values                                           Example
 ``boolean``  ``true``, ``false``                                       :code:`boolean a = true;`
 ============ ========================================================= ========================
 
+.. raw:: latex
+    \normalsize
 As you can see, each primitive type has a limited range of values it can represent. For example, a variable of type :code:`int` can be only used for integer numbers between :math:`-2^{31}` and :math:`2^{31}-1`. If you don't respect the range of a type, very strange things will happen in your program! Try this code in IntelliJ (copy it into the :code:`main()` method of your program):
 
 ..  code-block:: java
@@ -334,11 +339,11 @@ When working with variables of primitive types, you can imagine that every time 
 +-----------------------+-------------------------------------------------+
 | Java code             | In memory during execution                      |
 +=======================+=================================================+
-| .. code::             | .. image:: _static/images/part1/assignment.svg  |
-|                       |    :width: 10%                                  |
+| .. code-block::  java |        \                                        |
+|                       |        \                                        |
 |    int a = 3;         |                                                 |
-|    int b = 4;         |                                                 |
-|                       |                                                 |
+|    int b = 4;         |  .. image:: _static/images/part1/assignment.svg |
+|                       |     :width: 10%                                 |
 +-----------------------+-------------------------------------------------+
 
 When you assign the content of a variable to another variable, the value is copied:
@@ -346,10 +351,10 @@ When you assign the content of a variable to another variable, the value is copi
 +-----------------------+-------------------------------------------------+
 | Java code             | In memory during execution                      |
 +=======================+=================================================+
-| .. code::             | .. image:: _static/images/part1/assignment2.svg |
+| .. code::             |           \                                     |
+|                       |           \                                     |
+|    a = b;             |  .. image:: _static/images/part1/assignment2.svg|
 |                       |    :width: 10%                                  |
-|    a = b;             |                                                 |
-|                       |                                                 |
 +-----------------------+-------------------------------------------------+
 
 The same also happens with the parameters of methods; when you call a method with arguments, for example :code:`calculateArea(side)`, the argument values are copied into the parameter variables of the called method. Look at the following program and try to understand what it does:
@@ -498,9 +503,10 @@ There is an important difference between array variables and primitive-type vari
 +-----------------------+------------------------------------------------------------+
 | Java code             | In memory during execution                                 |
 +=======================+============================================================+
-| .. code::             |  .. image:: _static/images/part1/arrayn.svg                |
+| .. code::             |                           /                                |
+|                       |                           /                                |
+|  int[] a = new int[4];|      .. image:: _static/images/part1/arrayn.svg            |
 |                       |     :width: 50%                                            |
-|  int[] a = new int[4];|                                                            |
 +-----------------------+------------------------------------------------------------+
 
 This difference becomes important when you assign an array variable to another array variable: 
@@ -938,10 +944,10 @@ Like array variables, string variables are references to the content of the stri
 +-----------------------+-------------------------------------------------+
 | Java code             | In memory during execution                      |
 +=======================+=================================================+
-| .. code::             | .. image:: _static/images/part1/stringn.svg     |
-|                       |    :width: 60%                                  |
-|    String a = "Hello";|                                                 |
-|                       |                                                 |
+| .. code::             |                                      /          |
+|                       |                                      /          |
+|    String a = "Hello";| .. image:: _static/images/part1/stringn.svg     |
+|                       |           :width: 60%                           |
 +-----------------------+-------------------------------------------------+
 
 Comparing things
@@ -1232,11 +1238,11 @@ Like array variables and ``String`` variables, object variables contain a refere
 +------------------------------------------+-------------------------------------------------+
 | Java code                                | In memory during execution                      |
 +==========================================+=================================================+
-| .. code::                                | .. image:: _static/images/part1/objectn.svg     |
-|                                          |    :width: 80%                                  |
+| .. code::                                |      /                                          |
+|                                          |                           /                     |
 |    Employee person1 =                    |                                                 |
-|       new Employee("Peter", 42000);      |                                                 |
-|                                          |                                                 |
+|       new Employee("Peter", 42000);      | .. image:: _static/images/part1/objectn.svg     |
+|                                          |          :width: 80%                            |
 +------------------------------------------+-------------------------------------------------+
 
 Because of this, what we have already said about array variables and ``String`` variables also holds for object variables: assigning an object variable to another object variable only copies the reference. Comparing two object variables will only compare the references, not the content of the objects:
