@@ -33,8 +33,6 @@ However, for specific functionalities that vary from one shape to another, such 
 
 
 ..  code-block:: java
-    :caption: Shape Abstract Class
-    :name: shape_abstract
 
     public abstract class Shape {
         protected String shapeName; // Instance variable to hold the name of the shape
@@ -58,8 +56,6 @@ With this design, introducing new shapes into the program is straightforward and
 We simply add new subclasses for the new shapes.
 
 ..  code-block:: java
-    :caption: Concrete shapes
-    :name: shape_concrete
 
     public class Circle extends Shape {
         private double radius;
@@ -114,8 +110,6 @@ This method will iterate on it, invoking the ``calculateArea()`` method on each 
 This static method remains valid even if you introduce later a new shape in your library.
 
 ..  code-block:: java
-    :caption: Shape Utils
-    :name: shapeutils
 
     class ShapeUtils {
 
@@ -155,8 +149,6 @@ Therefore interfaces promote a higher degree of flexibility and modularity in so
 
 
 ..  code-block:: java
-    :caption: Camera and MediaPlayer interfaces
-    :name: interface_camera_mediaplayer
 
     public interface Camera {
         void takePhoto();
@@ -170,8 +162,6 @@ Therefore interfaces promote a higher degree of flexibility and modularity in so
 
 
 ..  code-block:: java
-    :caption: Smartphone
-    :name: smartphone
 
     public class Smartphone implements Camera, MediaPlayer {
 
@@ -221,9 +211,6 @@ Whatever the one you choose the high level contract described at the interface l
 One example of the ``List`` ADT is given next.
 
 ..  code-block:: java
-    :caption: Example of usage of a Java List
-    :name: java_list
-
 
     import java.util.LinkedList;
     import java.util.List;
@@ -262,9 +249,6 @@ You could add any type of object to collections, which was prone to runtime type
 
 
 ..  code-block:: java
-    :caption: Example of ``ClassCastException`` at runtime
-    :name: java_list_no_generics
-
 
     import java.util.LinkedList;
     import java.util.List;
@@ -288,9 +272,6 @@ A stack is a collection that operates on a Last-In-First-Out (LIFO) principle.
 The primary operations of a ``Stack`` are ``push()``, ``pop()``, and ``peek()``, as described in the next interface:
 
 ..  code-block:: java
-    :caption: Stack ADT
-    :name: stack_adt
-
 
     public interface StackADT<T> {
         // Pushes an item onto the top of this stack.
@@ -324,9 +305,6 @@ The top of the stack is maintained as a reference to the first node (head) of th
 
 
 ..  code-block:: java
-    :caption: Linked Stack ADT
-    :name: linked_stack
-
 
     public class LinkedStack<T> implements Stack<T> {
         private Node<T> top;
@@ -396,9 +374,6 @@ An implementation is given in the next code fragment:
 
 
 ..  code-block:: java
-    :caption: Array Stack ADT
-    :name: array_stack
-
 
     public class DynamicArrayStack<T> implements Stack<T> {
         private T[] array;
@@ -484,9 +459,6 @@ Evaluating Arithmetic Expressions with a Stack
 A typical use of stacks is to evaluate arithmetic expressions, as demonstrated in the next algorithm:
 
 ..  code-block:: java
-    :caption: Evaluating Expressions Using Stacks
-    :name: stack_expressions
-
 
     public class ArithmeticExpression {
         public static void main(String[] args) {
@@ -588,9 +560,6 @@ Trees
 .. TODO - Add an introduction paragraph
 
 ..  code-block:: java
-    :caption: LinkedBinaryTree
-    :name: linkedBinaryTree
-
 
     public class LinkedBinaryTree {
 
@@ -636,9 +605,6 @@ Trees
 
 
 ..  code-block:: java
-    :caption: LinkedBinaryTree Construction
-    :name: linkedBinaryTree_construction
-
 
     public static void main(String[] args) {
         LinkedBinaryTree tree = combine(5,
@@ -670,9 +636,6 @@ Here's a brief explanation of each:
 The code for each traversal is given next.
 
 ..  code-block:: java
-    :caption: Tre Traversal
-    :name: tree_traversals
-
 
         public void preOrderPrint() {
             preOrderPrint(root);
@@ -769,9 +732,6 @@ An example is provided in the main method for creating tree representation of th
 
 
 ..  code-block:: java
-    :caption: BinaryExpressionTree
-    :name: expressionTree
-
 
     public abstract class BinaryExpressionTree {
 
@@ -835,9 +795,6 @@ We now enrich this class with two functionalities:
 
 
 ..  code-block:: java
-    :caption: BinaryExpressionTree (Continued)
-    :name: expressionTree_enriched
-
 
     public abstract class BinaryExpressionTree {
 
@@ -918,9 +875,6 @@ Representing a set with a tree
 
 
 ..  code-block:: java
-    :caption: BinarySearchTree
-    :name: binary_search_tree
-
 
     public class BinarySearchTree implements IntSet {
 
@@ -1010,9 +964,6 @@ The method ``remove()`` is optional and will not be covered in this course.
 The next example show how to use an iterator to print every element of a list.
 
 ..  code-block:: java
-    :caption: ``Iterator`` Usage Example
-    :name: iterator
-
 
 	import java.util.ArrayList;
 	import java.util.Iterator;
@@ -1046,9 +997,6 @@ Any class that implements ``Iterable`` can be used in a for-each loop.
 This is illustrated next that is equivalent to the previous code.
 
 ..  code-block:: java
-    :caption: Iterator Usage Example relying on Iterable for for-loops
-    :name: iterable
-
 
 	import java.util.ArrayList;
 	import java.util.Iterator;
@@ -1105,9 +1053,6 @@ No other operations are involved in the iterator's creation, and notably, there 
 
 
 ..  code-block:: java
-    :caption: Implementation of a Fail-Fast Iterator for the LinkedStack
-    :name: iterator_linkedstack
-
 
 	import java.util.Iterator;
 	import java.util.ConcurrentModificationException;
@@ -1227,8 +1172,6 @@ This can be done by implementing the ``Comparable`` interface that requires to d
 The ``compareTo()`` method, when implemented within the ``Book`` class, leverages the inherent ``compareTo()`` method of the ``String`` class.
 
 ..  code-block:: java
-    :caption: Book Comparable
-    :name: book_comparable
 
     import java.util.ArrayList;
     import java.util.Collections;
@@ -1288,8 +1231,6 @@ Here are the three ``Comparator`` classes, one for each sorting criterion:
 
 
 ..  code-block:: java
-    :caption: Book Comparators
-    :name: book_comparators
 
 	import java.util.Comparator;
 
@@ -1320,9 +1261,6 @@ As next example shows, we can now sort by title, author or publication year by j
 
 
 ..  code-block:: java
-    :caption: Book Comparators Example
-    :name: book_comparators_example
-
 
 	import java.util.ArrayList;
 	import java.util.Collections;
@@ -1357,9 +1295,6 @@ As next example shows, we can now sort by title, author or publication year by j
 
 
     ..  code-block:: java
-        :caption: Printers
-        :name: printers
-
 
     	// The Printer interface
     	interface Printer {
@@ -1440,8 +1375,6 @@ On the next example we have a solitary button that, when clicked, responds with 
 
 
 ..  code-block:: java
-    :caption: Simple GUI with Action Listener
-    :name: listener_gui
 
 	import javax.swing.JButton;
 	import javax.swing.JFrame;
@@ -1497,9 +1430,6 @@ The complete source code is given next.
 
 
 ..  code-block:: java
-    :caption: Implementation of the Observable Design Pattern for an Account
-    :name: listener_account
-
 
 	public interface AccountObserver {
 	    public void accountHasChanged(int newValue);
@@ -1585,8 +1515,6 @@ It is important to note that in this specific implementation, the order of notif
 
 
     ..  code-block:: java
-        :caption: Implementation of GUI MessageApp
-        :name: message_app
 
     	import javax.swing.*;
     	import java.awt.event.*;

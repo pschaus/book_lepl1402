@@ -25,8 +25,6 @@ Let's delve into the intricacies of time complexity and uncover the beauty and e
 .. _sum:
 
 ..  code-block:: java
-    :caption: The ``sum()`` method
-    :name: Sum Algorithm
 
 
 	public class Main {
@@ -47,8 +45,6 @@ Here is an example of how to use it to measure the time of one call to the ``sum
 
 
 ..  code-block:: java
-    :caption: Measuring the time of ``sum()`` using ``currentTimeMillis()``
-    :name: Sum Algorithm with Time Measurement
 
 
 	public class Main {
@@ -96,8 +92,6 @@ The next code add comments on the number of steps required to execute the sum al
 
 
 ..  code-block:: java
-    :caption: The ``sum()`` method with step annotations
-    :name: Sum Algorithm with Step Annotations
 
 
     public static int sum(int [] values) {         // n = values.length
@@ -130,8 +124,6 @@ To illustrate this, consider the ``linearSearch()`` method that looks whether an
 .. _linear_search:
 
 ..  code-block:: java
-    :caption: Linear Search algorithm
-    :name: Linear Search Algorithm
 
     /**
      * This method performs a linear search on an array.
@@ -279,8 +271,6 @@ The Java code is a direct translation of the explanation of the algorithm.
 .. _binary_search:
 
 ..  code-block:: java
-    :caption: Binary Search Algorithm
-    :name: Binary Search Algorithm
 
 
 	/**
@@ -359,8 +349,6 @@ Here is a simple implementation of Merge Sort in Java:
 .. _merge_sort_implem:
 
 ..  code-block:: java
-    :caption: Merge Sort Algorithm
-    :name: Merge Sort Algorithm
 
 
     private static void merge(int[] left, int [] right, int result[]) {
@@ -435,8 +423,6 @@ The Java code is given next.
 .. _insertion_sort:
 
 ..  code-block:: java
-    :caption: Insertion Sort Algorithm
-    :name: Insertion Sort Algorithm
 
 
     /**
@@ -479,8 +465,6 @@ Here an implementation in Java:
 .. _triple_sum:
 
 ..  code-block:: java
-    :caption: Triple Sum algorithm
-    :name: Triple Sum Algorithm
 
     /**
      * This method checks if there are any three numbers in the array that sum up to zero.
@@ -528,8 +512,6 @@ up to index ``i`` already included.
 .. _subset_sum:
 
 ..  code-block:: java
-    :caption: An algorithm for solving the Subset-Sum problem
-    :name: Subset-Sum Algorithm
 
     /**
      * This method checks if there is a subset of the array that sums up to zero.
@@ -601,8 +583,6 @@ Even with high-speed modern computers, attempting to solve the TSP for, say, 20 
 
 
 ..  code-block:: java
-    :caption: Traveling Salesman Problem 
-    :name: TSP
 
     public class TSPBruteForce {
 
@@ -690,10 +670,6 @@ Even with high-speed modern computers, attempting to solve the TSP for, say, 20 
 
 
     ..  code-block:: java
-        :caption: BitCount 
-        :name: Bitcount
-
-
 
         /**
          * Counts the minimum number of bits in the binary representation 
@@ -749,10 +725,6 @@ Let us compare the space and time complexity of an iterative and a recursive com
 
 
     ..  code-block:: java
-        :caption: Two implementations of the factorial
-        :name: Recursive
-
-
 
         public class Factorial {
             // Recursive implementation
@@ -821,9 +793,6 @@ As such, the space complexity of this version of the merge sort algorithm is :ma
 
 
 ..  code-block:: java
-    :caption: Merge Sort Algorithm with Temporary Shared Array
-    :name: Merge Sort Algorithm with Temporary Shared Array
-
 
 	public class MergeSort {
 
@@ -908,9 +877,6 @@ a method searching for the maximum of an array.
 
 
 ..  code-block:: java
-    :caption: Maximum of an array using ``while``, with loop invariant 
-    :name: max_invariant_while
-
 
     /**
      * Finds the maximum value in the provided array.
@@ -941,8 +907,6 @@ The correctness of the ``max()`` algorithm is a consequence of the correctness o
 When ``for`` loops are used instead of ``while`` loops, one generally only expresses the invariant before each iteration as shown next. 
 
 ..  code-block:: java
-    :caption: Maximum of an array using ``for``, with loop invariant
-    :name: max_invariant_for
 
     public static int max(int[] a) {
         int m = a[0];
@@ -973,9 +937,6 @@ Let us now rewrite the ``max()`` algorithm in a recursive form.
 
 
 ..  code-block:: java
-    :caption: Maximum of an array, recursive version
-    :name: max_invariant_recur
-
 
     /**
      * Finds the maximum value in the provided array.
@@ -1024,10 +985,6 @@ We do it on the inductive parameter ``i``.
 
 
     ..  code-block:: java
-        :caption: MaxSum Subarray 
-        :name: maxsum
-
-
 
         public class MaxSubArray {
 
@@ -1075,9 +1032,6 @@ We do it on the inductive parameter ``i``.
 
 
     ..  code-block:: java
-        :caption: Bubble Sort with Loop Invariant
-        :name: bubble_loop
-
 
     	public class Main {
     	    public static void main(String[] args) {
