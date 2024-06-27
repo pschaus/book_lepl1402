@@ -191,14 +191,19 @@ latex_elements = {
 #'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': 'r',
+'preamble': r'''
+\usepackage{anyfontsize}
+\usepackage{array}
+\let\OldTabular\tabular
+\renewcommand{\tabular}{\small\OldTabular}
+''',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'lepl1402.tex', u'Concepts of Programming with Java',
-   u'Sébastien Jodogne, Ramin Sadré, Pierre Schaus', 'manual'),
+   u'Sébastien Jodogne, Ramin Sadre, Pierre Schaus', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

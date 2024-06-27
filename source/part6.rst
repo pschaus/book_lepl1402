@@ -2,7 +2,7 @@
 
 
 *****************************************************************
-Part 6: Functional Programming
+Functional Programming
 *****************************************************************
 
 Functional programming refers to a programming paradigm that emphasizes the **use of functions and immutable data** to create applications. This paradigm promotes writing code that is easier to reason about, and that allows for better handling of concurrency.
@@ -1195,7 +1195,7 @@ The method ``map(Function<T,R> f)`` is especially important and very frequently 
 ..  code-block:: java
 
     Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
-    Stream<Integer> incremented = stream.map(i -> i + 1);  // => [ 11, 21, 31, 41, 51 ]
+    Stream<Integer> incremented = stream.map(i -> i + 1);  // => [11, 21, 31, 41, 51]
 
 This is an example that uses an :ref:`unary operator <fp_operators>`, as both streams share the same data type (i.e., ``Integer``). But the ``map()`` method also accept general functions that change the data type of the elements of the input stream. As an example, the following code creates a stream that provides the number of characters in each element of a stream of strings:
     
@@ -1210,7 +1210,7 @@ The ``map()`` method evidently supports user-defined classes. For instance, it i
 ..  code-block:: java
 
     Stream<Account> accounts = Stream.of(new Account(100), new Account(200));
-    Stream<Integer> values = accounts.map(i -> i.getValue());  // => [ 100, 200 ]
+    Stream<Integer> values = accounts.map(i -> i.getValue());  // => [100, 200]
     // Note that we could have written: accounts.map(Account::getValue);
 
 Interestingly, the ``map()`` method can also be used to create objects by calling their constructor on the elements from the input stream. For instance:
@@ -1230,7 +1230,7 @@ Another significant method on streams is ``filter(Predicate<T> p)``. This method
 ..  code-block:: java
 
     Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
-    Stream<Integer> filtered = stream.filter(i -> i % 4 == 0);  // [ 20, 40 ]
+    Stream<Integer> filtered = stream.filter(i -> i % 4 == 0);  // [20, 40]
 
 
 Other intermediate methods
@@ -1243,7 +1243,7 @@ The ``map()`` and ``filter()`` methods are extremely important higher-order func
   ..  code-block:: java
 
       Stream<Integer> stream = Stream.of(20, 10, 50, 40, 30);
-      Stream<Integer> sorted = stream.sorted();  // => [ 10, 20, 30, 40, 50 ]
+      Stream<Integer> sorted = stream.sorted();  // => [10, 20, 30, 40, 50]
 
 * ``sorted(Comparator<T> c)`` returns a stream containing the same elements as the one to which it is applied, but **sorted by delegation to a comparator**:
 
@@ -1258,14 +1258,14 @@ The ``map()`` and ``filter()`` methods are extremely important higher-order func
   ..  code-block:: java
 
       Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
-      Stream<Integer> skipped = stream.skip(3);  // => [ 40, 50 ]
+      Stream<Integer> skipped = stream.skip(3);  // => [40, 50]
 
 * ``limit(long l)`` returns a stream containing the same elements as the stream to which it is applied, but **truncated to have at most "l" elements**:
 
   ..  code-block:: java
 
       Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
-      Stream<Integer> limited = stream.limit(2);  // => [ 10, 20 ]
+      Stream<Integer> limited = stream.limit(2);  // => [10, 20]
 
   The ``limit()`` method can notably be used to truncate infinite streams into a finite stream.
 
@@ -1322,14 +1322,14 @@ Here are some of the most useful predefined collectors to create Java containers
   ..  code-block:: java
                  
       Stream<Integer> stream = Stream.of(10, 20, 30);
-      List<Integer> lst = stream.collect(Collectors.toList());  // => List: [ 10, 20, 30 ]
+      List<Integer> lst = stream.collect(Collectors.toList());  // => List: [10, 20, 30]
 
 * ``Collectors.toSet()`` returns a collector that **stores the elements of the stream into a set**. If the stream is of type ``Stream<T>``, the output list will be of type ``Set<T>``. For instance:
 
   ..  code-block:: java
                  
       Stream<Integer> stream = Stream.of(10, 20, 20, 10);
-      Set<Integer> lst = stream.collect(Collectors.toSet());  // => Set: { 10, 20 }
+      Set<Integer> lst = stream.collect(Collectors.toSet());  // => Set: {10, 20}
 
 * ``Collectors.toMap(Function<T,K> keyMapper, Function<T,U> valueMapper)`` returns a collector that **stores the elements of the stream into an associative array** (i.e., a dictionary). The function ``keyMapper`` is used to generate the key corresponding to each element in the stream, and the function ``valueMapper`` is used to generate the value corresponding to each element. If the stream is of type ``Stream<T>``, the output list will be of type ``Map<K,V>``. For instance:
 
@@ -1366,7 +1366,7 @@ If the stream is of type ``Stream<String>``, the following predefined containers
 
       Stream<String> stream = Stream.of("one", "two", "three");
       String joined = stream.collect(Collectors.joining(", ", "{ ", " }"));
-      System.out.println(joined);  // Displays: { one, two, three }
+      System.out.println(joined);  // Displays: {one, two, three}
 
 Finally, note that the ``Stream<T>`` interface also contains the ``toArray()`` collector method. This method create an array of ``Object`` from a stream:
 
@@ -1567,8 +1567,8 @@ It is also worth noticing that ``IntStream`` and ``LongStream`` have two interes
 
 .. code-block:: java
 
-   IntStream s1 = IntStream.range(-3, 3);        // => [ -3, -2, -1, 0, 1, 2 ]
-   IntStream s2 = IntStream.rangeClosed(-3, 3);  // => [ -3, -2, -1, 0, 1, 2, 3 ]    
+   IntStream s1 = IntStream.range(-3, 3);        // => [-3, -2, -1, 0, 1, 2]
+   IntStream s2 = IntStream.rangeClosed(-3, 3);  // => [-3, -2, -1, 0, 1, 2, 3]    
 
 As can be seen in this example, these two methods only differ with respect to the fact that the last integer in the range is included or not.
 
@@ -1817,7 +1817,7 @@ Let us for instance consider the operation ``myList.map(x -> x + 3)`` on our imm
    <=> new Cons(10 + 3, new Cons(20 + 3, list3.map(x -> x + 3)))
    <=> new Cons(10 + 3, new Cons(20 + 3, new Cons(30 + 3, empty.map(x -> x + 3))))
    <=> new Cons(10 + 3, new Cons(20 + 3, new Cons(30 + 3, new Nil())))
-   <=> ImmutableList<Integer> containing: [ 13, 23, 33 ]
+   <=> ImmutableList<Integer> containing: [13, 23, 33]
 
 Thanks to those ``map()`` and ``filter()`` methods, we can chain operations to create more complex pipelines, for instance:
     
