@@ -1433,7 +1433,27 @@ Interpreted programming languages (like Python) do similarly but accept construc
 Trees
 ------------
 
-.. TODO - Add an introduction paragraph
+
+In many applications, there is a need to store and manage hierarchically organized data. Examples include representing family trees (genealogy), structuring the way files are stored on your computer, or representing arithmetic expressions.
+
+Consider the following example where we represent data using a tree structure. 
+
+
+
+.. figure:: _static/images/part4/binary_tree.png
+   :scale: 70 %
+   :alt: Binary Tree example
+
+   BinaryTree
+
+A tree is often represented with the root node at the top (in this case, the node with the value 5) and the leaf nodes (the ones without children) at the bottom. 
+
+The `LinkedBinaryTree` class shown below is an implementation for representing such a tree data-structure.ó 
+In this class, each node contains a value and references to its left and right children. 
+This structure is similar to the nodes used in linked lists, with the key difference being that we store two references (one for each child) instead of just one.
+This class facilitates the creation of leaf nodes and includes a static helper method called `combine`, 
+which allows us to merge two trees by creating a new root node, thus forming a larger binary tree.
+
 
 ..  code-block:: java
 
@@ -1473,11 +1493,9 @@ Trees
 
 .. _binary-tree:
 
-.. figure:: _static/images/binary_tree.png
-   :scale: 50 %
-   :alt: Binary Tree example
 
-   BinaryTree
+
+
 
 
 ..  code-block:: java
@@ -1663,7 +1681,6 @@ An example is provided in the main method for creating tree representation of th
 
 
 
-
 We now enrich this class with two functionalities:
 
 * ``evaluate()`` is a method for evaluating the expression represented by the tree. This method performs a post-order traversal of the tree. The evaluation of the left sub-expression (left traversal) and the right subexpression (right traversal) must be first evaluated prior to applying the node operator (visit of the node).
@@ -1744,11 +1761,28 @@ We now enrich this class with two functionalities:
 
 
 
-Representing a set with a tree
-"""""""""""""""""""""""""""""""""""""""""""""""
+Representing a set with a Binary Search Tree (BST)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. TODO - Add an explanation paragraph
 
+A Binary Search Tree (BST) is a specialized type of binary tree used for efficient data storage and retrieval. 
+In a BST, each node stores a value, and all nodes in the left subtree of a node 
+contain values less than the node’s value, while all nodes in the right subtree contain values greater than the node’s value.
+
+These properties ensure that the tree remains ordered, which is crucial for the efficiency of operations like search, insertion, and deletion.
+
+
+A valid BST is shown on the left, while an invalid BST is displayed on the right. The tree on the right is not valid because the value 14 appears in the left subtree of the node with value 13, which violates the BST rule.
+
+
+.. figure:: _static/images/part4/bst_example.png
+   :scale: 50 %
+   :alt: A valide BST, an Invalid BST
+
+
+The `BinarySearchTree` class defined below, implements a simple BST in Java for storing a set of integers.
+At the construction the set is empty, then values can be added with the `add` method, 
+or the presence of a value in the set can be tested with the `contains`.
 
 ..  code-block:: java
 
@@ -1818,9 +1852,170 @@ Representing a set with a tree
         }
     }
 
+Each Node represents a single element in the tree. It contains:
+
+* An integer val to store the node’s value.
+* References to its left and right children (left and right).
+	
+The `isLeaf(`) method checks whether a node is a leaf node (i.e., it has no children).
+
+The `add(int val)` method allows us to insert a new value into the tree.
+This method calls `addRecursive(Node current, int val)`, which recursively traverses the tree:
+
+* If the current node is `null`, a new node with the value `val` is created.
+* If `val` is less than the current node’s value, the algorithm moves (recursively) to the left child.
+* If `val` is greater, it moves (recursively) to the right child.
+* If `val` is equal to the current node’s value, no action is taken (to avoid duplicates).
+
+
+The recursion ensures that the new value is inserted at the correct position according to the BST properties.
+
+The time complexity for insertion is :math:`\mathcal{O}(h)`, where :math:`h` is the height of the tree. 
+Since no guarantees on :math:`h` can be made with this implementation, 
+the height should be assumed to be :math:`\mathcal{O}(n)`, the number of nodes. This worst-case scenario occurs when the tree is highly unbalanced, resembling a linked list. This situation can arise, for instance, if the keys are inserted in increasing order.
+
+
+
+.. tip::
+   There exist more complex implementations of a BST to enforce :math:`h` is in :math:`\mathcal{O}(log(n))`. The most famous one is called a red-black tree.
+
+
+.. admonition:: Exercise
+   :class: note
+   
+   One traversal strategy allows to iterate over the values of the BST in increasing order in linear time. Which one is it? Can you implement it?
+
+
 
 
 .. _iterators:
+
+
+Maps
+------
+
+An array in Java is a data structure that stores elements in a fixed order. Each element in the array is accessed using an index, which is a integer.
+
+A Map is an ADT that generalizes the idea of indexing to be more flexible by allowing the index to be something else than an integer.
+In Map, the index is called a key, and each key maps it to a value.
+An example usage of Map is given next making use of the two most important methods,
+the `put` to add a key, value pair (aka entry)  and the `get` to retrieve the value from the key.
+`Map` is an interface in Java, it is implemented by the class `java.util.HashMap` (and many others).
+
+..  code-block:: java
+	
+	
+	import java.util.HashMap;
+
+	public class MapExample {
+	    public static void main(String[] args) {
+		// Create a HashMap to store tree names and their heights
+		HashMap<String, Integer> treeHeights = new HashMap<>();
+
+		// Add some key-value pairs (tree names and their average heights in meters)
+		treeHeights.put("Oak", 20);
+		treeHeights.put("Pine", 25);
+		treeHeights.put("Maple", 15);
+		treeHeights.put("Birch", 18);
+
+		// Retrieve the height of a specific tree
+		System.out.println("Height of Oak: " + treeHeights.get("Oak")); // Output: 20
+	    }
+	}
+
+An illustration of the internal representation of hash table is given next.
+
+
+.. figure:: _static/images/part4/hash_tables.png
+   :scale: 100 %
+   :alt: Illustration of the underlying time-table
+
+
+A hash table stores keys and values as entries (key-value pairs) in a Java array. At the core of a hash table is the concept of hashing. A hash function takes a key (in this case, a string) and converts it into an integer, known as the hash code. It is crucial that this function is deterministic, meaning the hash code for a given key must always remain the same.
+
+The purpose of the hash code is to determine where a specific key should be stored in the internal array. In Java, every object has a `hashCode` method that returns an integer (which can sometimes be negative). To map this hash code to a valid index between 0 and N-1 (where N is the size of the array), we first take its absolute value and then apply the % (modulo) operator.
+
+When inserting a new entry into the hash table, there is no guarantee that the computed index will be unoccupied. This situation, known as a collision, occurs when multiple keys are mapped to the same index. To handle collisions, a linked list is used at each index of the array to store multiple entries.
+
+Collisions become more frequent as the number of entries in the hash table grows compared to the size of the array N. The efficiency of the hash table largely depends on the assumption that the hash function distributes keys uniformly across the array and that the number of entries is kept lower than N. However, these topics go beyond the scope of this brief introduction to hash tables.
+Insertion and retrieval can be assumed to have an expected time complexity of :math:`\mathcal{O}(1)` for the `java.util.HashTable` implementation because the load factor (ratio of the number of entries divided by N) is kept low by resizing the table if necessary similarly as in the stack implementation with an array.
+
+A simple implementation is given next.
+ 
+
+..  code-block:: java
+
+
+	import java.util.LinkedList;
+
+	public class TreeHashtable {
+
+	    // Size of the internal array
+	    private static final int N = 10;
+
+	    // Each entry in the array is a LinkedList to handle collisions
+	    private LinkedList<Entry>[] table;
+
+	    // Constructor initializes the array
+	    @SuppressWarnings("unchecked")
+	    public TreeHashtable() {
+		table = new LinkedList[N];
+		for (int i = 0; i < N; i++) {
+		    table[i] = new LinkedList<>();
+		}
+	    }
+
+	    // A private class representing a key-value pair
+	    private static class Entry {
+		String key;
+		Integer value;
+
+		Entry(String key, Integer value) {
+		    this.key = key;
+		    this.value = value;
+		}
+	    }
+
+	    // Hash function to calculate the index for a given key
+	    private int hash(String key) {
+		return Math.abs(key.hashCode()) % N;
+	    }
+
+	    // Put method to insert or update a key-value pair
+	    public void put(String key, Integer value) {
+		int index = hash(key);
+		LinkedList<Entry> bucket = table[index];
+
+		// Check if the key already exists, if so, update its value
+		for (Entry entry : bucket) {
+		    if (entry.key.equals(key)) {
+			entry.value = value;
+			return;
+		    }
+		}
+
+		// If the key doesn't exist, add a new Entry to the bucket
+		bucket.add(new Entry(key, value));
+	    }
+
+	    // Get method to retrieve the value associated with a key
+	    public Integer get(String key) {
+		int index = hash(key);
+		LinkedList<Entry> bucket = table[index];
+
+		// Iterate through the bucket to find the key
+		for (Entry entry : bucket) {
+		    if (entry.key.equals(key)) {
+			return entry.value;
+		    }
+		}
+
+		// Return null if the key is not found
+		return null;
+	    }
+	}	
+
+
 
 Iterators
 ===========
