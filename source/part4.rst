@@ -708,8 +708,36 @@ Since this notion of "space" is subject to interpretation, let us separate it in
 The definition of space complexity includes both: *space complexity* = *auxiliary space complexity* + *input space complexity*.
 
 
+The next `sum` method computing the sum of the elements in an array uses :math:`\mathcal{O}O(1)` auxiliary space, but :math:`\Theta(n)` input space where :math:`n` is the lenght of the input array. Its space complexity is thus :math:`Theta(n)`.
 
 
+    ..  code-block:: java
+
+	public static int sum(int[] array) {
+	    int sum = 0;  // O(1) space for the sum variable
+	    for (int i = 0; i < array.length; i++) {
+		sum += array[i];
+	    }
+	    return sum;
+	}
+
+
+
+On the other hand, the method `range` uses :math:`\Theta(n)`  auxiliary space where :math:`n`  is the absolute value of the input parameter, but it consumes only :math:`\mathcal{O}(1)`  input space since an integer has a fixed size encoding of 32 bits in Java.
+
+    ..  code-block:: java
+
+	public static int[] range(int n) {
+	    int[] result = new int[n];
+	    for(int i = 0; i < n; i++)
+		result[i] = i;
+	    return result;
+	}}
+
+Notice that we have chosen to express the space complexity in terms of the absolute value of the number. We could also have chosen to express it in terms of the input size.
+The input size is 32 bits here, but in binary form, it could encode a number as large as :math:`2^{31}-1` . 
+Therefore, if :math:`k`  is the number of bits required to encode the value :math:`n` , the auxiliary space complexity is :math:`\mathcal{O}(2^k)`  (exponential thus).
+This illustrates the importance of clearly specifying what the parameters in a complexity expression represent when describing complexity.
 
 Space complexity of recursive algorithms
 -------------------------------------------
@@ -717,7 +745,7 @@ Space complexity of recursive algorithms
 Notice that the extra space may also take into account the space of the system stack in the case of a recursive algorithm.
 In such a situation, when the recursive call happens, the current local variables are pushed onto the system stack, where they wait for the call the return and unstack the local variables.
 
-More exactly, If a method ``A()`` calls method ``B()`` (which can possible be ``A()`` in case of recursion) inside it, then all the variables still in the scope of the method ``A()`` will get stored on the system stack temporarily, while the method ``B()`` is called and executed inside the method ``A()``.
+More exactly, If a method ``A()`` calls method ``B()`` (which can possibly be ``A()`` in case of recursion) inside it, then all the variables still in the scope of the method ``A()`` will get stored on the system stack temporarily, while the method ``B()`` is called and executed inside the method ``A()``.
 
 
 Let us compare the space and time complexity of an iterative and a recursive computation of the factorial of a number expressed in function of :math:`n`, the value of the number for which we want to compute the factorial.
