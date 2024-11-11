@@ -1476,7 +1476,7 @@ Consider the following example where we represent data using a tree structure.
 
 A tree is often represented with the root node at the top (in this case, the node with the value 5) and the leaf nodes (the ones without children) at the bottom. 
 
-The `LinkedBinaryTree` class shown below is an implementation for representing such a tree data-structure.ó 
+The `LinkedBinaryTree` class shown below is an implementation for representing such a tree data-structure. 
 In this class, each node contains a value and references to its left and right children. 
 This structure is similar to the nodes used in linked lists, with the key difference being that we store two references (one for each child) instead of just one.
 This class facilitates the creation of leaf nodes and includes a static helper method called `combine`, 
@@ -1496,10 +1496,6 @@ which allows us to merge two trees by creating a new root node, thus forming a l
 
                 public Node(int val) {
                     this.val = val;
-                }
-
-                public boolean isLeaf() {
-                    return this.left == null && this.right == null;
                 }
             }
 
@@ -1792,15 +1788,29 @@ We now enrich this class with two functionalities:
 Representing a set with a Binary Search Tree (BST)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+An Abstract Data Type (ADT) for representing a set of integers without duplicates is provided below. 
+The set is initially empty. Elements can then be added, and it is possible to check if an element has already been added.
 
-A Binary Search Tree (BST) is a specialized type of binary tree used for efficient data storage and retrieval. 
+
+..  code-block:: java
+
+    public interface IntSet {
+        public void add(int val);
+        public boolean contains(int val);
+    }
+
+
+
+A Binary Search Tree (BST) is a specialized type of binary tree that can be used as
+a data-structure for implementing the IntSet ADT.
 In a BST, each node stores a value, and all nodes in the left subtree of a node 
 contain values less than the node’s value, while all nodes in the right subtree contain values greater than the node’s value.
 
 These properties ensure that the tree remains ordered, which is crucial for the efficiency of operations like search, insertion, and deletion.
 
 
-A valid BST is shown on the left, while an invalid BST is displayed on the right. The tree on the right is not valid because the value 14 appears in the left subtree of the node with value 13, which violates the BST rule.
+A valid BST is shown on the left, while an invalid BST is displayed on the right. 
+The tree on the right is not valid because the value 14 appears in the left subtree of the node with value 13, which violates the BST rule.
 
 
 .. figure:: _static/images/part4/bst_example.png
@@ -1808,9 +1818,8 @@ A valid BST is shown on the left, while an invalid BST is displayed on the right
    :alt: A valide BST, an Invalid BST
 
 
-The `BinarySearchTree` class defined below, implements a simple BST in Java for storing a set of integers.
-At the construction the set is empty, then values can be added with the `add` method, 
-or the presence of a value in the set can be tested with the `contains`.
+The `BinarySearchTree` class defined below, implements `IntSet`
+ for storing a set of integers.
 
 ..  code-block:: java
 
@@ -1827,9 +1836,6 @@ or the presence of a value in the set can be tested with the `contains`.
                 this.val = val;
             }
 
-            public boolean isLeaf() {
-                return this.left == null && this.right == null;
-            }
         }
 
         // Method to add a value to the tree
@@ -1880,13 +1886,8 @@ or the presence of a value in the set can be tested with the `contains`.
         }
     }
 
-Each Node represents a single element in the tree. It contains:
 
-* An integer val to store the node’s value.
-* References to its left and right children (left and right).
-	
-The `isLeaf(`) method checks whether a node is a leaf node (i.e., it has no children).
-
+We reuse the linked node representation.
 The `add(int val)` method allows us to insert a new value into the tree.
 This method calls `addRecursive(Node current, int val)`, which recursively traverses the tree:
 
