@@ -1964,7 +1964,7 @@ A hash table stores keys and values as entries (key-value pairs) in a Java array
 
 The purpose of the hash code is to determine where a specific key should be stored in the internal array. In Java, every object has a `hashCode` method that returns an integer (which can sometimes be negative). To map this hash code to a valid index between 0 and N-1 (where N is the size of the array), we first take its absolute value and then apply the % (modulo) operator.
 
-When inserting a new entry into the hash table, there is no guarantee that the computed index will be unoccupied. This situation, known as a collision, occurs when multiple keys are mapped to the same index. To handle collisions, a linked list is used at each index of the array to store multiple entries.
+When inserting a new entry into the hash table, there is no guarantee that the computed index will be unoccupied. This situation, known as a *collision*, occurs when multiple keys are mapped to the same index. To handle collisions, a linked list is used at each index of the array to store multiple entries.
 
 Collisions become more frequent as the number of entries in the hash table grows compared to the size of the array N. The efficiency of the hash table largely depends on the assumption that the hash function distributes keys uniformly across the array and that the number of entries is kept lower than N. However, these topics go beyond the scope of this brief introduction to hash tables.
 Insertion and retrieval can be assumed to have an expected time complexity of :math:`\mathcal{O}(1)` for the `java.util.HashTable` implementation because the load factor (ratio of the number of entries divided by N) is kept low by resizing the table if necessary similarly as in the stack implementation with an array.
@@ -1977,7 +1977,7 @@ A simple implementation is given next.
 
 	import java.util.LinkedList;
 
-	public class TreeHashtable {
+	public class SimpleHashtable {
 
 	    // Size of the internal array
 	    private static final int N = 10;
@@ -1987,7 +1987,7 @@ A simple implementation is given next.
 
 	    // Constructor initializes the array
 	    @SuppressWarnings("unchecked")
-	    public TreeHashtable() {
+	    public SimpleHashtable() {
 		table = new LinkedList[N];
 		for (int i = 0; i < N; i++) {
 		    table[i] = new LinkedList<>();
