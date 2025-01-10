@@ -1177,7 +1177,7 @@ The primary operations of a ``Stack`` are ``push()``, ``pop()``, and ``peek()``,
 
 ..  code-block:: java
 
-    public interface StackADT<T> {
+    public interface Stack<T> {
         // Pushes an item onto the top of this stack.
         void push(T item);
         
@@ -1929,17 +1929,18 @@ A Map is an ADT that generalizes the idea of indexing to be more flexible by all
 In Map, the index is called a key, and each key maps it to a value.
 An example usage of Map is given next making use of the two most important methods,
 the `put` to add a key, value pair (aka entry)  and the `get` to retrieve the value from the key.
-`Map` is an interface in Java, it is implemented by the class `java.util.HashMap` (and many others).
+Ìn Java, `java.util.`Map` is the interface for the Map ADT.
+It is implemented by the class `java.util.HashTable` (and many others).
 
 ..  code-block:: java
 	
-	
-	import java.util.HashMap;
+	import java.util.Hashtable;
+	import java.util.Map;
 
 	public class MapExample {
 	    public static void main(String[] args) {
 		// Create a HashMap to store tree names and their heights
-		HashMap<String, Integer> treeHeights = new HashMap<>();
+		Map<String, Integer> treeHeights = new HashTable<>();
 
 		// Add some key-value pairs (tree names and their average heights in meters)
 		treeHeights.put("Oak", 20);
@@ -2115,6 +2116,7 @@ This is illustrated next that is equivalent to the previous code.
 	}
 
 
+
 In conclusion, while they are closely related and often used together, ``Iterable`` and ``Iterator`` serve distinct purposes. 
 ``Iterable`` is about the ability to produce an ``Iterator``, while ``Iterator`` is the mechanism that actually facilitates the traversal.
 
@@ -2124,7 +2126,29 @@ In conclusion, while they are closely related and often used together, ``Iterabl
 Implementing your own iterators
 ---------------------------------
 
-To properly implement an ``Iterator``, there are two possible strategies:
+The correct way to enable iteration capabilities is to extend the Iterable interface at the Abstract Data Type (ADT) level. 
+This ensures that any implementation of the ADT is required to implement the iterator method defined by the Iterable interface.
+
+..  code-block:: java
+
+    public interface Stack<T> extends Iterable<T> {
+        // Pushes an item onto the top of this stack.
+        void push(T item);
+        
+        // Removes and returns the top item from this stack.
+        T pop();
+        
+        // Returns the top item from this stack without removing it.
+        T peek();
+        
+        // Returns true if this stack is empty.
+        boolean isEmpty();
+
+        // Returns the number of items in this stack.
+        public int size();
+    }
+
+Now to properly implement an ``Iterator``, there are two possible strategies:
 
 1. Fail-Fast: Such iterators throw ``ConcurrentModificationException`` if there is structural modification of the collection. 
 2. Fail-Safe: Such iterators don't throw any exceptions if a collection is structurally modified while iterating over it. This is because they operate on the clone of the collection, not on the original collection.
@@ -2157,7 +2181,7 @@ No other operations are involved in the iterator's creation, and notably, there 
 	import java.util.Iterator;
 	import java.util.ConcurrentModificationException;
 
-	public class LinkedStack<T> implements Iterable<T> {
+	public class LinkedStack<T> implements Stack<T> {
 	    private Node<T> top;
 	    private int size = 0;
 	    private int modCount = 0;  // Modification count
@@ -2227,7 +2251,7 @@ No other operations are involved in the iterator's creation, and notably, there 
 	    }
 
 	    public static void main(String[] args) {
-	        LinkedStack<Integer> stack = new LinkedStack<>();
+	        Stack<Integer> stack = new LinkedStack<>();
 	        stack.push(1);
 	        stack.push(2);
 	        stack.push(3);
