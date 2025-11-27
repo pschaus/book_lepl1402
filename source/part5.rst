@@ -835,6 +835,13 @@ To this end, we can create a separate data structure (e.g., a stack or a list) t
 
         Stack<Future<MinMaxResult>> pendingComputations = new Stack<>();
 
+        int numberOfBlocks;  // Contains the ceiling of value.length divided by blockSize
+        if (values.length % blockSize == 0) {
+            numberOfBlocks = values.length / blockSize;
+        } else {
+            numberOfBlocks = values.length / blockSize + 1;
+        }
+
         for (int block = 0; block < numberOfBlocks; block++) {
             int startIndex = block * blockSize;
             int endIndex;
