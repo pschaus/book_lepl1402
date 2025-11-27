@@ -1,17 +1,29 @@
 name: Docs
+
 on: [push, pull_request, workflow_dispatch]
+
 jobs:
   docs:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+
+      # 🔧 Pin Python version to avoid Sphinx EPUB3 imghdr crash
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
       - name: Install TeX Live
         run: |
-          sudo apt-get update && sudo apt-get install -y texlive texlive-publishers texlive-science latexmk cm-super dvipng
+          sudo apt-get update && sudo apt-get install -y \
+            texlive texlive-publishers texlive-science \
+            latexmk cm-super dvipng
+
       - name: Sphinx build
         run: |
           ./build.sh
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
