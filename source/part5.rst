@@ -73,7 +73,7 @@ Threads in Java
 
 Java provides extensive support of multithreading.
 
-When a Java program starts its execution, the Java Virtual Machine (JVM) starts an initial thread. This initial thread is called the **main thread** and is responsible for the execution of the ``main()`` method, which is the :ref:`entry point of most Java applications <java_main>`. Alongside the main thread, the JVM also start some private background threads for its own housekeeping (most notably the garbage collector).
+When a Java program starts its execution, the Java Virtual Machine (JVM) starts an initial thread. This initial thread is called the **main thread** and is responsible for the execution of the ``main()`` method, which is the :ref:`entry point of most Java applications <java_main>`. Alongside the main thread, the JVM also starts some private background threads for its own housekeeping (most notably the garbage collector).
 
 Additional threads can then be created by software developers in two different ways:
 
@@ -144,7 +144,7 @@ Our ``MinComputation`` class specifies how to compute the minimum of an array. W
         // This prints: "Minimum value: -5.0"
     }
 
-In this example, no additional thread was created besides the main Java thread. Thanks to the fact that ``MinComputation`` implements ``Runnable``, it is now possible to compute the minimum in a separate thread:
+In this example, no additional thread was created besides the main Java thread. But thanks to the fact that ``MinComputation`` implements ``Runnable``, it is now possible to compute the minimum in a separate thread:
 
 ..  code-block:: java
 
@@ -306,7 +306,7 @@ For algorithms working on an array, the basic idea is to split the array in two 
 
 Once the two threads have finished their work, we need to **combine** their results to get the final result. In our example, the minimum of the whole array is the minimum of the two minimums computed on the two parts.
 
-To implement this solution, the class that implements the ``Runnable`` interface must not only receive the ``values`` array, but it must also receive the start index and the end index of the block of interest in the array. Furthermore, the class must not *print* the minimum, but must provide access to computed minimum value in either block. This is implemented in the following code:
+To implement this solution, the class that implements the ``Runnable`` interface must not only receive the ``values`` array, but it must also receive the start index and the end index of the block of interest in the array. Furthermore, the class must not *print* the minimum, but it must provide access to computed minimum value in either block. This is implemented in the following code:
 
 ..  code-block:: java
 

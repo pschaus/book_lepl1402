@@ -144,7 +144,7 @@ To this end, the ``Spreadsheet`` class contains the member variable ``sortOnColu
         }
     }
     
-The ``RowComparator1`` class is called an **external class** because it is located outside of the ``Spreadsheet`` class. This is not an issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
+The ``RowComparator1`` class is called a **package-private top-level class** because it is located outside of the main ``Spreadsheet`` class. This is not an issue because this sample code is quite short. But in real code, it might be important for readability to bring the comparator class closer to the method that uses it (in this case, ``sort()``). This is why Java features **static nested classes**. This construction allows to define a class at the member level of another class:
 
 ..  code-block:: java
 
@@ -175,7 +175,7 @@ In this code, ``RowComparator2`` is the static nested class, and ``Spreadsheet``
 
 Static nested classes are a way to logically group classes together, to improve code organization, and to encapsulate functionality within a larger class. This promotes a more modular and structured design, in a way that is similar to :ref:`packages <packages>`, but at a finer granularity. Note that it is allowed for two different classes to use the same name for a nested class, which can prevent collisions between class names in large applications.
 
-Importantly, static nested classes have access to the private static members of the outer class, which was not the case of the external class ``RowComparator1``: This can for instance be useful to take advantage of :ref:`private enumerations or constants <enumerations>` that would be defined inside the outer class.
+Importantly, static nested classes have access to the private static members of the outer class, which was not the case of the top-level class ``RowComparator1``: This can for instance be useful to take advantage of :ref:`private enumerations or constants <enumerations>` that would be defined inside the outer class.
 
 
 Inner classes
@@ -290,7 +290,7 @@ Local inner classes
     
 So far, we have seen three different constructions to define classes:
 
-* External classes are the default way of defining classes, i.e., separately from any other class.
+* Top-level classes are the default way of defining classes, i.e., separately from any other class.
 
 * Static nested classes are members of an outer class. They have access to the static members of the outer class.
 
