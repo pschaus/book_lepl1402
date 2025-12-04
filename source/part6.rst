@@ -393,7 +393,7 @@ To illustrate this point, let us consider the task of filling a matrix with a co
         lowerPart.get();
     }
     
-As can be seen in this example, it is not necessary for the inner class ``Filler`` to explicitly store a copy of ``m`` and ``value``. Indeed, because those two variables are part of the scope of method ``fill1()``, the ``run()`` method has direct access to the ``m`` and ``value`` variables. Actually, this is again :ref:`syntactic sugar <syntactic_sugar>`: The compiler automatically gives a **copy of all the local variables of the surrounding method** to the constructor of the inner class.
+As can be seen in this example, it is not necessary for the inner class ``Filler`` to explicitly store a copy of ``m`` and ``value``. Indeed, because those two variables are part of the scope of method ``fill1()``, the ``run()`` method has direct access to the ``m`` and ``value`` variables. Actually, this is again :ref:`syntactic sugar <syntactic_sugar>`: The compiler automatically generates a **reference to all the local variables of the outer method** to the constructor of the inner class.
 
 The method ``fill1()`` creates exactly two threads, one for each part of the matrix. One could want to take advantage of a higher number of CPU cores by reducing this granularity. According to this idea, here is an alternative implementation that introduces parallelism at the level of the individual rows of the matrix:
 
