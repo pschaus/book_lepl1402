@@ -1,0 +1,518 @@
+
+
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Unit testing &#8212; LEPL1402  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Algorithms and Data Structures" href="part4.html" />
+    <link rel="prev" title="Object-Oriented Programming" href="part2.html" />
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-125847974-1']);
+  _gaq.push(['_trackPageview']);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="part4.html" title="Algorithms and Data Structures"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="part2.html" title="Object-Oriented Programming"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LEPL1402  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Unit testing</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="unit-testing">
+<span id="part3"></span><h1>Unit testing<a class="headerlink" href="#unit-testing" title="Permalink to this heading">¶</a></h1>
+<section id="software-testing">
+<h2>Software testing<a class="headerlink" href="#software-testing" title="Permalink to this heading">¶</a></h2>
+<section id="what-is-software-testing">
+<span id="id1"></span><h3>What is software testing?<a class="headerlink" href="#what-is-software-testing" title="Permalink to this heading">¶</a></h3>
+<p>According to the ANSI/IEEE standard 610.12-1990, <em>testing</em>  is <em>“the process of operating a system or component under specified conditions, observing or recording the results and making an evaluation of some aspect of the system or component.”</em> More informally, testing means verifying that software (or hardware) does what we expect it to do.</p>
+<p>As an example, let’s assume we have written a method to calculate the quotient <code class="docutils literal notranslate"><span class="pre">a/b</span></code> of two natural numbers <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">division</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, we want to know whether our implementation is correct. We can call the method with arguments 6 and 3 and maybe we get 2 as result. This seems to be correct. Then we call the method with arguments 12 and 3, and we get 4. This looks fine, too. Finally, we call the method with arguments 5 and 2 and we get 3. Is that correct? Or did we expect the result to be 2? And what should be the result if the arguments are 4 and 0?</p>
+<p>As the above example shows, tests are only useful if we have defined what our program is supposed to do. There are different ways to specify the expected behavior of software:</p>
+<ol class="arabic">
+<li><p>We could write a formal specification. In our example, this is relatively easy because the method performs a simple operation. Our formal specification could be:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/e85f285e8338e56788beb567fdd8dea71f570363.svg" alt="division(a,b) = \left\{\begin{array}{cl}\lceil\frac{a}{b}\rceil &amp; if b\neq 0\\error\  exception,&amp; otherwise \end{array}\right."/></p>
+</div></div></blockquote>
+</li>
+</ol>
+<blockquote>
+<div><p>According to this specification (note the <img class="math" src="_images/math/258e543014e60e260c7e41417a9cb1b48b4b915f.svg" alt="\lceil\cdot \rceil"/>), it becomes clear that the method should return 3 when called with arguments 5 and 2, and it should throw an exception if the second argument is 0.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Especially for more complex programs that are difficult to describe in a formal way, the specification is often written in the form of a text document with sentences like <em>“The method returns the quotient of two natural numbers…”</em>.</p></li>
+<li><p>Finally, when working with customers, we often have to start with a list of <em>user requirements</em>, i.e., a description of what is need (<em>“The program should calculate a/b”</em>), and we have to write our own specification from that.</p></li>
+</ol>
+<p>Requirements can come in all kinds of forms. In general, we can distinguish two broad categories of requirements:</p>
+<ul class="simple">
+<li><p><strong>Functional requirements</strong> describe <strong>what</strong> the final product must be able to do. Examples:</p>
+<ul>
+<li><p>“The program should calculate <em>a/b</em>”</p></li>
+<li><p>“The program should sort a list”</p></li>
+<li><p>“The program should print the first five prime numbers”</p></li>
+</ul>
+</li>
+<li><p><strong>Non-functional requirements</strong> describe <strong>how</strong> the product should perform. Examples:</p>
+<ul>
+<li><p>“The program should be easy to use”</p></li>
+<li><p>“The program should not need more than 10 milliseconds to calculate <em>a/b</em>”</p></li>
+<li><p>“The program should be secure”</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="what-can-be-tested">
+<h3>What can be tested?<a class="headerlink" href="#what-can-be-tested" title="Permalink to this heading">¶</a></h3>
+<p>Tests can be performed at different levels. Our above test of the <code class="code docutils literal notranslate"><span class="pre">division()</span></code> method is a <em>unit test</em> because methods are the smallest entities in Java that we can independently test. We could also test an entire class or package (this is called a <em>module test</em>), several packages (<em>integration test</em>), or an entire program (<em>system test</em>). In this book, we will only do unit tests.</p>
+<p>In general, the larger and the more complex the program you are testing, the more complicated the tests will be, and, more importantly, the more time-consuming it will be to fix a bug. A unit test can be done as soon as we write the method, and if we find a bug we can change the implementation of the method relatively easily. Imagine if we first finished writing the whole program and then, after several months of development, found during a system test that the program violates the specification! In the worst case, this could mean rewriting the whole program.</p>
+<p>For this reason, it makes sense to start testing as early as possible in the form of unit tests. However, it should be noted that unit tests do not replace the other tests, because some errors appear only when we combine several methods or classes.</p>
+</section>
+<section id="how-to-plan-a-unit-test">
+<h3>How to plan a unit test<a class="headerlink" href="#how-to-plan-a-unit-test" title="Permalink to this heading">¶</a></h3>
+<p>We test software because we want to verify that it produces the correct results (functional requirements) in the right way (non-functional requirements). In general, software like our above <code class="code docutils literal notranslate"><span class="pre">division()</span></code> method takes one or more input values and produces one or more result values. Unfortunately, in many cases there are many possible input values and testing our software with all of them would take a lot of time.</p>
+<p>In practice, we can only test our software on a few input values and hope that the software also works correctly for other input values. For example, when we call our <code class="code docutils literal notranslate"><span class="pre">division()</span></code> method with the arguments 6 and 3 and we get the correct result, we assume that the method also works correctly with the arguments 12 and 6. On the other hand, if the result for 6 and 3 is not correct, we know that our software contains a bug that we have to fix.</p>
+<p>Does that mean that we should test our <code class="code docutils literal notranslate"><span class="pre">division()</span></code> method with some random numbers? No, we can do something smarter than that:</p>
+<ol class="arabic">
+<li><p>First, we determine the <em>input domain</em> of the method, i.e., the set of possible input values. Because the method has two <code class="code docutils literal notranslate"><span class="pre">int</span></code> parameters, the input domain is <img class="math" src="_images/math/c21b5408dde55ef5a7983c28fd12146494c58ead.svg" alt="\{-2^{31}..2^{31}-1\}\times \{-2^{31}..2^{31}-1\}"/>.</p></li>
+<li><p>Then we split the input domain into interesting sub-domains. For example, we could decide it is interesting to test whether our method works correctly for <img class="math" src="_images/math/909e24d245f258d326cb27b9517126ea124435db.svg" alt="b=0"/>. In that case we would obtain two sub-domains:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>With <img class="math" src="_images/math/909e24d245f258d326cb27b9517126ea124435db.svg" alt="b=0"/>: <img class="math" src="_images/math/132cbd55e15af783894ed34e76726ca01c68dfff.svg" alt="\{-2^{31}..2^{31}-1\}\times \{0\}"/></p></li>
+<li><p>With <img class="math" src="_images/math/e9e436a2f4a8b19b470750738208b8094ad3415b.svg" alt="b\neq 0"/>: <img class="math" src="_images/math/edc4439b5643fa30e77121dbbbc18a31dba54acb.svg" alt="\{-2^{31}..2^{31}-1\}\times \{-2^{31}..2^{31}-1\} \backslash \{0\}"/></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Instead of testing all possible input values, we choose a few input values from each subdomain for the tests, for example <img class="math" src="_images/math/20a9e7b53df832d7f3b8e68503b865f8a6f2ee36.svg" alt="a=3, b=0"/> for the first sub-domain, and <img class="math" src="_images/math/6eb4682ee44b35a8c23619ec1fbbeef49b3032d3.svg" alt="a=6, b=3"/> for the second sub-domain.</p></li>
+</ol>
+<p>This approach also works for more complex methods. Let’s take the following one:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// returns a sorted array with the elements</span>
+<span class="c1">// of &quot;a&quot; in ascending order</span>
+<span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="nf">sortArray</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Clearly, the input domain is very large. It contains all arrays of any length <img class="math" src="_images/math/6915d3932294b85a890bd9445c663978f85d6cad.svg" alt="n\ge 0"/> containing all possible integer values. Possible sub-domains could be:</p>
+<ol class="arabic simple">
+<li><p>The empty array (<img class="math" src="_images/math/8a2377d9f9f7b3c6510e0619d487013bb93df230.svg" alt="n=0"/>)</p></li>
+<li><p>Arrays with one element (<img class="math" src="_images/math/6c1ff1fa9d98053f892ccdaa411b17edee8da802.svg" alt="n=1"/>)</p></li>
+<li><p>Arrays containing random unsorted numbers for <img class="math" src="_images/math/5591158cb72237338906d1b791334d3f62f94af1.svg" alt="n&gt;1"/></p></li>
+<li><p>Arrays containing numbers that have been already sorted, like <code class="code docutils literal notranslate"><span class="pre">{1,2,3,4}</span></code>, for <img class="math" src="_images/math/5591158cb72237338906d1b791334d3f62f94af1.svg" alt="n&gt;1"/></p></li>
+<li><p>Arrays containing numbers that have been already sorted in descending order, like <code class="code docutils literal notranslate"><span class="pre">{4,3,2,1}</span></code>, for <img class="math" src="_images/math/5591158cb72237338906d1b791334d3f62f94af1.svg" alt="n&gt;1"/></p></li>
+</ol>
+<p>It’s always good to have disjoint sub-domains that cover the entire input domain. Our second sub-domain already covers the case <img class="math" src="_images/math/6c1ff1fa9d98053f892ccdaa411b17edee8da802.svg" alt="n=1"/>, therefore it is not necessary to cover that case again in sub-domains 3 to 5.</p>
+</section>
+</section>
+<section id="test-coverage">
+<h2>Test coverage<a class="headerlink" href="#test-coverage" title="Permalink to this heading">¶</a></h2>
+<section id="black-box-vs-white-box-testing">
+<h3>Black box vs white box testing<a class="headerlink" href="#black-box-vs-white-box-testing" title="Permalink to this heading">¶</a></h3>
+<p>Because the input domain of any non-trivial program is so large, identifying interesting input values for testing is a major challenge. If we do not have access to the source code of the program to test, we can only select the test values based on our experience and the specification. Such a test is called a <em>black box test</em> because the program that we want to test is like a opaque black box.</p>
+<p>But if we have the source code of the program available, and that is the assumption in this book, we can use it to choose reasonable test values. This is a <em>white box test</em>.</p>
+</section>
+<section id="control-flow-graph-and-node-coverage">
+<h3>Control Flow Graph and node coverage<a class="headerlink" href="#control-flow-graph-and-node-coverage" title="Permalink to this heading">¶</a></h3>
+<p>The following example shows an implementation of the <code class="code docutils literal notranslate"><span class="pre">min()</span></code> method that contains a bug:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// returns the minimum of &quot;a&quot; and &quot;b&quot;</span>
+<span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="w">        </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">    </span><span class="c1">// oops. That should be &quot;m = b&quot;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If we call the above method with two numbers <em>a</em> and <em>b</em> where <em>a&lt;b</em> (for example, <em>a=3</em> and <em>b=5</em>), we get always the correct result because the statement that contains the bug is never executed. The obvious truth is that <strong>we can only find a bug in a program if the program reaches the faulty location in the code with our test values</strong>. The conclusion here is that our input values should be chosen such that both branches of the if-else statement are tested.</p>
+<p>We can visualize this by the <em>Control Flow Graph</em> (CFG) of the above code:</p>
+<a class="reference internal image-reference" href="_images/control_flow_minn.svg"><img alt="_images/control_flow_minn.svg" src="_images/control_flow_minn.svg" width="50%" /></a>
+<p>In the above control flow graph the node 0 represents the beginning of the method, the node 1 and 2 represent the two assignments in the if-else statement, and node 3 represents the <code class="code docutils literal notranslate"><span class="pre">return</span></code> statement of the method.</p>
+<div class="admonition- admonition">
+<p class="admonition-title"></p>
+<p>In the Control Flow Graph (CFG), the small circles (called “nodes”, French “nœuds”) represent the beginning of the method and the statements. The arrows between the circles (called “edges”, French “arêtes”) represent how the program can go from statement to statement.</p>
+</div>
+<p>If we test the code with test values <em>a=3</em> and <em>b=5</em>, the program will go through the nodes 0, 1, and 3 of the CFG. To find the bug, we have to use test values where the program goes through node 2, for example <em>a=5</em> and <em>b=3</em>. With these two tests, we have covered all nodes of the CFG. We call this <em>100% node coverage</em>.</p>
+</section>
+<section id="edge-coverage">
+<h3>Edge coverage<a class="headerlink" href="#edge-coverage" title="Permalink to this heading">¶</a></h3>
+<p>While 100% node coverage is an important goal in testing, it does not necessarily mean that a program  contains no bugs. Consider the following faulty implementation of the the <code class="code docutils literal notranslate"><span class="pre">min()</span></code> method:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w">              </span><span class="c1">// oops, we forgot the &quot;else&quot;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here is the CFG of the method:</p>
+<a class="reference internal image-reference" href="_images/control_flow_min2n.svg"><img alt="_images/control_flow_min2n.svg" src="_images/control_flow_min2n.svg" width="35%" /></a>
+<p>If we test this method with the test values <em>a=3</em> and <em>b=5</em>, the program will go through the nodes 0, 1, and 2, and we have achieved 100% node coverage without finding the bug! The bug only becomes visible if we use test values that force the program to go directly from node 0 to 2.</p>
+<p>The above example shows that covering 100% of the <em>nodes</em> of the CFG with our tests is not enough. We have to choose our test values such that all all <em>edges</em> of the CFG are covered, too.</p>
+</section>
+<section id="path-coverage">
+<h3>Path coverage<a class="headerlink" href="#path-coverage" title="Permalink to this heading">¶</a></h3>
+<p>Unfortunately, 100% edge coverage is still not enough to find all bugs. The following example shows a method with a loop:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// returns the sum of the values 1 to n</span>
+<span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">n</span><span class="p">){</span>
+<span class="w">        </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">       </span><span class="c1">// oops, this should be &quot;sum += i&quot;</span>
+<span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/control_flow_loopn.svg"><img alt="_images/control_flow_loopn.svg" src="_images/control_flow_loopn.svg" width="50%" /></a>
+<p>A test with <em>n=0</em> covers the edges <img class="math" src="_images/math/8237818c58e00fad37dbfa718c113f41436a9486.svg" alt="0 \to 1"/> and <img class="math" src="_images/math/062ce94e9b6dcd42ba6a8548eef47ddf7f21d2c4.svg" alt="1 \to 3"/> and we get the correct result 0. A test with <em>n=1</em> covers the edges <img class="math" src="_images/math/8237818c58e00fad37dbfa718c113f41436a9486.svg" alt="0 \to 1"/>, <img class="math" src="_images/math/42ac308f7e8fcf72cd1ac34f146af3b265eeb70f.svg" alt="1 \to 2"/>, <img class="math" src="_images/math/ed0ba0587c3c01b2f9d2233d1499b28aa146a95f.svg" alt="2 \to 1"/>, and <img class="math" src="_images/math/062ce94e9b6dcd42ba6a8548eef47ddf7f21d2c4.svg" alt="1 \to 3"/> and we get the correct result 1. With these two tests, we have covered all edges, but we have not found the bug.</p>
+<p>To be sure that our program is correct, we would have to test all possible <em>paths</em> through the code:</p>
+<ul class="simple">
+<li><p>For <em>n=0</em>, the program takes the path <img class="math" src="_images/math/130fa405ae2853fb0a5a38dd740c1b921650dfb0.svg" alt="0 \to 1 \to 3"/> through the code.</p></li>
+<li><p>For <em>n=1</em>, the program takes the path <img class="math" src="_images/math/9412afa6de9ccb4a1298e3749fccf28e9222e2b3.svg" alt="0 \to 1 \to 2 \to 1 \to 3"/> through the code.</p></li>
+<li><p>For <em>n=2</em>, the program takes the path <img class="math" src="_images/math/e80e9b49c407efe592c8e9e7ddda7024884da9c4.svg" alt="0 \to 1 \to 2 \to 1 \to 2 \to 1 \to 3"/> through the code. In this path, the bug becomes visible.</p></li>
+<li><p>etc.</p></li>
+</ul>
+<p>In practice, 100% path coverage is not feasible if a program contains loops or recursion because there are too many possible paths. In practice, we are often satisfied with 100% node coverage or 100% edge coverage.</p>
+</section>
+<section id="hidden-paths">
+<h3>“Hidden” paths<a class="headerlink" href="#hidden-paths" title="Permalink to this heading">¶</a></h3>
+<p>Be aware that code can sometimes contain execution paths that are not directly visible in the source code. For example, the following statement looks like a simple assignment:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>However, we know that Java programs can throw exceptions, and in this case, the division will throw an exception if <em>b=0</em>. Therefore, the code can be better understood as:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArithmeticException</span><span class="p">();</span>
+<span class="k">else</span>
+<span class="w">    </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Thus, if your goal is a test with 100% coverage, you also have to consider the test case <em>b=0</em>.</p>
+</section>
+<section id="coverage-test-tools">
+<h3>Coverage test tools<a class="headerlink" href="#coverage-test-tools" title="Permalink to this heading">¶</a></h3>
+<p>JaCoCo is a tool (and library) to perform coverage tests for Java programs: <a class="reference external" href="https://www.jacoco.org/jacoco/">https://www.jacoco.org/jacoco/</a>. When you run a program with JaCoCo, it calculates two metrics:</p>
+<ul class="simple">
+<li><p>JVM bytecode instruction coverage: this is similar to node coverage, but JaCoCo counts JVM bytecode instructions, not Java statements. A statement like <code class="code docutils literal notranslate"><span class="pre">a=b+2</span></code> corresponds to 4 JVM bytecode instructions.</p></li>
+<li><p>Branch coverage: this is similar to edge coverage, but only for the edges of if-else and switch statements.</p></li>
+</ul>
+<p>Similar tools also exist for other programming languages. They help to check whether you have enough test cases.</p>
+</section>
+</section>
+<section id="automated-unit-testing">
+<h2>Automated Unit Testing<a class="headerlink" href="#automated-unit-testing" title="Permalink to this heading">¶</a></h2>
+<section id="writing-tests-as-a-program">
+<h3>Writing tests as a program<a class="headerlink" href="#writing-tests-as-a-program" title="Permalink to this heading">¶</a></h3>
+<p>Testing is a repetitive task. In unit testing, we have to test every new method we write. And we have to repeat the test every time we changed the code of a method. It is therefore an obvious question whether we cannot let the computer do the testing.</p>
+<p>As an example, consider again the <code class="code docutils literal notranslate"><span class="pre">min()</span></code> method:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">Main</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We can write a test program to call this method and verify that the result is correct. The combination of test input values and the expected result is called a <em>test case</em>. In the following test code, we have two test cases:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// test case 1</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">result1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result1</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Test 1 failed: Minimum of 3 and 5 should be 3&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// test case 2</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">result2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result2</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Test 2 failed: Minimum of 5 and 3 should be 3&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The advantage of having a test program is that we can run the test automatically every time we change something in our project. There are even people who say that it is better to write <em>first</em> the tests and then the actual program! This practice is called <em>Test Driven Development</em> (TDD).</p>
+</section>
+<section id="junit">
+<h3>JUnit<a class="headerlink" href="#junit" title="Permalink to this heading">¶</a></h3>
+<p>Fortunately there are already tools and libraries to write tests. For Java, the most famous one is JUnit. Similar tools also exist for other programming language.</p>
+<p>JUnit provides many useful classes and methods to write tests. To write a test you create a new class (for example, <code class="code docutils literal notranslate"><span class="pre">MainTest</span></code>) and write a method for each test case. Depending on which version of JUnit you use, your test code will look different. In JUnit version 4, our above two tests of the <code class="code docutils literal notranslate"><span class="pre">min()</span></code> method can be written like this:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import static</span><span class="w"> </span><span class="nn">org.junit.Assert.*</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MainTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@org.junit.Test</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testFirstNumberLessThanSecondNumber</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;Minimum of 3 and 5 should be 3&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@org.junit.Test</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testFirstNumberGreaterThanSecondNumber</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;Minimum of 5 and 3 should be 3&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In JUnit version 5, the two tests are written slightly differently:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">org.junit.jupiter.api.Assertions</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.junit.jupiter.api.Test</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MainTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testFirstNumberLessThanSecondNumber</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Assertions</span><span class="p">.</span><span class="na">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Minimum of 3 and 5 should be 3&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testFirstNumberGreaterThanSecondNumber</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Assertions</span><span class="p">.</span><span class="na">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Minimum of 5 and 3 should be 3&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The method <code class="code docutils literal notranslate"><span class="pre">assertEquals()</span></code> of the class <code class="code docutils literal notranslate"><span class="pre">Assertions</span></code> takes three arguments: the expected value, the actual value produced by your implementation, and an (optional) message that is shown if the test fails, i.e., if the actual value and the expected value are not equal.</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">&#64;Test</span></code> written above the two test methods is called an <em>annotation</em> and helps JUnit to find the methods that it should call to perform the tests. IntelliJ also uses them to show you the small green triangles that you can click to run individual tests (or all tests):</p>
+<a class="reference internal image-reference" href="_images/intellij_test.png"><img alt="_images/intellij_test.png" src="_images/intellij_test.png" style="width: 25%;" /></a>
+<p>The class <code class="code docutils literal notranslate"><span class="pre">Assertions</span></code> has many other methods to compare results, such as <code class="code docutils literal notranslate"><span class="pre">assertArrayEquals()</span></code> for arrays, and <code class="code docutils literal notranslate"><span class="pre">assertNotEquals()</span></code> to test for inequality. It is important to note that these methods use the <code class="code docutils literal notranslate"><span class="pre">equals()</span></code> method when comparing objects. If you want to compare references, you have to use <code class="code docutils literal notranslate"><span class="pre">assertSame()</span></code>. Check the documentation at <a class="reference external" href="https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html">https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html</a>.</p>
+</section>
+<section id="practical-aspects-of-unit-testing">
+<h3>Practical aspects of unit testing<a class="headerlink" href="#practical-aspects-of-unit-testing" title="Permalink to this heading">¶</a></h3>
+<p>The main idea behind unit testing is that your program is organized in small units that can be individually tested. As already said, in Java, methods can be seen as such units.
+However, if a method is very complex or does many different things, it becomes more difficult to test.
+As an example, consider the following (incomplete) code:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">DifficultToTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">m</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">v1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">...</span><span class="na">something</span><span class="w"> </span><span class="n">complex</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">calculate</span><span class="w"> </span><span class="n">v2</span><span class="p">...</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="w">        </span><span class="p">...</span><span class="na">something</span><span class="w"> </span><span class="n">complex</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">calculate</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">result</span><span class="p">...</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As a developer, we would like to know whether the intermediate value <code class="code docutils literal notranslate"><span class="pre">v2</span></code> and the result are correctly calculated. To do this with a unit test, it would be better to split the method in two:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">EasierToTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">m1</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">v1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">...</span><span class="na">something</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">calculate</span><span class="w"> </span><span class="n">v2</span><span class="p">...</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">v2</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">m2</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">v2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">...</span><span class="na">something</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">calculate</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">result</span><span class="p">...</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">m</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">v1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m1</span><span class="p">(</span><span class="n">v1</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m2</span><span class="p">(</span><span class="n">v2</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This new code is not only easier to read but also easier to test because you can provide your own values <code class="code docutils literal notranslate"><span class="pre">v1</span></code> and <code class="code docutils literal notranslate"><span class="pre">v2</span></code> to test the two parts of the calculation independently.</p>
+<p>Another practical problem is the testing of non-static methods or methods that need objects as parameters. Consider the following class:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">Employee</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">salary</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Employee</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">salary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">increaseSalary</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">salary</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getSalary</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">salary</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When testing non-static methods like <code class="code docutils literal notranslate"><span class="pre">increaseSalary()</span></code>, your test needs to “prepare” an object before the method can be called. In JUnit v5, the test code could look like this:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">EmployeeTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">testSalaryIncrease</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Employee</span><span class="w"> </span><span class="n">employee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Employee</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="w">        </span><span class="n">employee</span><span class="p">.</span><span class="na">increaseSalary</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Assertions</span><span class="p">.</span><span class="na">assertEquals</span><span class="p">(</span><span class="mi">1500</span><span class="p">,</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="na">getSalary</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Although this test is correctly implemented, it’s difficult to see where the bug is located if the test fails. Did <code class="code docutils literal notranslate"><span class="pre">increaseSalary()</span></code> not work correctly? Or was the bug in the constructor or in the <code class="code docutils literal notranslate"><span class="pre">getSalary()</span></code> method?</p>
+<p>There are different ways to address this problem. One is to add more test cases, for example for the construction of the object:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">EmployeeTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">testConstruction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Employee</span><span class="w"> </span><span class="n">employee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Employee</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Assertions</span><span class="p">.</span><span class="na">assertEquals</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="na">getSalary</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">testSalaryIncrease</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Employee</span><span class="w"> </span><span class="n">employee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Employee</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="w">        </span><span class="n">employee</span><span class="p">.</span><span class="na">increaseSalary</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Assertions</span><span class="p">.</span><span class="na">assertEquals</span><span class="p">(</span><span class="mi">1500</span><span class="p">,</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="na">getSalary</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Alternative, we could do more tests inside one test case:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">EmployeeTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">testSalaryIncrease</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Employee</span><span class="w"> </span><span class="n">employee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Employee</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Assertions</span><span class="p">.</span><span class="na">assertEquals</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="na">getSalary</span><span class="p">());</span>
+
+<span class="w">        </span><span class="n">employee</span><span class="p">.</span><span class="na">increaseSalary</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Assertions</span><span class="p">.</span><span class="na">assertEquals</span><span class="p">(</span><span class="mi">1500</span><span class="p">,</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="na">getSalary</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>One can argue about what is the “right” way. Some developers prefer simple test methods, in which exactly one thing is tested. Others don’t like too many small trivial tests. We don’t want to get involved in this discussion and leave it to you to decide.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/lepl1402.png" alt="Logo"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="part1.html">From Python to Java</a></li>
+<li class="toctree-l1"><a class="reference internal" href="part2.html">Object-Oriented Programming</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Unit testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#software-testing">Software testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-coverage">Test coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automated-unit-testing">Automated Unit Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="part4.html">Algorithms and Data Structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="part5.html">Parallel Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="part6.html">Functional Programming</a></li>
+</ul>
+
+  <div>
+    <h3><a href="index.html">Download the book</a></h3>
+    <a href="_static/lepl1402.pdf">PDF version of the book</a>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="part4.html" title="Algorithms and Data Structures"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="part2.html" title="Object-Oriented Programming"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LEPL1402  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Unit testing</a></li> 
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Sébastien Jodogne, Ramin Sadre, Pierre Schaus.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.2.2.
+    </div>
+<div class="footer">
+    <script type="text/javascript">
+  (function() {
+    var ga = document.createElement('script');
+    ga.src = ('https:' == document.location.protocol ?
+              'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    ga.setAttribute('async', 'true');
+    document.documentElement.firstChild.appendChild(ga);
+  })();
+</script>
+</div>
+
+<script>
+//open external links in a new window
+function external_new_window() {
+    for(var c = document.getElementsByTagName("a"), a = 0;a < c.length;a++) {
+        var b = c[a];
+        if(b.getAttribute("href") && b.hostname !== location.hostname) {
+            b.target = "_blank";
+            b.rel = "noopener";
+        }
+    }
+}
+//open PDF links in a new window
+function pdf_new_window ()
+{
+    if (!document.getElementsByTagName) return false;
+    var links = document.getElementsByTagName("a");
+    for (var eleLink=0; eleLink < links.length; eleLink ++) {
+    if ((links[eleLink].href.indexOf('.pdf') !== -1)||(links[eleLink].href.indexOf('.doc') !== -1)||(links[eleLink].href.indexOf('.docx') !== -1)) {
+        links[eleLink].onclick =
+        function() {
+            window.open(this.href);
+            return false;
+        }
+    }
+    }
+}
+pdf_new_window();
+external_new_window();
+</script>
+
+
+  </body>
+</html>
