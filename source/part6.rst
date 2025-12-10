@@ -1197,7 +1197,7 @@ The method ``map(Function<T,R> f)`` is especially important and very frequently 
     Stream<Integer> stream = Stream.of(10, 20, 30, 40, 50);
     Stream<Integer> incremented = stream.map(i -> i + 1);  // => [11, 21, 31, 41, 51]
 
-This is an example that uses an :ref:`unary operator <fp_operators>`, as both streams share the same data type (i.e., ``Integer``). But the ``map()`` method also accept general functions that change the data type of the elements of the input stream. As an example, the following code creates a stream that provides the number of characters in each element of a stream of strings:
+This is an example that uses an :ref:`unary operator <fp_operators>`, as both streams share the same data type (i.e., ``Integer``). But the ``map()`` method also accepts general functions that change the data type of the elements of the input stream. As an example, the following code creates a stream that provides the number of characters in each element of a stream of strings:
     
 ..  code-block:: java
 
@@ -1273,11 +1273,11 @@ The ``map()`` and ``filter()`` methods are extremely important higher-order func
 Terminal methods
 ----------------
 
-In a stream pipeline, the last operation is usually an operation that returns some result that is not a stream: This last operation **gets the data out of the stream**. It is possible to distinguish between three different cases:
+The final operation in a stream pipeline is usually a method whose return type is not a stream: This so-called "terminal method" **gets the data out of the stream**. It is possible to distinguish between three different cases:
 
 * Stream pipelines whose terminal method does something with each individual element of the stream (**consumer methods**),
 
-* Stream pipelines whose terminal method creates a Java data structure to store the elements of the stream (**collector methods**), and
+* Stream pipelines whose terminal method creates a Java collection containing the elements of the stream (**collector methods**), and
 
 * Stream pipelines whose terminal method extracts a single value out of the stream (**reduction methods**).
 
@@ -1309,7 +1309,7 @@ By virtue of the :ref:`method reference <lambda_expressions>` construction, the 
 Collector methods
 .................
 
-Another possibility for a terminal method consists in collecting the elements of the stream into a Java data structure. This is the role of the ``collect()`` method that is available in the ``Stream<T>`` interface, and takes as argument an object that implements the ``Collector`` interface.
+Another possibility for a terminal method consists in storing the elements of the stream into a new Java collection. This is the role of the ``collect()`` method that is available in the ``Stream<T>`` interface, and takes as argument an object that implements the ``Collector`` interface.
 
 The ``Collector`` interface represents a very generic construction that is quite complex to master. Fortunately, Java proposes a set of predefined, concrete implementations of the ``Collector`` interface that can be directly instantiated using the static methods of the ``java.util.stream.Collectors`` class: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html>`_
 
@@ -1383,7 +1383,7 @@ The downside of ``toArray()`` is that the generic type ``T`` is lost and replace
 Reduction methods
 .................
 
-As explained above, consumer methods apply an operation to each element in a stream, while collector methods create a new Java data structure that combines all the elements of a stream. This contrasts with reduction methods, that produce **one single value from the entire stream**.
+As explained above, consumer methods apply an operation to each element in a stream, while collector methods create a new Java collection that combines all the elements of a stream. This contrasts with reduction methods, that **summarize the entire stream as one single value**.
 
 The simplest reduction method consists in **counting the number of elements** in the stream. The ``count()`` method can be used to this end:
 
@@ -1407,7 +1407,7 @@ For instance, the following code tests whether we are given a stream of even int
     System.out.println(Stream.of(2, 4, 8, 12).allMatch(x -> x % 2 == 0));  // Displays: true
     System.out.println(Stream.of(2, 4, 8, 13).allMatch(x -> x % 2 == 0));  // Displays: false
 
-The most generic reduction method is offered by the ``reduce()`` method. There exists several variants of this method, but the most commonly used is ``T reduce(T identity, BinaryOperator<T> accumulator)``: This method returns the value resulting from **successive application of the binary operator** ``accumulator`` to the initial value ``identity`` and to the successive elements of the stream. If the stream is empty, this method simply returns ``identity``.
+The most generic reduction method is offered by the ``reduce()`` method. There exist several variants of this method, but the most commonly used is ``T reduce(T identity, BinaryOperator<T> accumulator)``: This method returns the value resulting from **successive application of the binary operator** ``accumulator`` to the initial value ``identity`` and to the successive elements of the stream. If the stream is empty, this method simply returns ``identity``.
 
 As an example, let us consider the task of computing the **sum of the values in a stream of integers**. Zero being the identity element for the addition, the ``reduce()`` method could be used as follows:
 
@@ -1468,7 +1468,7 @@ However, this is wrong! The code above does not print anything. Indeed, as :ref:
    Stream<Integer> s2 = s1.map(i -> { System.out.println(i); return i + 1; });
    Object[] a = s2.toArray();  // <- here, all the elements of the stream are needed
 
-This code will actually print all the elements onto the console! Now, let us consider the following example:
+Executing the last command will print all the elements onto the console. Now, let us consider the following example:
    
 .. code-block:: java
 
@@ -1529,7 +1529,7 @@ So far, we have only been considering the generic interface ``Stream<T>``. For p
 
 * ``DoubleStream`` for streams of double precision numbers (i.e., for the primitive type ``double``): `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/DoubleStream.html>`_
  
-For instance, a stream of ``int`` numbers can either be represented as a generic stream of type ``Stream<Integer>`` (in which each element is an object of type ``Integer``), or as a specialized stream of type ``IntStream`` (in which each element is internally represented as an ``int`` primitive value). Specialized streams are in general more efficient than generic streams, as they avoid the creation of objects, and should be preferred wherever possible when performance optimization or memory usage is important.
+For instance, a stream of ``int`` numbers can either be represented as a generic stream of type ``Stream<Integer>`` (in which each element is an object of type ``Integer``), or as a specialized stream of type ``IntStream`` (in which each element is internally represented as an ``int`` primitive value). Specialized streams are in general more efficient than generic streams, as they avoid the creation of objects, and should be preferred if performance or memory usage is important.
 
 Note that there is no specialized streams for the other primitive types: It is recommended to use ``IntStream`` to store ``short``, ``char``, ``byte``, and ``boolean`` values. As far as ``float`` are concerned, it is recommended to use ``DoubleStream`` if a specialized stream is preferable.
 
@@ -1594,7 +1594,7 @@ Programming without side effects
 Side effects
 ------------
 
-Remember that :ref:`lambda expressions <lambda_expressions>` in Java are implemented as anonymous inner classes. As a consequence, they are allowed to access members of the outer class:
+Remember that :ref:`lambda expressions <lambda_expressions>` in Java are syntactic sugar around anonymous inner classes. As a consequence, they are allowed to access members of the outer class:
 
 .. code-block:: java
                 
@@ -1628,15 +1628,18 @@ Immutable objects
 
 In order to enforce the absence of side effects and to ensure thread safety, functional programming promotes the use of **immutable objects**. Immutable objects are objects whose state cannot be changed after they are created.
 
-For instance, **strings in Java are immutable**. Once a ``String`` object is created, its value cannot be changed. Operations that appear to modify a string actually create a new ``String`` object.
+For instance, **strings in Java are immutable**. Once a ``String`` object is created, its value cannot be changed. Operations that seem to modify a string actually always create a new ``String`` object.
 
-On the other hand, primitive types in Java *are* mutable (for instance, you can change the value of a ``int`` variable after its declaration). However, the **wrapper classes associated with primitive types are immutable**. Indeed, classes like ``Integer``, ``Long``, ``Float``, ``Double``, ``Byte``, ``Short``, ``Character``, or ``Boolean``, which are used to wrap the primitive data types, are all immutable: The primitive value they store can never be changed after their construction. In the same vein, :ref:`Java enums <enumerations>` are implicitly immutable. Once the enum constants are created, their values cannot be modified.
+On the other hand, primitive types in Java *are* mutable (for instance, you can change the value of a ``int`` variable after its declaration). However, the **wrapper classes associated with primitive types are immutable**. Indeed, classes like ``Integer``, ``Long``, ``Float``, ``Double``, ``Byte``, ``Short``, ``Character``, or ``Boolean``, which are used to wrap the primitive data types, are all immutable: The primitive value they store can never be changed after their construction. In the same vein, :ref:`Java enums <enumerations>` are immutable. Once the enum constants are created, their values cannot be modified.
 
 
 An immutable list
 -----------------
 
-We already know that the standard ``List<T>`` interface offers the ``removeIf()`` and ``replaceAll()`` methods to apply :ref:`higher-order functions <higher_order_functions>` onto their content. Because of the presence such methods, the standard Java lists are mutable objects, which contrasts with the philosophy of functional programming. Can we design a list without side effect, in a way that is similar to streams? The answer is "yes", and this section explains how to **create an immutable generic list**.
+We already know that the standard ``List<T>`` interface offers the ``removeIf()`` and ``replaceAll()`` methods to apply :ref:`higher-order functions <higher_order_functions>` onto their content. Because of the presence such methods, the standard Java lists are mutable objects, which contrasts with the philosophy of functional programming. Can we design a list without side effect, in a way that is similar to streams?
+
+The answer is "yes", and this section explains how to **create an immutable generic list**. In this immutable list, operations such as adding an element will return a new list, without modifying the original one, while reusing as much of the existing content as possible.
+
 
 The basic idea is similar to the :ref:`linked list abstract data structure <linked_stack_adt>`. It consists in creating the following class hierarchy:
 
@@ -1704,15 +1707,15 @@ And our sample immutable list containing 10, 20, and 30 can then be constructed 
     // Create the node containing "10" that represents the list: [ 10, 20, 30 ]
     ImmutableList<Integer> myList = new Cons<Integer>(10, list2);
 
-Note that ``list1`` and ``list2`` are always the same lists: We can add an element to the head of a list without changing the tail of the list. This demonstrates that **this data structure is immutable**. It cannot be changed after creation.
+Note that ``list1`` is not modified by the creation of ``list2`` or ``myList``, and that ``list2`` is not modified by the creation of ``myList``. This is why we can add the ``final`` keyword in the definition of ``Cons<T>``: An element can be added to the head of a list without changing the tail of the list. This demonstrates that **this data structure is immutable**. It cannot be changed after creation.
 
 
 Consuming an immutable list
 ---------------------------
 
-Because our ``ImmutableList<T>`` data structure is immutable, we do not provide a public access to the values it stores.
+Because our ``ImmutableList<T>`` data structure is designed to be immutable, we do not expose a public getter for its stored values. These values should be accessed only through general-purpose functions to avoid risk of modification.
 
-If we want to execute an operation on each element of the immutable list according to the functional programming paradigm, we would use a :ref:`consumer <fp_consumer>`. A consumer can be applied to our immutable list by adding a ``forEach()`` higher-order method in the ``ImmutableList<T>`` interface, which mimics :ref:`streams <stream_foreach>`:
+If we want to execute an operation on each element of the immutable list according to the functional programming paradigm, we would use a :ref:`consumer <fp_consumer>`. A consumer can be applied to our immutable list by adding a ``forEach()`` higher-order method to the ``ImmutableList<T>`` interface, which mimics :ref:`streams <stream_foreach>`:
 
 .. code-block:: java
 
