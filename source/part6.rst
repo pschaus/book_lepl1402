@@ -507,7 +507,7 @@ As can be seen in this example, a lambda expression only specifies the name of t
 
 A lambda expression can only appear in a context that expects a value whose type is a functional interface. Once the Java compiler has determined which functional interface is expected for this context, it transparently instantiates a suitable anonymous inner class that implements the expected functional interface with the expected single method.
 
-Concretely, in the ``sort()`` example, the compiler notices the construction :code:`Collections.sort(rows, lambda)`. Because ``rows`` has type ``List<Row>``, the compiler looks for a static method in the ``Collections`` class that is named ``sort()`` and that takes as arguments a value of type ``List<Row>`` and a functional interface. As can be seen in the `Java documentation <https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html>`_, the only matching method is :code:`Collections.sort(List<T> list, Comparator<? super T> c)`, with ``T`` corresponding to class ``Row``. The compiler deduces that the functional interface of interest is ``Comparator<Row>``, and it accordingly creates an anonymous inner class as follows:
+Concretely, in the ``sort()`` example, the compiler notices the construction :code:`Collections.sort(rows, lambda)`. Because ``rows`` has type ``List<Row>``, the compiler looks for a static method in the ``Collections`` class that is named ``sort()`` and that takes as arguments a value of type ``List<Row>`` and a functional interface. As can be seen in the `Java documentation <https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html>`__, the only matching method is :code:`Collections.sort(List<T> list, Comparator<? super T> c)`, with ``T`` corresponding to class ``Row``. The compiler deduces that the functional interface of interest is ``Comparator<Row>``, and it accordingly creates an anonymous inner class as follows:
 
 ..  code-block:: java
 
@@ -717,7 +717,7 @@ The function computing the sum of two integers can be defined as:
 .. admonition:: Remark
    :class: remark
 
-   If you look at the `Java documentation <https://docs.oracle.com/javase/8/docs/api/java/util/function/UnaryOperator.html>`_, unary and binary operators are actually defined as:
+   If you look at the `Java documentation <https://docs.oracle.com/javase/8/docs/api/java/util/function/UnaryOperator.html>`__, unary and binary operators are actually defined as:
 
    .. code-block:: java
                    
@@ -727,7 +727,7 @@ The function computing the sum of two integers can be defined as:
    This construction implies that a ``UnaryOperator`` (resp. ``BinaryOperator``) can be used as a placeholder for a ``Function`` (resp. ``BiFunction``). However, the construction is more involved, which explains why we preferred defining the operators as separate interfaces.
 
 
-.. _composition:
+.. _fp_composition:
       
 Composition
 -----------
@@ -787,7 +787,7 @@ Here is another example to test whether a number if negative:
                 
 Note that there exists a binary version of the ``Predicate<T>`` unary functional interface, that is known as ``BiPredicate<T,U>``.
 
-In the same way functions and operators can be :ref:`composed <composition>`, the ``Predicate`` and ``BiPredicate`` interfaces contain default methods that can be used to create new predicates from existing predicates. Those methods are:
+In the same way functions and operators can be :ref:`composed <fp_composition>`, the ``Predicate`` and ``BiPredicate`` interfaces contain default methods that can be used to create new predicates from existing predicates. Those methods are:
 
 * ``and()`` to define the logical conjunction of two predicates (i.e., :math:`f \wedge g`),
 
@@ -850,7 +850,7 @@ Higher-order functions
 
 In Java, **higher-order functions** are methods that can **accept other functions as arguments, return functions as results, or both**. They treat the general-purpose functions seen above as first-class citizens, allowing these functions to be manipulated, passed around, and used as data.
 
-The :ref:`composition of two functions <composition>` is an example of higher-order function: It takes two ``Function`` as arguments, and generates one ``Function`` as its result. We have already seen that Java already provides built-in support for function composition. However, we could have implemented composition by ourselves thanks to the expressiveness of lambda expressions. Indeed, the following program would have produced exactly the same result as the standard ``compose()`` method of the ``Function`` class:
+The :ref:`composition of two functions <fp_composition>` is an example of higher-order function: It takes two ``Function`` as arguments, and generates one ``Function`` as its result. We have already seen that Java already provides built-in support for function composition. However, we could have implemented composition by ourselves thanks to the expressiveness of lambda expressions. Indeed, the following program would have produced exactly the same result as the standard ``compose()`` method of the ``Function`` class:
 
 .. code-block:: java
 
