@@ -18,7 +18,7 @@ Your first Java program with IntelliJ
 Installing IntelliJ
 -------------------
 
-You might have already used an Integrated Development Environment (IDE) to write Python programs. In this course, we will do the same for programming in Java: we will use the free "Community Edition" of IntelliJ IDEA (simply referred to as "IntelliJ" hereafter). You can download the installer from  `<https://www.jetbrains.com/idea/download/>`_ (scroll down to find the free Community Edition, you don't need the commercial Ultimate Edition). Start the installer and follow the instructions.
+You might have already used an Integrated Development Environment (IDE) to write Python programs. In this course, we will do the same for programming in Java: We will use the free and open-source version of IntelliJ IDEA (simply referred to as "IntelliJ" hereafter). You don't need the proprietary edition of IntelliJ. Instead, download precompiled binaries from  `<https://github.com/JetBrains/intellij-community/releases>`_ (scroll down to find the latest release of ``idea``, such as ``idea/2026.1.1``, and open the list of assets). Uncompress the archive corresponding to your platform (e.g., ``idea-2026.1.1.tar.gz`` for GNU/Linux or ``idea-2026.1.1.win.zip`` for Microsoft Windows), you will be able to start IntelliJ by running the executable in the ``bin/`` folder.
 
 The second thing you will need for Java programming is a *Java Development Kit* (JDK). A JDK is a software package that contains the tools that you need to build and run Java programs. The JDK also includes a *very, very  large* library of useful classes for all kinds of programming tasks. You can see the content of the library here: `<https://docs.oracle.com/en/java/javase/21/docs/api/index.html>`_. 
 
