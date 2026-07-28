@@ -19,7 +19,7 @@ In other words, it allows us to predict the efficiency of our code before we eve
 It's like having a magic crystal ball that tells us how our algorithm will behave in the wild!
 
 
-Let's delve into the intricacies of time complexity and uncover the beauty and elegance of efficient code by studying first a very simple ``sum()`` method that calculates the total sum of all the elements in an integer array provided as argument.
+Let's delve into the intricacies of time complexity and uncover the beauty and elegance of efficient code by studying first a very simple ``sum()`` method that calculates the total sum of all the elements in an integer array provided as an argument.
 
 
 .. _sum:
@@ -38,7 +38,7 @@ Let's delve into the intricacies of time complexity and uncover the beauty and e
 	}
 
 
-One can measure the time it takes using ``System.currentTimeMillis()`` method
+One can measure the time it takes using the ``System.currentTimeMillis()`` method
 that returns the current time in milliseconds since the Unix Epoch (January 1, 1970 00:00:00 UTC). 
 It is typically used to get a timestamp representing the current point in time.
 Here is an example of how to use it to measure the time of one call to the ``sum()`` method.  
@@ -58,8 +58,8 @@ Here is an example of how to use it to measure the time of one call to the ``sum
 	}
 
 
-Now, if one makes vary the size of values one can observe the evolution of execution time
-in function of the size of the input array given in argument to ``sum()`` and plot it.
+Now, if we vary the size of values one can observe the evolution of execution time
+in a function of the size of the input array given in argument to ``sum()`` and plot it.
 Here is what we obtain on a standard laptop.
 
 .. figure:: _static/images/sum_complexity.png
@@ -82,11 +82,11 @@ In the RAM model, each "simple" operation (such as addition, subtraction, multip
 It assumes that memory accesses (like accessing an element in an array: ``value[i]`` above) take constant time, regardless of the memory location. 
 This is where the name "random access" comes from, since any memory location can be accessed in the same amount of time.
 
-This abstraction is quite realistic for many practical purposes, and closely models real computers (a bit like Newton laws is a good approximation of general relativity).
+This abstraction is quite realistic for many practical purposes, and closely models real computers (a bit like Newton's laws are a good approximation of general relativity).
 
 Of course we can't assume a loop is a "simple" operation in the RAM model. 
-One need to count the number of times its body will be executed.
-The next code add comments on the number of steps required to execute the sum algorithm.
+One needs to count the number of times its body will be executed.
+The following code adds comments on the number of steps required to execute the sum algorithm.
 
 
 
@@ -107,7 +107,7 @@ The next code add comments on the number of steps required to execute the sum al
 In practice, it is difficult to translate one step into a concrete time since it depends on many factors (machine, language, compiler, etc.).
 It is also not true that every operation takes exactly the same amount of time.
 Remember that it is just an approximation. 
-We'll further simplify our step-counting approach by utilizing classes of functions that easily interpretable for practitioners like us.
+We'll further simplify our step-counting approach by utilizing classes of functions that are easily interpretable for practitioners like us.
 
 Let us first realize in the next section that even for a consistent input size, the execution time of an algorithm can vary significantly.
 
@@ -151,7 +151,7 @@ We call this the *best-case scenario*.
 Conversely, if the target value is at the end of the array or not present at all, the method must iterate through the entire array, which naturally takes more steps.
 We call this, the *worst-case scenario*.
 
-The execution of ``linearSearch()`` can thus greatly vary depending not only on the *size* of the input array, but also on the *content* of the input array. Other categories of algorithms will have a execution that is mostly determined by the input size, rather than the input content. 
+The execution of ``linearSearch()`` can thus greatly vary depending not only on the *size* of the input array, but also on the *content* of the input array. Other categories of algorithms will have an execution that is mostly determined by the input size, rather than the input content. 
 This characteristic is exemplified by the ``sum()`` method we previously analyzed.
 
 The notation we are about to introduce for characterizing the execution time of an algorithm will allow us to represent both the best and worst-case scenarios.
@@ -170,15 +170,15 @@ This section introduces standard methods and notations used to simplify the asym
 We shall see asymptotic notations that are well suited to characterizing running times no matter what the input.
 
 Those so-called Big-Oh notations are sets or classes of functions.
-We have classes of function asymptotically bounded by above, below or both:
+We have classes of functions asymptotically bounded by above, below or both:
 
 * :math:`f(n)\in \mathcal{O}(g(n)) \Longleftrightarrow` :math:`\exists c \in \mathbb{R}^+,n_0 \in \mathbb{N}: f(n) \leq c\cdot g(n)\ \forall n \geq n_0` (upper bound)
 * :math:`f(n)\in \Omega(g(n)) \Longleftrightarrow` :math:`\exists c \in \mathbb{R}^+,n_0 \in \mathbb{N}: f(n) \geq c\cdot g(n)\ \forall n \geq n_0` (lower bound)
 *  :math:`f(n)\in \Theta(g(n)) \Longleftrightarrow`:math:`\exists c_1, c_2 \in \mathbb{R}^+,n_0 \in \mathbb{N}: c_1\cdot g(n) \leq f(n) \leq c_2\cdot g(n)\ \forall n \geq n_0` (exact bound)
 
 
-What is common in the definitions of these classes of function is that we are not concerned about small constant.
-Instead we care about the big-picture that is when :math:`n` becomes really large (say 10,000 or 1,000,000). The intuition for those classes of function notations are illustrated next.
+What is common in the definitions of these classes of functions is that we are not concerned with small constants.
+Instead we care about the big-picture that is when :math:`n` becomes really large (say 10,000 or 1,000,000). The intuition for those classes of functions notations are illustrated next.
 
 .. figure:: _static/images/bigo.png
    :scale: 25 %
@@ -190,7 +190,7 @@ Let us consider an example of simplification: :math:`f(n)=c \cdot n^a + d\cdot n
 Then we have :math:`f(n) \in \Theta(n^a)`. 
 This is even true if :math:`c` is very small and :math:`d` very big!
 
-The simplification principle that we have applied are the following:
+The simplification principles that we have applied are the following:
 :math:`\mathcal{O}(c \cdot f(n)) = \mathcal{O}(f(n))` (for :math:`c>0`) and :math:`\mathcal{O}(f(n) + g(n)) \subseteq \mathcal{O}(\max(f(n), g(n))))`.
 You can also use these inclusion relations to simplify:
 :math:`\mathcal{O}(1) \subseteq \mathcal{O}(\log n) \subseteq \mathcal{O}(n) \subseteq \mathcal{O}(n^2) \subseteq \mathcal{O}(n^3) \subseteq \mathcal{O}(c^n) \subseteq \mathcal{O}(n!)`
@@ -223,7 +223,7 @@ The following table provides an overview of the most prevalent complexity classe
 +-------------------------------------------------+---------------------------------------------------------------+
 | :math:`\mathcal{O}(\log n)` (logarithmic)       | Find an entry in a sorted array (binary search)               |
 +-------------------------------------------------+---------------------------------------------------------------+
-| :math:`\mathcal{O}(n)` (linear)                 | Sum elements or find an entry in a not sorted array           |
+| :math:`\mathcal{O}(n)` (linear)                 | Sum elements or find an entry in an unsorted array           |
 +-------------------------------------------------+---------------------------------------------------------------+
 | :math:`\mathcal{O}(n \log n)` (linearithmic)    | Sorting efficiently an array (merge sort)                     |
 +-------------------------------------------------+---------------------------------------------------------------+
@@ -253,7 +253,7 @@ Here's how the binary search algorithm works:
 5. You keep repeating this process until you either find the target value or exhaust all elements.
 
 
-The execution of this search is illustrated on next schema searching for value 7 repeating 4 times the process until finding it.
+The execution of this search is illustrated in the following schema searching for value 7 repeating 4 times the process until finding it.
 On this array of 16 entries, the search will never require more than four trials, so this is the worst-case scenario.
 
 
@@ -263,7 +263,7 @@ On this array of 16 entries, the search will never require more than four trials
 
 
 This algorithm has a time complexity of :math:`\mathcal{O}(\log n)` because each time we go through the loop, the number of elements to be searched is halved and in the worst case, this process is repeated :math:`\log n` times.
-On the other hand, if we are lucky, the search immediately find the element at the first iteration. 
+On the other hand, if we are lucky, the search immediately finds the element at the first iteration. 
 Therefore the best-case time complexity is :math:`\Omega(1)`.
 
 The Java code is a direct translation of the explanation of the algorithm.
@@ -323,7 +323,7 @@ The Java code is a direct translation of the explanation of the algorithm.
 Linear Search
 """""""""""""""""
 
-We already have seen the :ref:`sum` algorithm and its :math:`\Theta(n)` time complexity.
+We have already seen the :ref:`sum` algorithm and its :math:`\Theta(n)` time complexity.
 Another example of a linear time complexity algorithm is the :ref:`linear_search`.
 The time complexity of the linear search algorithm is :math:`\mathcal{O}(n)`, where `n` is the size of the array, because in the worst-case scenario (the target value is not in the array or is the last element in the array), the algorithm has to examine every element in the array once.
 In the best-case scenario for the linear search algorithm, the target value is the very first element of the array.
@@ -395,7 +395,7 @@ Here is a simple implementation of Merge Sort in Java:
 
 
 The Merge sort is a divide and conquer algorithm.
-It breaks the array into two subarrays, sort them, and then merges these sorted subarrays to produce a final sorted array.
+It breaks the array into two subarrays, sorts them, and then merges these sorted subarrays to produce a final sorted array.
 All the operations and the data-flow of execution is best understood with a small visual example.
 
 
@@ -426,7 +426,7 @@ The Java code is given next.
 
 
     /**
-     * This method sort the array using Insertion Sort algorithm.
+     * This method sorts the array using Insertion Sort algorithm.
      *
      * @param arr The input array.
      */
@@ -459,8 +459,8 @@ Alternatively, we can simply say that the insertion sort algorithm runs in :math
 Triple Sum
 """""""""""""""""
 
-We consider a algorithm that checks if there exists at least one combination of three elements in an array that sum up to zero. 
-Here an implementation in Java:
+We consider an algorithm that checks if there exists at least one combination of three elements in an array that sum up to zero. 
+Here is an implementation in Java:
 
 .. _triple_sum:
 
@@ -541,21 +541,21 @@ up to index ``i`` already included.
 The time complexity of this algorithm is :math:`\mathcal{O}(2^n)`, because in the worst case it generates all possible subsets of the array, and there are :math:`2^n` possible subsets for an array of n elements. The worst case is obtained when there is no solution and that ``false`` is returned.
 The best-case complexity is :math:`\Omega(1)` and is obtained when the first element in the array is zero so that the algorithm immediately returns ``true``.
 
-Note that this algorithm has an exponential time complexity (so far the algorithm we have studied were polynomial e.g., :math:`\mathcal{O}(n^3)`). Therefore, although this approach will work fine for small arrays, it will be unbearably slow for larger ones.
+Note that this algorithm has an exponential time complexity (so far the algorithms we have studied were polynomial e.g., :math:`\mathcal{O}(n^3)`). Therefore, although this approach will work fine for small arrays, it will be unbearably slow for larger ones.
 
 
 .. tip::
     The question that arises is: Can we find an efficient algorithm to solve this problem more efficiently? By "efficient", we mean an algorithm that doesn't take an exponential time to compute as the size of the input grows.
     The answer is, maybe but we don't know yet.
-    Researchers stumbled upon a category of problems discovered in the early 1970's, that share a common trait: They all seem to be impossible to solve efficiently, but if you're handed a potential solution, you can at least verify its correctness quickly. 
+    Researchers stumbled upon a category of problems discovered in the early 1970s, that share a common trait: They all seem to be impossible to solve efficiently, but if you're handed a potential solution, you can at least verify its correctness quickly. 
     The subset-sum problem belongs to this class.
     This category is called *NP* (Nondeterministic Polynomial time).
     
     Now, within NP, there's a special class of problems dubbed *NP-complete*. 
     What is so special about them? Well, if you can find an efficient solution for one *NP-complete* problem, you've essentially found efficient solutions for all of them! 
     The subset-sum problem is one of these NP-complete problems. Like its NP-complete siblings, we don't have efficient solutions for it yet. 
-    But remember, this doesn't mean that no efficient solution exists; we just haven't found one and it was also not yet proven that such an algorithm does not exist.
-    This also doesn't mean that there are no faster algorithms for the subset-sum problem that the one we have shown.
+    But remember, this doesn't mean that no efficient solution exists; we just haven't found one and it was also not yet been proven that such an algorithm does not exist.
+    This also doesn't mean that there are no faster algorithms for the subset-sum problem than the one we have shown.
     For instance a *dynamic programming* algorithm (out of scope of this introduction to algorithms) for subset-sum can avoid redundant work, but still has a worst-case exponential time complexity.
 
 
@@ -664,7 +664,7 @@ Even with high-speed modern computers, attempting to solve the TSP for, say, 20 
 .. admonition:: Exercise
    :class: note
 
-   What is the time complexity of following algorithm? 
+   What is the time complexity of the following algorithm? 
    Characterize the best and worst case.
 
 
@@ -708,7 +708,7 @@ Since this notion of "space" is subject to interpretation, let us separate it in
 The definition of space complexity includes both: *space complexity* = *auxiliary space complexity* + *input space complexity*.
 
 
-The next `sum` method computing the sum of the elements in an array uses :math:`\mathcal{O}O(1)` auxiliary space, but :math:`\Theta(n)` input space where :math:`n` is the lenght of the input array. Its space complexity is thus :math:`Theta(n)`.
+The next `sum` method computing the sum of the elements in an array uses :math:`\mathcal{O}(1)` auxiliary space, but :math:`\Theta(n)` input space where :math:`n` is the length of the input array. Its space complexity is thus :math:`\Theta(n)`.
 
 
     ..  code-block:: java
@@ -743,12 +743,12 @@ Space complexity of recursive algorithms
 -------------------------------------------
 
 Notice that the extra space may also take into account the space of the system stack in the case of a recursive algorithm.
-In such a situation, when the recursive call happens, the current local variables are pushed onto the system stack, where they wait for the call the return and unstack the local variables.
+In such a situation, when the recursive call happens, the current local variables are pushed onto the system stack, where they wait for the call to return and unstack the local variables.
 
 More exactly, If a method ``A()`` calls method ``B()`` (which can possibly be ``A()`` in case of recursion) inside it, then all the variables still in the scope of the method ``A()`` will get stored on the system stack temporarily, while the method ``B()`` is called and executed inside the method ``A()``.
 
 
-Let us compare the space and time complexity of an iterative and a recursive computation of the factorial of a number expressed in function of :math:`n`, the value of the number for which we want to compute the factorial.
+Let us compare the space and time complexity of an iterative and a recursive computation of the factorial of a number expressed as a function of :math:`n`, the value of the number for which we want to compute the factorial.
 
 
 
@@ -780,7 +780,7 @@ Both implementations have a time complexity of :math:`\Theta (n)`. However, the 
 You may be a bit surprised by this result since no array of size :math:`n` is ever created in the recursive version.
 True! But a stack of size ``n`` is created. A stack? Yes, a stack, but it is not visible and it is created by the JVM. 
 
-Indeed, as explained before, every recursive call requires to store the local context or *frame* so that when the recursion returns, the multiplication can be performed. The sucessive frames are stored in a system stack that is transparently managed by the JVM, and that is part of the auxiliary space. The system stack for computing the factorial of 10 will look like ``[10*[9*[8*[7*[6*[5*[4*[3*[2*[1]]]]]]]]]]``.
+Indeed, as explained before, every recursive call requires storing the local context or *frame* so that when the recursion returns, the multiplication can be performed. The successive frames are stored in a system stack that is transparently managed by the JVM, and that is part of the auxiliary space. The system stack for computing the factorial of 10 will look like ``[10*[9*[8*[7*[6*[5*[4*[3*[2*[1]]]]]]]]]]``.
 This system stack can be visualized using the IntelliJ debugger by adding a breakpoint in the method. 
 The call stack is shown at the bottom left of IntelliJ and you can see what the local context is by clicking on each *frame*.
 
@@ -811,7 +811,7 @@ This is because, at each level of the recursion, new arrays are created in the c
 
 
 The time complexity required by our merge sort algorithm can be lowered to :math:`\mathcal{O}(n)` for the auxiliary space.
-We can indeed create a single temporary array of size :math:`n` once and reusing it in every merge operation. 
+We can indeed create a single temporary array of size :math:`n` once and reuse it in every merge operation. 
 This temporary array requires :math:`n` units of space, which is independent of the depth of the recursion. 
 As such, the space complexity of this version of the merge sort algorithm is :math:`\mathcal{O}(n)`, which is an improvement over the original version.
 
@@ -952,7 +952,7 @@ When ``for`` loops are used instead of ``while`` loops, one generally only expre
     }
 
 
-In order to be complete, we also need to prove that invariant itself is correctly maintained:
+In order to be complete, we also need to prove that the invariant itself is correctly maintained:
 
 * Initialization: When entering the loop, ``i == 1``. The invariant is thus that ``m`` should contain the maximum of subarray with only the first element. Since the maximum of a single element is the element itself, the invariant holds when entering the loop.
 * Maintenance: If ``m`` is the maximum value in ``a[0..i-1]`` at the start of the loop, the current maximum either remains ``m`` or it becomes ``a[i]`` during the iteration, ensuring it is the maximum of ``a[0..i]`` by the end of the iteration. So, the invariant holds for the next iteration as well.
@@ -991,7 +991,7 @@ Let us now rewrite the ``max()`` algorithm in a recursive form.
     }    
 
 
-The correctness of a recursive algorithm is done by induction.
+The correctness of a recursive algorithm is proved by induction.
 We do it on the inductive parameter ``i``.
 
 * Base case: proof that the algorithm is correct when the algorithm is not recursing (when ``i == 0`` here). When ``i == 0`` we have ``max(a[0]) == a[0]``.
@@ -1110,7 +1110,7 @@ It defines an ordered collection of elements, with duplicates allowed.
 
 To get a concrete implementation of a ``List``, you must use one of the concrete classes that implement this interface, 
 for instance `ArrayList <https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html>`_ or `LinkedList <https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html>`_.
-Whatever the one you choose the high level contract described at the interface level remain the same, although depending on the instanciation you might have different behaviors in terms of speed for example.
+Whatever the one you choose the high level contract described at the interface level remain the same, although depending on the instantiation you might have different behaviors in terms of speed for example.
 
 One example of the ``List`` ADT is given next.
 
@@ -1148,7 +1148,7 @@ This enables you to create generic algorithms that can work on collections of di
 Generics offer a way to define and enforce strong type-checks at compile-time without committing to a specific data type. 
 
 
-Java introduced support for generics in 2004, as a part of Java 5 (formally referred to as J2SE 5.0). In earlier versions of Java generics did not exit.
+Java introduced support for generics in 2004, as a part of Java 5 (formally referred to as J2SE 5.0). In earlier versions of Java generics did not exist.
 You could add any type of object to collections, which was prone to runtime type-casting errors, as illustrated in this example:
 
 
@@ -1405,7 +1405,7 @@ The time complexity of the algorithm is clearly :math:`O(n)` where :math:`n` is 
 
 
 
-To understand and convince one-self about the correctness of the algorithm, we should try to discover an invariant.
+To understand and convince oneself about the correctness of the algorithm, we should try to discover an invariant.
 As can be seen, a fully parenthesized expression can be represented as a binary tree where the parenthesis are not necessary:
 
 
@@ -1444,7 +1444,7 @@ When a closing parenthesis ``)`` is encountered, it indicates the end of a fully
 This invariant captures the essence of the algorithm's approach to the problem: It traverses the expression tree in a sort of depth-first manner, evaluating each subtree as it is fully identified by its closing parenthesis.
 
 
-This algorithm taking a ``String`` as its input is a an example of an interpreter.
+This algorithm taking a ``String`` as its input is an example of an interpreter.
 Interpreted programming languages (like Python) do similarly but accept constructs that a slightly more complex that parenthesized arithmetic expressions.
 
 
@@ -1452,7 +1452,7 @@ Interpreted programming languages (like Python) do similarly but accept construc
 .. admonition:: Exercise
    :class: note
 
-   Write an recursive algorithm for evaluation arithmetic expressions. 
+   Write a recursive algorithm to evaluate arithmetic expressions. 
    This program will not use explicit stacks but rely on the call stack instead.
 
 
@@ -1750,7 +1750,7 @@ We now enrich this class with two functionalities:
                     case '*':
                         return leftRes * rightRes;
                     default:
-                        throw new IllegalArgumentException("unkown operator " + operator);
+                        throw new IllegalArgumentException("unknown operator " + operator);
                 }
             }
         }
@@ -1815,7 +1815,7 @@ The tree on the right is not valid because the value 14 appears in the left subt
 
 .. figure:: _static/images/part4/bst_example.png
    :scale: 50 %
-   :alt: A valide BST, an Invalid BST
+   :alt: A valid BST, an Invalid BST
 
 
 The `BinarySearchTree` class defined below, implements `IntSet`
@@ -1923,13 +1923,13 @@ the height should be assumed to be :math:`\mathcal{O}(n)`, the number of nodes. 
 Maps
 ------
 
-An array in Java is a data structure that stores elements in a fixed order. Each element in the array is accessed using an index, which is a integer.
+An array in Java is a data structure that stores elements in a fixed order. Each element in the array is accessed using an index, which is an integer.
 
-A Map is an ADT that generalizes the idea of indexing to be more flexible by allowing the index to be something else than an integer.
+A Map is an ADT that generalizes the idea of indexing to be more flexible by allowing the index to be something other than an integer.
 In Map, the index is called a key, and each key maps it to a value.
 An example usage of Map is given next making use of the two most important methods,
 the `put` to add a key, value pair (aka entry)  and the `get` to retrieve the value from the key.
-Ìn Java, `java.util.`Map` is the interface for the Map ADT.
+In Java, `java.util.`Map` is the interface for the Map ADT.
 It is implemented by the class `java.util.HashTable` (and many others).
 
 ..  code-block:: java
@@ -1958,7 +1958,7 @@ An illustration of the internal representation of hash table is given next.
 
 .. figure:: _static/images/part4/hash_tables.png
    :scale: 100 %
-   :alt: Illustration of the underlying time-table
+   :alt: Illustration of the underlying hash table
 
 
 A hash table stores keys and values as entries (key-value pairs) in a Java array. At the core of a hash table is the concept of hashing. A hash function takes a key (in this case, a string) and converts it into an integer, known as the hash code. It is crucial that this function is deterministic, meaning the hash code for a given key must always remain the same.
@@ -2062,7 +2062,7 @@ The two important methods of an iterator are:
 
 The method ``remove()`` is optional and will not be covered in this course.
 
-The next example show how to use an iterator to print every element of a list.
+The following example shows how to use an iterator to print every element of a list.
 
 ..  code-block:: java
 
@@ -2153,7 +2153,7 @@ Now to properly implement an ``Iterator``, there are two possible strategies:
 1. Fail-Fast: Such iterators throw ``ConcurrentModificationException`` if there is structural modification of the collection. 
 2. Fail-Safe: Such iterators don't throw any exceptions if a collection is structurally modified while iterating over it. This is because they operate on the clone of the collection, not on the original collection.
 
-Fail-Safe iterator may be slower since one have to pay the cost of the clone at the creation of the iterator, even if we only end-up iterating over few elements. Therefore we will rather focus on the Fail-Fast strategy, which corresponds to the most frequent choice in the implementation of Java collections.
+Fail-Safe iterator may be slower since one has to pay the cost of the clone at the creation of the iterator, even if we only end-up iterating over only a few elements. Therefore we will rather focus on the Fail-Fast strategy, which corresponds to the most frequent choice in the implementation of Java collections.
 
 
 To implement a Fail-Fast iterator for our ``LinkedStack``, we can keep track of a modification count for the stack. 

@@ -74,7 +74,7 @@ There are several ways to avoid this kind of mistake. One way is to initialize t
         int salary = 10000;
     }
     
-Of course, this is only useful if you want that all employees start with a salary of 10000. The other way is to define a *constructor* in your class. The constructor is a special method that has the same name as the class. It can have parameters but it has no return type:
+Of course, this is only useful if you want all employees to start with a salary of 10000. The other way is to define a *constructor* in your class. The constructor is a special method that has the same name as the class. It can have parameters but it has no return type:
 
 .. code-block:: java
 
@@ -315,7 +315,7 @@ We can prevent this by declaring the instance variable :code:`salary` as :code:`
 
 A private instance variable is only accessible *inside* the class. So the access :code:`anna.salary += 150000` in the :code:`Main` class doesn't work anymore. Mission accomplished...
 
-Unfortunately, that's a bit annoying because it also means that we cannot access anymore Anna's salary in :code:`System.out.println("New salary of Anna is "+anna.salary)`. To fix this, we can add a method :code:`getSalary()` whose only purpose is to give us the value of the private :code:`salary` variable. Here is the new version of the code:
+Unfortunately, that's a bit annoying because it also means that we can no longer access Anna's salary in :code:`System.out.println("New salary of Anna is "+anna.salary)`. To fix this, we can add a method :code:`getSalary()` whose only purpose is to give us the value of the private :code:`salary` variable. Here is the new version of the code:
 
 .. code-block:: java
 
@@ -395,7 +395,7 @@ Let's say we are writing a computer game, for example an RPG (role-playing game)
     
 **Before you continue, carefully study the above program and make sure that you understand what it does. Run it in IntelliJ. Things are about to get a little more complicated in the following!**
     
-In our game, there is also a special weapon type, the *Mighty Swords*. These swords always deal a damage of 1000, independently of their level. In Java, we can implement this new weapon type like this:
+In our game, there is also a special weapon type, the *Mighty Swords*. These swords always deal 1000 damage, independently of their level. In Java, we can implement this new weapon type like this:
 
 .. code-block:: java
 
@@ -592,7 +592,7 @@ Alternatively, you can do a type cast:
     Weapon weapon = new MagicSword("Elven sword", 7, 3);
     System.out.println(((MagicSword) weapon).getMagicDamage());
 
-However, be careful with type casts. The compiler will accept them but if you do a mistake, you will get an error during program execution:
+However, be careful with type casts. The compiler will accept them but if you make a mistake, you will get an error during program execution:
 
 .. code-block:: java
 
@@ -611,7 +611,7 @@ The three rules make it possible to write code and data structures that can be u
     inventory[1] = new MagicSword("Elven sword", 7, 3);
     inventory[2] = new ExpensiveWeapon("Golden pitchfork", 3);
 
-And thanks to rule 2 and 3, you can write methods that work for different types of weapons:
+And thanks to rules 2 and 3, you can write methods that work for different types of weapons:
 
 .. code-block:: java
 
@@ -647,7 +647,7 @@ The class :code:`Object` that is above our :code:`Weapon` class was not defined 
 
 The documentation of :code:`Object` can be found at `<https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html>`_.
 The class defines several interesting methods that can be used on all objects.
-One of them is the :code:`toString()` method. This method is very useful because it is called by frequently used methods like :code:`String.valueOf()` and :code:`System.out.println()` when you call them with an object as parameter. Therefore, if we override this method in our own class, we will get a nice output:
+One of them is the :code:`toString()` method. This method is very useful because it is called by frequently used methods like :code:`String.valueOf()` and :code:`System.out.println()` when you call them with an object as a parameter. Therefore, if we override this method in our own class, we will get a nice output:
 
 .. code-block:: java
 
@@ -804,7 +804,7 @@ For loops on ArrayList
 Boxing and unboxing
 -------------------
 
-Unfortunately, primitive types are not subclasses of :code:`Object`. Therefore, we cannot simple add an :code:`int` value to an ArrayList, at least not without the help of the compiler:
+Unfortunately, primitive types are not subclasses of :code:`Object`. Therefore, we cannot simply add an :code:`int` value to an ArrayList, at least not without the help of the compiler:
 
 .. code-block:: java
 
@@ -1373,7 +1373,7 @@ Why are packages useful?
 
 Packages have two advantages. First of all, with the :code:`public` keyword, you can control for each class and each method in your package whether it can be used by classes in other packages. For example, we have already talked several times about the :code:`java.lang` package that contains useful classes such as :code:`String` or :code:`Integer`. Those classes are declared as public, so everybody can use them. However, that package also contains classes like :code:`CharacterData0E` that are only used internally by some classes in :code:`java.lang` and that are therefore *not* declared as public.
 
-The second advantage of packages is that they provide separate *namespaces*. This means that a package X and a package Y can both contain a class named ``ABC``. By using the fully classified names (or an ``import`` statement), we can exactly tell the compiler whether we want to use class :code:`X.ABC` or class :code:`Y.ABC`. This becomes important when you write larger applications and you want to use packages written by other people. Thanks to the different packages, you don't have to worry about classes with identical names.
+The second advantage of packages is that they provide separate *namespaces*. This means that a package X and a package Y can both contain a class named ``ABC``. By using the fully qualified names (or an ``import`` statement), we can exactly tell the compiler whether we want to use class :code:`X.ABC` or class :code:`Y.ABC`. This becomes important when you write larger applications and you want to use packages written by other people. Thanks to the different packages, you don't have to worry about classes with identical names.
 
 
 .. _visibility:
@@ -1499,8 +1499,8 @@ We simply add new subclasses for the new shapes.
 
 
 To compute the total area of all shapes in an array, we can create a static method that takes an array of ``Shape`` objects as its parameter. 
-This method will iterate on it, invoking the ``calculateArea()`` method on each ``Shape`` object, and accumulate the total area.
-This static method remains valid even if you introduce later a new shape in your library.
+This method will iterate over it, invoking the ``calculateArea()`` method on each ``Shape`` object, and accumulate the total area.
+This static method remains valid even if you later introduce a new shape in your library.
 
 ..  code-block:: java
 
@@ -1538,7 +1538,7 @@ Remember that Java doesn't allow to :ref:`extend multiple classes <multiple_inhe
 
 .. TODO - Not sure to understand the end of the following sentence
 
-Therefore interfaces promote a higher degree of flexibility and modularity in software design than abstract classes, but they don't often the same facility in terms of factorization of the code.
+Therefore interfaces promote a higher degree of flexibility and modularity in software design than abstract classes, but they don't offer the same facilities in terms of code factorization.
 
 
 ..  code-block:: java
@@ -1694,7 +1694,7 @@ Here are the three ``Comparator`` classes, one for each sorting criterion:
 
 
 
-As next example shows, we can now sort by title, author or publication year by just providing the corresponding comparator to the sorting algorithm.
+As the next example shows, we can now sort by title, author or publication year by just providing the corresponding comparator to the sorting algorithm.
 
 
 ..  code-block:: java
@@ -1804,7 +1804,7 @@ In Java, the ``swing`` and ``awt`` packages facilitate the creation of Graphical
 Swing in Java uses a system based on the observer pattern to handle events, such as mouse clicks. 
 
 
-On the next example we have a solitary button that, when clicked, responds with the message "Thank you" to the user.
+In the next example we have a solitary button that, when clicked, responds with the message "Thank you" to the user.
 
 
 
@@ -1917,7 +1917,7 @@ In this context, our bank account is the subject being observed.
 In our code, this will be modeled by the ``ObservableAccount`` class. 
 This account maintains a balance, which can be incremented through a deposit function.
 
-We require a mechanism to register observers (note: the wordings "observer" and "listener" are synonyms that can be used interchangeably) who wish to be informed about deposits. The ``LinkedList`` data structure is an excellent choice for this purpose: It offers constant-time addition and seamlessly supports iterators since it implements the ``Iterable`` interface. 
+We require a mechanism to register observers (note: the terms "observer" and "listener" are synonyms that can be used interchangeably) who wish to be informed about deposits. The ``LinkedList`` data structure is an excellent choice for this purpose: It offers constant-time addition and seamlessly supports iterators since it implements the ``Iterable`` interface. 
 To add an ``AccountObserver``, one would simply append it to this list. 
 We have chosen not to check for duplicate observers in the list, believing that ensuring uniqueness is the user's responsibility.
 

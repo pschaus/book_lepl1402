@@ -96,7 +96,7 @@ The second thing you might have noticed is the word :code:`public` appearing twi
 The word :code:`public` in the first line indicates that the class :code:`Main` can be used by others. It is not strictly necessary for this simple program and, in fact, our program will still work if you remove it (try it!). However, there is something important you have to know about public classes: If a class is marked as public, the source file that contains the class must have the same name as the class. That's the reason why the file is called ``Main.java`` and the public class in the file is called ``Main`` (Try to change the name of the class and see what happens!). Apart from that, the name ``Main`` for a class doesn't have any special meaning in Java. Our program would still work if we renamed the class to ``Catweazle`` or ``Cinderella``, as long as we don't forget to rename the file as well. But note that **all class names in Java (public or not) start with an uppercase letter**.
 
 The :code:`public` in the second line is much more important for our example. A Java program can only be executed if it contains a method :code:`main()` that is :code:`public` *and* :code:`static`. Remove the :code:`public` or :code:`static` from the second line and see what happens when you try to run the program.
-In general, **a Java program always starts at the public static main method**. If your program contains multiple classes with a main method, you have tell IntelliJ which one you want to start.
+In general, **a Java program always starts at the public static main method**. If your program contains multiple classes with a main method, you have to tell IntelliJ which one you want to start.
 
 With this knowledge, can you guess what the following program prints?
 
@@ -248,7 +248,7 @@ Primitive Types
 ---------------
 
 As explained, Java requires that you specify the type of all variables (including method parameters) and the return types of all methods.
-Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are used for numbers (integers and real numbers), for Boolean values (``true`` and ``false``) and for single characters (``a``, ``b``, etc.). However, there are several different number types. The below table shows all primitive types:
+Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are used for numbers (integers and real numbers), for Boolean values (``true`` and ``false``) and for single characters (``a``, ``b``, etc.). However, there are several different number types. The table below shows all primitive types:
 
 
 .. raw:: latex 
@@ -304,14 +304,14 @@ Java performs automatic conversions between values of different types if the des
 
 ..  code-block:: java
 
-    float a = 34;             // the int value 34 is casted to float 34.0f
+    float a = 34;             // the int value 34 is cast to float 34.0f
     float b = 6 * 4.5f;       // int multiplied by float gives float
     
 But this is not allowed:
 
 ..  code-block:: java
 
-    int a = 4.5f;             // Error! float is not automatically casted to int
+    int a = 4.5f;             // Error! float is not automatically cast to int
     float b = 4.5f * 6.7;     // Error! float * double gives double
 
 You can force the conversion by doing a *manual type cast*, but the result will be less precise or, in some situations, even wrong:
@@ -575,7 +575,7 @@ But note that this short form is only allowed when you initialize a newly declar
 
 ..  code-block:: java
 
-    int[] a = { 2, 5, 6, -3 }  
+    int[] a = { 2, 5, 6, -3 };  
     a = new int[]{ 1, 9, 3, 4 };
 
 
@@ -661,7 +661,7 @@ You can think of the value :code:`null` as representing an invalid reference.
 -------------
 The two most common loop constructs in Java are the :code:`while` loop and the :code:`for` loop.
 
-The :code:`while` loop in Java is very similar to its namesake in Python. It repeats one or more statements (we call them the *body* of the loop) as long a condition is met. Here is an example calculating the sum of the numbers from 0 to 9 (again, the surrounding :code:`main()` method is not shown):
+The :code:`while` loop in Java is very similar to its namesake in Python. It repeats one or more statements (we call them the *body* of the loop) as long as a condition is met. Here is an example calculating the sum of the numbers from 0 to 9 (again, the surrounding :code:`main()` method is not shown):
 
 ..  code-block:: java
 
@@ -707,7 +707,7 @@ There are two different ways :code:`for` loops can be used. The simple :code:`fo
     }
     System.out.println("The sum is " + sum);
 
-The :code:`for` loop will do as many iterations as number of elements in the array, with the variable :code:`elem` successively taking the values of the elements. 
+The :code:`for` loop will do as many iterations as there are elements in the array, with the variable :code:`elem` successively taking the values of the elements. 
 
 Complex "for" loops
 -------------------
@@ -1380,7 +1380,7 @@ Just by reading these two lines, it is not obvious that the second call to :code
         success = peter.setBoss(peter);
     }
     
-For this reason, exceptions should only be used sparingly. Fortunately, in many program, you don't need to throw your own exceptions, and often the only place you need to catch an exception is when using the existing I/O classes of the JDK. We will show an example in the next section.
+For this reason, exceptions should only be used sparingly. Fortunately, in many programs, you don't need to throw your own exceptions, and often the only place you need to catch an exception is when using the existing I/O classes of the JDK. We will show an example in the next section.
 
 
 .. _file_reader:
@@ -1449,7 +1449,7 @@ The above code has a weakness: If the :code:`read()` method throws an exception,
 
 The JVM *always* executes the statements in a :code:`finally` block after the preceding :code:`try` block, even if an exception happened inside the :code:`try` block or the :code:`try` block contains a return statement. For this reason :code:`finally` blocks are often used in combination with try/catch blocks to "clean up" used resources (e.g., close a file).  
 
-The above situation (opening a file, using it, and then closing it) is very common in Java programs. For this reason, Java has a special compact form of the :code:`try` block that is equivalent to the above program. When we us this special form, the Java compiler automatically adds the :code:`finally` block and the :code:`reader.close()` statement to our program:
+The above situation (opening a file, using it, and then closing it) is very common in Java programs. For this reason, Java has a special compact form of the :code:`try` block that is equivalent to the above program. When we use this special form, the Java compiler automatically adds the :code:`finally` block and the :code:`reader.close()` statement to our program:
 
 .. code-block:: java
 

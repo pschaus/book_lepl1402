@@ -7,7 +7,7 @@ Functional Programming
 
 Functional programming refers to a programming paradigm that emphasizes the **use of functions and immutable data** to create applications. This paradigm promotes writing code that is easier to reason about, and that allows for better handling of concurrency.
 
-While Java is not a pure functional language like Haskell, it offers many features that can be used to write more functional-style code. Functional programming in Java encourages the use of pure functions that have no side effect, i.e., that avoid changing the state of the program. Java 8 introduced features to support functional programming, primarily through the addition of functional interfaces, of lambda expressions, and of the ``Stream`` API.
+While Java is not a pure functional language like Haskell, it offers many features that can be used to write more functional-style code. Functional programming in Java encourages the use of pure functions that have no side effects, i.e., that avoid changing the state of the program. Java 8 introduced features to support functional programming, primarily through the addition of functional interfaces, lambda expressions, and the ``Stream`` API.
 
 
 Nesting classes
@@ -46,9 +46,9 @@ Let us consider the task of creating a spreadsheet application. A spreadsheet do
         }
     }
     
-The ``Row`` class uses an `associative array <https://en.wikipedia.org/wiki/Associative_array>`_ that maps integers (the index of the columns) to strings (the value of the columns). The use of an associated array allows to account for columns with a missing value. The standard ``HashMap<K,V>`` class is used to this end: `<https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html>`_
+The ``Row`` class uses an `associative array <https://en.wikipedia.org/wiki/Associative_array>`_ that maps integers (the index of the columns) to strings (the value of the columns). The use of an associative array allows to account for columns with a missing value. The standard ``HashMap<K,V>`` class is used to this end: `<https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html>`_
 
-A basic spreadsheet application can then be created on the top of this ``Row`` class. Let us define a spreadsheet document as an ordered list of rows:
+A basic spreadsheet application can then be created on top of this ``Row`` class. Let us define a spreadsheet document as an ordered list of rows:
     
 ..  code-block:: java
 
@@ -319,7 +319,7 @@ In this new version of the ``sort()`` method, the comparator was defined within 
 Anonymous inner classes
 -----------------------
 
-Because local inner classes are typically used at one single point of the method, it is generally not useful to give a name to local inner classes (in the previous example, this name was ``RowComparator5``). Consequently, Java features the **anonymous inner class** construction:
+Because local inner classes are typically used at a single point of the method, it is generally not useful to give a name to local inner classes (in the previous example, this name was ``RowComparator5``). Consequently, Java features the **anonymous inner class** construction:
 
 ..  code-block:: java
 
@@ -334,7 +334,7 @@ Because local inner classes are typically used at one single point of the method
         Collections.sort(rows, comparator);
     }
 
-As can be seen in this example, an anonymous inner class is a class that is defined without a name inside a method and that instantiated at the same place where it is defined.
+As can be seen in this example, an anonymous inner class is a class that is defined without a name inside a method and that is instantiated at the same place where it is defined.
 
 This construction is often used for implementing interfaces or extending classes on-the-fly. To make this more apparent, note that we could have avoided the introduction of temporary variable ``comparator`` by directly writing:
 
@@ -424,7 +424,7 @@ The method ``fill1()`` creates exactly two threads, one for each part of the mat
 
 Contrarily to ``fill1()`` that used a *local* inner class, the ``fill2()`` method uses an *anonymous* inner class, an instance of which is created for each row. This construction was not possible in the first implementation, because it had to separately track exactly two futures using two variables, which needed to share the definition of the inner class between the two separate runnables. However, in the second implementation, thanks to the fact that the multiple futures are tracked in a uniform way using a stack, the definition of the inner class can occur at a single place.
 
-There is however a caveat associated with ``fill2()``: One could expect to have access to the ``row`` variable inside the ``run()`` method, because ``row`` is part of the scope of the enclosing method. However, the inner class might continue to exist and be used even after the loop has finished executing and the variable ``row`` has disappeared. To prevent potential issues arising from changes to variables after the start of the execution of a method, an inner class is actually only allowed to access the **final variables** in the scope of method (or variables that could have been tagged as ``final``). Remember that a final variable means that it is :ref:`not allowed to change its value later <final_keyword>`.
+There is however a caveat associated with ``fill2()``: One could expect to have access to the ``row`` variable inside the ``run()`` method, because ``row`` is part of the scope of the enclosing method. However, the inner class might continue to exist and be used even after the loop has finished executing and the variable ``row`` has disappeared. To prevent potential issues arising from changes to variables after the start of the execution of a method, an inner class is actually only allowed to access the **final variables** in the scope of the method (or variables that could have been tagged as ``final``). Remember that a final variable means that it is :ref:`not allowed to change its value later <final_keyword>`.
 
 In the ``fill2()`` example, ``m`` and ``value`` could have been explicitly tagged as ``final``, because their value does not change in the method. But adding a line like ``value = 10;`` inside the method would break the compilation, because ``value`` could not be tagged as ``final`` anymore, which would prevent the use of ``value`` inside the runnable. One could argue that the *content* of ``m`` changes because of the calls to ``m.setValue()``, however the *reference* to the object ``m`` that was originally provided as argument to the method never changes. Finally, the variable ``row`` cannot be declared as ``final``, because its value changes during the loop. Storing a copy of ``row`` inside the variable ``myRow`` is a workaround to solve this issue.
 
@@ -491,7 +491,7 @@ The presence of a single method stems from the fact that these classes implement
 .. admonition:: Advanced remarks
    :class: remark
 
-   A functional interface can have multiple ``default`` methods or ``static`` methods without violating the rule of having a single abstract method. This course has not covered ``default`` methods, but it is sufficient to know that a ``default`` method provides a default implementation within an interface that the classes implementing the interface can choose to inherit or overwrite. For instance, the interface ``Comparator<T>`` comes with multiple ``default`` and ``static`` methods, as can be seen in the Java documentation: `<https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html>`_
+   A functional interface can have multiple ``default`` methods or ``static`` methods without violating the rule of having a single abstract method. This course has not covered ``default`` methods, but it is sufficient to know that a ``default`` method provides a default implementation within an interface that the classes implementing the interface can choose to inherit or override. For instance, the interface ``Comparator<T>`` comes with multiple ``default`` and ``static`` methods, as can be seen in the Java documentation: `<https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html>`_
 
    In Java 8 and later, the ``@FunctionalInterface`` annotation helps explicitly mark an interface as a functional interface. If an interface annotated with ``@FunctionalInterface`` contains more than one abstract method, the compiler generates an error to indicate that it does not meet the criteria of a functional interface. Nonetheless, pay attention to the fact that not all the functional interfaces of Java are annotated with ``@FunctionalInterface``. This is notably the case of ``ActionListener``.
 
@@ -641,7 +641,7 @@ For instance, the following program first uses a lambda expression to define a f
         System.out.println(f.apply("Hello"));  // Displays: 5
     }
 
-As another example, here is a function that extracts the first character of a string in lower case:
+As another example, here is a function that extracts the first character of a string in lowercase:
     
 .. code-block:: java
 
@@ -689,7 +689,7 @@ An **operator** is a particular case of a general-purpose functional interface, 
         public T apply(T x, T y);
     }
 
-The mathematical domain of an unary operator :math:`f` is :math:`f: T \mapsto T`, whereas the domain of a binary operator :math:`f` is :math:`f: T \times T \mapsto T`.
+The mathematical domain of a unary operator :math:`f` is :math:`f: T \mapsto T`, whereas the domain of a binary operator :math:`f` is :math:`f: T \times T \mapsto T`.
 
 As an example, the function computing the square of a double number is an unary operator that could be defined as:
 
@@ -776,7 +776,7 @@ For instance, a predicate that tests whether a list is empty could be defined an
     System.out.println(f.test(Arrays.asList(10)));     // Displays: false
     System.out.println(f.test(Arrays.asList(10, 20))); // Displays: false
 
-Here is another example to test whether a number if negative:
+Here is another example to test whether a number is negative:
 
 .. code-block:: java
 
@@ -867,7 +867,7 @@ The :ref:`composition of two functions <fp_composition>` is an example of higher
         System.out.println(h.apply(25));  // Display: 2.0
     }
 
-Composition is an example of higher-order function that *outputs* new functions. The standard Java classes also contains methods that take functions as their *inputs*. This is notably the case of the standard Java collections (most notably lists), that include several methods taking operators and predicates as arguments, for instance:
+Composition is an example of higher-order function that *outputs* new functions. The standard Java classes also contain methods that take functions as their *inputs*. This is notably the case of the standard Java collections (most notably lists), that include several methods taking operators and predicates as arguments, for instance:
 
 * ``forEach(c)`` applies a consumer to all the elements of the collection (this is part of the ``Iterable<E>`` interface),
 
@@ -984,7 +984,7 @@ Stream pipelines are also **lazy**, which means that the intermediate operations
 Java streams
 ------------
 
-Stream programming in Java is built on the top of the following generic interface:
+Stream programming in Java is built on top of the following generic interface:
 
 ..  code-block:: java
 
@@ -1041,7 +1041,7 @@ Note that streams are not immutable, in the sense that when the elements of a st
       List<Integer> b = stream.collect(Collectors.toList());  // => java.lang.IllegalStateException: stream has already been operated upon or closed
 
 
-The main source, intermediate, and terminal methods for stream programming in the Java standard library are now reviewed. Evidently, this list is by no way exhaustive. The full list of the features offered ``Stream<T>`` is available in the online Java documentation: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html>`_
+The main source, intermediate, and terminal methods for stream programming in the Java standard library are now reviewed. Evidently, this list is by no means exhaustive. The full list of the features offered ``Stream<T>`` is available in the online Java documentation: `<https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html>`_
 
 
 .. _stream_source_methods:
@@ -1225,7 +1225,7 @@ Interestingly, the ``map()`` method can also be used to create objects by callin
 Filter
 ......
 
-Another significant method on streams is ``filter(Predicate<T> p)``. This method is a higher-order function that takes as a argument an :ref:`unary predicate <fp_predicate>` ``p``, and that creates a new stream that **only contains the objects from the input stream that verify the predicate**. As an example, here is how to filter a stream of integers to keep only the values that are integer multiples of 4:
+Another significant method on streams is ``filter(Predicate<T> p)``. This method is a higher-order function that takes as an argument an :ref:`unary predicate <fp_predicate>` ``p``, and that creates a new stream that **only contains the objects from the input stream that verify the predicate**. As an example, here is how to filter a stream of integers to keep only the values that are integer multiples of 4:
     
 ..  code-block:: java
 
@@ -1360,7 +1360,7 @@ If the stream is of type ``Stream<String>``, the following predefined containers
       String joined = stream.collect(Collectors.joining(", "));
       System.out.println(joined);  // Displays: one, two, three
   
-* ``Collectors.joining(String delimiter, String prefix, String suffix)`` works similarly to ``Collectors.joining(delimiter)``, but it also add a prefix and a suffix:
+* ``Collectors.joining(String delimiter, String prefix, String suffix)`` works similarly to ``Collectors.joining(delimiter)``, but it also adds a prefix and a suffix:
 
   ..  code-block:: java
 
@@ -1368,7 +1368,7 @@ If the stream is of type ``Stream<String>``, the following predefined containers
       String joined = stream.collect(Collectors.joining(", ", "{ ", " }"));
       System.out.println(joined);  // Displays: {one, two, three}
 
-Finally, note that the ``Stream<T>`` interface also contains the ``toArray()`` collector method. This method create an array of ``Object`` from a stream:
+Finally, note that the ``Stream<T>`` interface also contains the ``toArray()`` collector method. This method creates an array of ``Object`` from a stream:
 
 ..  code-block:: java
 
@@ -1396,7 +1396,7 @@ Reduction methods also exist to test to which extent the elements of a stream **
 
 * ``allMatch(Predicate<T> p)`` returns ``true`` if and only if all the individual elements in a ``Stream<T>`` satisfy the predicate ``p``.
 
-* ``anyMatch(Predicate<T> p)`` returns ``true`` if and only if at least one of individual elements in a ``Stream<T>`` satisfies the predicate ``p``.
+* ``anyMatch(Predicate<T> p)`` returns ``true`` if and only if at least one of the individual elements in a ``Stream<T>`` satisfies the predicate ``p``.
 
 * ``noneMatch(Predicate<T> p)`` returns ``true`` if and only if none of the individual elements in a ``Stream<T>`` satisfies the predicate ``p``.
 
@@ -1456,7 +1456,7 @@ You could think that the code does the following:
 
 2. The lambda expression :code:`i -> { System.out.println(i); return i + 1; }` is applied to each element.
 
-3. The console display the lines ``1``, ``2``, ``3``, ``4``, and ``5``.
+3. The console displays the lines ``1``, ``2``, ``3``, ``4``, and ``5``.
 
 4. A new stream containing ``2``, ``3``, ``4``, ``5``, and ``6`` is returned.
    
@@ -1531,7 +1531,7 @@ So far, we have only been considering the generic interface ``Stream<T>``. For p
  
 For instance, a stream of ``int`` numbers can either be represented as a generic stream of type ``Stream<Integer>`` (in which each element is an object of type ``Integer``), or as a specialized stream of type ``IntStream`` (in which each element is internally represented as an ``int`` primitive value). Specialized streams are in general more efficient than generic streams, as they avoid the creation of objects, and should be preferred if performance or memory usage is important.
 
-Note that there is no specialized streams for the other primitive types: It is recommended to use ``IntStream`` to store ``short``, ``char``, ``byte``, and ``boolean`` values. As far as ``float`` are concerned, it is recommended to use ``DoubleStream`` if a specialized stream is preferable.
+Note that there are no specialized streams for the other primitive types: It is recommended to use ``IntStream`` to store ``short``, ``char``, ``byte``, and ``boolean`` values. As far as ``float`` are concerned, it is recommended to use ``DoubleStream`` if a specialized stream is preferable.
 
 The **conversions between generic streams and specialized streams** are ruled as follows:
 
@@ -1541,7 +1541,7 @@ The **conversions between generic streams and specialized streams** are ruled as
 
 * A specialized ``DoubleStream`` can be constructed from a ``Stream<T>`` using the ``mapToDouble()`` method of the generic stream.
 
-* Conversely, a generic ``Stream<T>`` can be constructed from an ``IntStream``, from a ``LongStream``, or from an ``DoubleStream`` using the ``mapToObj()`` method of the specialized stream.
+* Conversely, a generic ``Stream<T>`` can be constructed from an ``IntStream``, from a ``LongStream``, or from a ``DoubleStream`` using the ``mapToObj()`` method of the specialized stream.
 
 For instance, the :ref:`conversion between miles and kilometers <stream_miles>` could have been implemented as follows using the specialized ``DoubleStream`` (the two modified lines are highlighted by asterisks):
 
@@ -1574,7 +1574,7 @@ As can be seen in this example, these two methods only differ with respect to th
 
 Finally, besides their interest for optimization, the specialized streams also provide convenient :ref:`collector methods <stream_collector_methods>` that **directly return Java arrays from a stream**:
 
-* The ``toArray()`` method of ``IntStream`` creates a ``int[]`` value,
+* The ``toArray()`` method of ``IntStream`` creates an ``int[]`` value,
 
 * The ``toArray()`` method of ``LongStream`` creates a ``long[]`` value, and
   
@@ -1620,7 +1620,7 @@ Remember that :ref:`lambda expressions <lambda_expressions>` in Java are syntact
 
 This is an extremely counter-intuitive behavior: Any developer that has not implemented the ``createAddition()`` method would expect that multiple applications of the same ``Function`` should always give the same result. In mathematics, we indeed expect that a function always gives the same result for the same argument!
 
-For this reason, this kind of code should be avoided, even if it fully respects the Java syntax. **A good function should have no side effect**. A function should never change existing objects and variables. The code of a function or method is easier to understand if the result *only* depends on its arguments. Furthermore, a function that has side effect can result in severe concurrency issues if executed in a multithreaded context.
+For this reason, this kind of code should be avoided, even if it fully respects the Java syntax. **A good function should have no side effect**. A function should never change existing objects and variables. The code of a function or method is easier to understand if the result *only* depends on its arguments. Furthermore, a function that has side effects can result in severe concurrency issues if executed in a multithreaded context.
 
 
 Immutable objects
@@ -1630,13 +1630,13 @@ In order to enforce the absence of side effects and to ensure thread safety, fun
 
 For instance, **strings in Java are immutable**. Once a ``String`` object is created, its value cannot be changed. Operations that seem to modify a string actually always create a new ``String`` object.
 
-On the other hand, primitive types in Java *are* mutable (for instance, you can change the value of a ``int`` variable after its declaration). However, the **wrapper classes associated with primitive types are immutable**. Indeed, classes like ``Integer``, ``Long``, ``Float``, ``Double``, ``Byte``, ``Short``, ``Character``, or ``Boolean``, which are used to wrap the primitive data types, are all immutable: The primitive value they store can never be changed after their construction. In the same vein, :ref:`Java enums <enumerations>` are immutable. Once the enum constants are created, their values cannot be modified.
+On the other hand, primitive types in Java *are* mutable (for instance, you can change the value of an ``int`` variable after its declaration). However, the **wrapper classes associated with primitive types are immutable**. Indeed, classes like ``Integer``, ``Long``, ``Float``, ``Double``, ``Byte``, ``Short``, ``Character``, or ``Boolean``, which are used to wrap the primitive data types, are all immutable: The primitive value they store can never be changed after their construction. In the same vein, :ref:`Java enums <enumerations>` are immutable. Once the enum constants are created, their values cannot be modified.
 
 
 An immutable list
 -----------------
 
-We already know that the standard ``List<T>`` interface offers the ``removeIf()`` and ``replaceAll()`` methods to apply :ref:`higher-order functions <higher_order_functions>` onto their content. Because of the presence such methods, the standard Java lists are mutable objects, which contrasts with the philosophy of functional programming. Can we design a list without side effect, in a way that is similar to streams?
+We already know that the standard ``List<T>`` interface offers the ``removeIf()`` and ``replaceAll()`` methods to apply :ref:`higher-order functions <higher_order_functions>` onto their content. Because of the presence of such methods, the standard Java lists are mutable objects, which contrasts with the philosophy of functional programming. Can we design a list without side effect, in a way that is similar to streams?
 
 The answer is "yes", and this section explains how to **create an immutable generic list**. In this immutable list, operations such as adding an element will return a new list, without modifying the original one, while reusing as much of the existing content as possible.
 
@@ -1695,7 +1695,7 @@ And our sample immutable list containing 10, 20, and 30 can then be constructed 
 
 .. code-block:: java
 
-    // Create the terminal node that represent the empty list
+    // Create the terminal node that represents the empty list
     ImmutableList<Integer> empty = new Nil<Integer>();
 
     // Create the node containing "30" that represents the list: [ 30 ]

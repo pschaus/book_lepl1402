@@ -20,7 +20,7 @@ As an example, let's assume we have written a method to calculate the quotient `
 
     static int division(int a, int b) { ... }
     
-Now, we want to know whether our implementation is correct. We can call the method with arguments 6 and 3 and maybe we get 2 as result. This seems to be correct. Then we call the method with arguments 12 and 3, and we get 4. This looks fine, too. Finally, we call the method with arguments 5 and 2 and we get 3. Is that correct? Or did we expect the result to be 2? And what should be the result if the arguments are 4 and 0?
+Now, we want to know whether our implementation is correct. We can call the method with arguments 6 and 3 and maybe we get 2 as a result. This seems to be correct. Then we call the method with arguments 12 and 3, and we get 4. This looks fine, too. Finally, we call the method with arguments 5 and 2 and we get 3. Is that correct? Or did we expect the result to be 2? And what should be the result if the arguments are 4 and 0?
 
 As the above example shows, tests are only useful if we have defined what our program is supposed to do. There are different ways to specify the expected behavior of software:
 
@@ -34,7 +34,7 @@ As the above example shows, tests are only useful if we have defined what our pr
 
 2. Especially for more complex programs that are difficult to describe in a formal way, the specification is often written in the form of a text document with sentences like *"The method returns the quotient of two natural numbers..."*.
 
-3. Finally, when working with customers, we often have to start with a list of *user requirements*, i.e., a description of what is need (*"The program should calculate a/b"*), and we have to write our own specification from that.
+3. Finally, when working with customers, we often have to start with a list of *user requirements*, i.e., a description of what is needed (*"The program should calculate a/b"*), and we have to write our own specification from that.
 
 Requirements can come in all kinds of forms. In general, we can distinguish two broad categories of requirements:
 
@@ -102,7 +102,7 @@ Test coverage
 Black box vs white box testing
 ------------------------------
 
-Because the input domain of any non-trivial program is so large, identifying interesting input values for testing is a major challenge. If we do not have access to the source code of the program to test, we can only select the test values based on our experience and the specification. Such a test is called a *black box test* because the program that we want to test is like a opaque black box.
+Because the input domain of any non-trivial program is so large, identifying interesting input values for testing is a major challenge. If we do not have access to the source code of the program to test, we can only select the test values based on our experience and the specification. Such a test is called a *black box test* because the program that we want to test is like an opaque black box.
 
 But if we have the source code of the program available, and that is the assumption in this book, we can use it to choose reasonable test values. This is a *white box test*.
 
@@ -123,14 +123,14 @@ The following example shows an implementation of the :code:`min()` method that c
         return m;
     }
     
-If we call the above method with two numbers *a* and *b* where *a<b* (for example, *a=3* and *b=5*), we get always the correct result because the statement that contains the bug is never executed. The obvious truth is that **we can only find a bug in a program if the program reaches the faulty location in the code with our test values**. The conclusion here is that our input values should be chosen such that both branches of the if-else statement are tested.
+If we call the above method with two numbers *a* and *b* where *a<b* (for example, *a=3* and *b=5*), we always get the correct result because the statement that contains the bug is never executed. The obvious truth is that **we can only find a bug in a program if the program reaches the faulty location in the code with our test values**. The conclusion here is that our input values should be chosen such that both branches of the if-else statement are tested.
 
 We can visualize this by the *Control Flow Graph* (CFG) of the above code:
 
 .. image:: _static/images/part1/control_flow_minn.svg
   :width: 50%
 
-In the above control flow graph the node 0 represents the beginning of the method, the node 1 and 2 represent the two assignments in the if-else statement, and node 3 represents the :code:`return` statement of the method.
+In the above control flow graph the node 0 represents the beginning of the method, nodes 1 and 2 represent the two assignments in the if-else statement, and node 3 represents the :code:`return` statement of the method.
 
 .. admonition:: \ \
 
@@ -141,7 +141,7 @@ If we test the code with test values *a=3* and *b=5*, the program will go throug
 Edge coverage
 -------------
 
-While 100% node coverage is an important goal in testing, it does not necessarily mean that a program  contains no bugs. Consider the following faulty implementation of the the :code:`min()` method:
+While 100% node coverage is an important goal in testing, it does not necessarily mean that a program  contains no bugs. Consider the following faulty implementation of the :code:`min()` method:
 
 ..  code-block:: java
 
@@ -160,7 +160,7 @@ Here is the CFG of the method:
 
 If we test this method with the test values *a=3* and *b=5*, the program will go through the nodes 0, 1, and 2, and we have achieved 100% node coverage without finding the bug! The bug only becomes visible if we use test values that force the program to go directly from node 0 to 2.
 
-The above example shows that covering 100% of the *nodes* of the CFG with our tests is not enough. We have to choose our test values such that all all *edges* of the CFG are covered, too.
+The above example shows that covering 100% of the *nodes* of the CFG with our tests is not enough. We have to choose our test values such that all *edges* of the CFG are covered, too.
 
 Path coverage
 -------------
@@ -232,7 +232,7 @@ Automated Unit Testing
 Writing tests as a program
 ---------------------------
 
-Testing is a repetitive task. In unit testing, we have to test every new method we write. And we have to repeat the test every time we changed the code of a method. It is therefore an obvious question whether we cannot let the computer do the testing.
+Testing is a repetitive task. In unit testing, we have to test every new method we write. And we have to repeat the test every time we change the code of a method. It is therefore an obvious question whether we cannot let the computer do the testing.
 
 As an example, consider again the :code:`min()` method:
 
@@ -265,9 +265,9 @@ The advantage of having a test program is that we can run the test automatically
 JUnit
 -----
 
-Fortunately there are already tools and libraries to write tests. For Java, the most famous one is JUnit. Similar tools also exist for other programming language.
+Fortunately there are already tools and libraries to write tests. For Java, the most famous one is JUnit. Similar tools also exist for other programming languages.
 
-JUnit provides many useful classes and methods to write tests. To write a test you create a new class (for example, :code:`MainTest`) and write a method for each test case. Depending on which version of JUnit you use, your test code will look different. In JUnit version 4, our above two tests of the :code:`min()` method can be written like this:
+JUnit provides many useful classes and methods to write tests. To write a test, you create a new class (for example, :code:`MainTest`) and write a method for each test case. Depending on which version of JUnit you use, your test code will look different. In JUnit version 4, our above two tests of the :code:`min()` method can be written like this:
 
 ..  code-block:: java
 
@@ -333,7 +333,7 @@ As an example, consider the following (incomplete) code:
         }
     }
 
-As a developer, we would like to know whether the intermediate value :code:`v2` and the result are correctly calculated. To do this with a unit test, it would be better to split the method in two:
+As a developer, we would like to know whether the intermediate value :code:`v2` and the result are correctly calculated. To do this with a unit test, it would be better to split the method into two:
 
 .. code-block:: java
 
@@ -405,7 +405,7 @@ There are different ways to address this problem. One is to add more test cases,
         }
     }
 
-Alternative, we could do more tests inside one test case:
+Alternatively, we could do more tests inside one test case:
 
 .. code-block:: java
 
