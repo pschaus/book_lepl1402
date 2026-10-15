@@ -1,0 +1,388 @@
+/* ==========================================================================
+   LEPL1402 - Modern Blue Theme & Responsive Custom Styling
+   ========================================================================== */
+
+/* --- 1. Blue Color Palette Variables --- */
+:root {
+  --pst-color-primary: #1d4ed8;            /* UCLouvain / Tech Royal Blue */
+  --pst-color-primary-highlight: #2563eb;
+  --pst-color-secondary: #0284c7;          /* Sky / Ocean Accent */
+  --pst-color-link: #1d4ed8;
+  --pst-color-link-hover: #1e40af;
+  --pst-color-target: #eff6ff;
+  --pst-color-border: #e2e8f0;
+  --pst-color-inline-code: #1e40af;
+  --pst-color-pre-background: #f8fafc;
+}
+
+html[data-theme="dark"] {
+  --pst-color-primary: #60a5fa;
+  --pst-color-primary-highlight: #93c5fd;
+  --pst-color-secondary: #38bdf8;
+  --pst-color-link: #60a5fa;
+  --pst-color-link-hover: #93c5fd;
+  --pst-color-border: #334155;
+  --pst-color-inline-code: #93c5fd;
+  --pst-color-pre-background: #0f172a;
+}
+
+/* --- 2. Code Block Presentation (Clean slate/blue background, NO green) --- */
+div[class*="highlight-"] {
+  margin: 1.25rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #2563eb !important;
+  background-color: #f8fafc !important; /* Pure clean light slate - zero green */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="dark"] div[class*="highlight-"] {
+  border-color: #334155;
+  border-left: 4px solid #3b82f6 !important;
+  background-color: #0f172a !important; /* Rich deep navy */
+  box-shadow: none;
+}
+
+/* Force override of old Pygments/Sphinx #eeffcc green background */
+.highlight,
+.highlight pre,
+pre {
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+  font-size: 0.88rem !important;
+  line-height: 1.55 !important;
+  padding: 0.85rem 1rem !important;
+  margin: 0 !important;
+  border: none !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-theme="dark"] .highlight,
+html[data-theme="dark"] .highlight pre,
+html[data-theme="dark"] pre {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+
+/* Line numbers styling */
+td.linenos, span.linenos {
+  color: #94a3b8 !important;
+  background-color: #f1f5f9 !important;
+  border-right: 1px solid #e2e8f0 !important;
+  padding-right: 0.6rem !important;
+  user-select: none;
+}
+
+html[data-theme="dark"] td.linenos,
+html[data-theme="dark"] span.linenos {
+  color: #64748b !important;
+  background-color: #1e293b !important;
+  border-right: 1px solid #334155 !important;
+}
+
+/* Inline code badges */
+code.literal,
+code.docutils.literal,
+tt.literal,
+p code,
+li code,
+td code {
+  background-color: #eff6ff !important; /* Soft ice-blue badge */
+  color: #1e40af !important;
+  border: 1px solid #dbeafe !important;
+  border-radius: 4px;
+  padding: 0.15em 0.4em !important;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em;
+  font-weight: 500;
+}
+
+html[data-theme="dark"] code.literal,
+html[data-theme="dark"] code.docutils.literal,
+html[data-theme="dark"] tt.literal,
+html[data-theme="dark"] p code,
+html[data-theme="dark"] li code,
+html[data-theme="dark"] td code {
+  background-color: #1e293b !important;
+  color: #93c5fd !important;
+  border-color: #334155 !important;
+}
+
+/* --- 3. Responsive Smartphone Enhancements --- */
+img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Responsive tables with smooth horizontal scroll on touchscreens */
+.table-wrapper,
+div.wy-table-responsive,
+table.docutils {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 6px;
+}
+
+table.docutils {
+  border-collapse: collapse;
+  min-width: 100%;
+  border: 1px solid #e2e8f0;
+}
+
+html[data-theme="dark"] table.docutils {
+  border-color: #334155;
+}
+
+table.docutils th {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+  border-bottom: 2px solid #cbd5e1;
+  padding: 0.6rem 0.8rem;
+}
+
+html[data-theme="dark"] table.docutils th {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-bottom: 2px solid #475569;
+}
+
+table.docutils td {
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+html[data-theme="dark"] table.docutils td {
+  border-bottom: 1px solid #334155;
+}
+
+/* Touch targets and mobile typography */
+@media (max-width: 768px) {
+  .bd-content {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .bd-header-article {
+    padding: 0.5rem 0.75rem;
+  }
+
+  div[class*="highlight-"] {
+    margin: 1rem -0.5rem;
+    border-radius: 4px;
+  }
+
+  .highlight pre {
+    font-size: 0.8rem !important;
+    padding: 0.65rem 0.75rem !important;
+  }
+
+  .hero-pdf-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.25rem 1rem !important;
+  }
+
+  .hero-pdf-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* --- 4. Sidebar Download Card --- */
+.sidebar-pdf-card {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e0effe 100%);
+  border: 1px solid #bfdbfe !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+html[data-theme="dark"] .sidebar-pdf-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid #3b82f6 !important;
+}
+
+.sidebar-pdf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.15) !important;
+}
+
+.download-pdf-btn {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  color: #ffffff !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 4px rgba(29, 78, 216, 0.25);
+  transition: all 0.2s ease;
+}
+
+.download-pdf-btn:hover {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 8px rgba(29, 78, 216, 0.35);
+  transform: translateY(-1px);
+}
+
+/* --- 5. Homepage Hero PDF Download Banner --- */
+.hero-pdf-banner {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #93c5fd;
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+  margin: 1.75rem 0 2rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+html[data-theme="dark"] .hero-pdf-banner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hero-pdf-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 0.35rem;
+}
+
+html[data-theme="dark"] .hero-pdf-title {
+  color: #93c5fd;
+}
+
+.hero-pdf-desc {
+  font-size: 0.95rem;
+  color: #334155;
+  margin-bottom: 0;
+}
+
+html[data-theme="dark"] .hero-pdf-desc {
+  color: #cbd5e1;
+}
+
+.hero-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  color: #ffffff !important;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.4rem;
+  border-radius: 8px;
+  text-decoration: none !important;
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.hero-pdf-btn:hover {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 14px rgba(29, 78, 216, 0.4);
+  transform: translateY(-2px);
+  color: #ffffff !important;
+}
+
+/* --- 6. Quick Access Part Cards on Homepage --- */
+.parts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin: 1.75rem 0 2.5rem 0;
+}
+
+.part-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-top: 4px solid #2563eb;
+  border-radius: 10px;
+  padding: 1.25rem 1.4rem;
+  text-decoration: none !important;
+  color: inherit !important;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+html[data-theme="dark"] .part-card {
+  background: #1e293b;
+  border-color: #334155;
+  border-top-color: #60a5fa;
+  box-shadow: none;
+}
+
+.part-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+  border-color: #93c5fd;
+}
+
+html[data-theme="dark"] .part-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  border-color: #60a5fa;
+}
+
+.part-card-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #2563eb;
+  margin-bottom: 0.4rem;
+}
+
+html[data-theme="dark"] .part-card-badge {
+  color: #93c5fd;
+}
+
+.part-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+html[data-theme="dark"] .part-card-title {
+  color: #f8fafc;
+}
+
+.part-card-desc {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0;
+  line-height: 1.45;
+}
+
+html[data-theme="dark"] .part-card-desc {
+  color: #94a3b8;
+}
+
+/* --- 7. Modern Admonition Enhancements --- */
+div.admonition {
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+div.admonition.note {
+  border-left-color: #2563eb !important;
+}
+
+html[data-theme="dark"] div.admonition.note {
+  border-left-color: #60a5fa !important;
+}

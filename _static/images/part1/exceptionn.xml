@@ -1,0 +1,58 @@
+<mxfile host="Electron" modified="2024-04-12T09:05:11.285Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.1.0 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="g9GHB-lKIj0yFv-onMfT" version="24.1.0" type="device">
+  <diagram name="Page-1" id="J8UMwBGC1rdaW2ehUiJ6">
+    <mxGraphModel dx="1364" dy="843" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-6" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="320" y="130" width="302.79" height="710" as="geometry" />
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-1" value="main method&lt;div style=&quot;font-size: 21px;&quot;&gt;catch&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=21;" parent="FGUHLjah1BAx3YFz-ME5-6" vertex="1">
+          <mxGeometry width="236.66692862068967" height="118.33333333333331" as="geometry" />
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-2" value="setBossOfTeam method" style="rounded=0;whiteSpace=wrap;html=1;fontSize=21;" parent="FGUHLjah1BAx3YFz-ME5-6" vertex="1">
+          <mxGeometry y="276.11111111111114" width="236.66692862068967" height="118.33333333333331" as="geometry" />
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-7" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;strokeColor=#2734ec;strokeWidth=2;" parent="FGUHLjah1BAx3YFz-ME5-6" source="FGUHLjah1BAx3YFz-ME5-1" target="FGUHLjah1BAx3YFz-ME5-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="20.882068965517245" y="208.82352941176472" as="sourcePoint" />
+            <mxPoint x="73.08724137931036" y="156.61764705882354" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-10" value="setBoss method&lt;div style=&quot;font-size: 21px;&quot;&gt;throw&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=21;" parent="FGUHLjah1BAx3YFz-ME5-6" vertex="1">
+          <mxGeometry y="540" width="236.66692862068967" height="118.33333333333331" as="geometry" />
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-11" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#273bd3;" parent="FGUHLjah1BAx3YFz-ME5-6" source="FGUHLjah1BAx3YFz-ME5-2" target="FGUHLjah1BAx3YFz-ME5-10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="60" y="500" as="sourcePoint" />
+            <mxPoint x="110" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-12" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#e12323;" parent="FGUHLjah1BAx3YFz-ME5-6" source="FGUHLjah1BAx3YFz-ME5-2" target="FGUHLjah1BAx3YFz-ME5-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="150" y="260" as="sourcePoint" />
+            <mxPoint x="200" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-13" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;strokeColor=#e81717;strokeWidth=2;" parent="FGUHLjah1BAx3YFz-ME5-6" source="FGUHLjah1BAx3YFz-ME5-10" target="FGUHLjah1BAx3YFz-ME5-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="140" y="500" as="sourcePoint" />
+            <mxPoint x="190" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-15" value="Call" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" parent="FGUHLjah1BAx3YFz-ME5-6" vertex="1">
+          <mxGeometry y="170" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-16" value="Call" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" parent="FGUHLjah1BAx3YFz-ME5-6" vertex="1">
+          <mxGeometry y="440" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-17" value="Exception" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" parent="FGUHLjah1BAx3YFz-ME5-6" vertex="1">
+          <mxGeometry x="190" y="430" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="FGUHLjah1BAx3YFz-ME5-18" value="Exception" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" parent="FGUHLjah1BAx3YFz-ME5-6" vertex="1">
+          <mxGeometry x="190" y="160" width="100" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
