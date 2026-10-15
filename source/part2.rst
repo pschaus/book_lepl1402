@@ -919,7 +919,7 @@ we are telling the compiler that it should assume that :code:`E = String`, and a
 
 
 Method overloading with different parameters
--------------------------------------
+--------------------------------------------
 
 In Java, it is allowed to have two methods with the same name as long as they have different parameters. This is called *method overloading*. Here is an example:
 
@@ -1781,6 +1781,8 @@ As the next example shows, we can now sort by title, author or publication year 
     	    }
     	}
 
+
+.. _observer:
 
 Observer
 ==========

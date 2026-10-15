@@ -323,8 +323,8 @@ The Java code is a direct translation of the explanation of the algorithm.
 Linear Search
 """""""""""""""""
 
-We have already seen the :ref:`sum` algorithm and its :math:`\Theta(n)` time complexity.
-Another example of a linear time complexity algorithm is the :ref:`linear_search`.
+We have already seen the sum algorithm and its :math:`\Theta(n)` time complexity.
+Another example of a linear time complexity algorithm is the linear search algorithm.
 The time complexity of the linear search algorithm is :math:`\mathcal{O}(n)`, where `n` is the size of the array, because in the worst-case scenario (the target value is not in the array or is the last element in the array), the algorithm has to examine every element in the array once.
 In the best-case scenario for the linear search algorithm, the target value is the very first element of the array.
 Therefore, in the best-case scenario, the time complexity of the linear search algorithm is :math:`\mathcal{O}(1)` or we can simply say that the algorithm is also in :math:`\Omega (1)`.
@@ -804,7 +804,7 @@ The call stack is shown at the bottom left of IntelliJ and you can see what the 
 Improving the space complexity of merge sort
 """"""""""""""""""""""""""""""""""""""""""""""""
 
-In the :ref:`merge_sort_implem` implementation, new arrays are created at each level of recursion.
+In the initial merge sort implementation, new arrays are created at each level of recursion.
 The overall space complexity is thus of :math:`\mathcal{O}(n \log n)`, where :math:`n` is the number of elements in the input array. 
 This is because, at each level of the recursion, new arrays are created in the current frame, adding up to :math:`n` elements per level, and the recursion goes :math:`\log n` levels deep.
 
@@ -900,7 +900,7 @@ The loop invariant must be true:
 
 The loop invariant often helps to prove something important about the output of the algorithm.
 
-The code fragment :ref:`max_invariant_while` illustrates a simple loop invariant for
+The code fragment below illustrates a simple loop invariant for
 a method searching for the maximum of an array. 
 
 
@@ -1006,7 +1006,7 @@ We do it on the inductive parameter ``i``.
 .. admonition:: Exercise
    :class: note
 
-    Find an invariant for the loop of the bubble :ref:`maxsum` algorithm.
+    Find an invariant for the loop of the maximum subarray sum algorithm below.
     Prove that the invariant is correctly maintained.
     Hint: Your invariant should express a property on the variables ``maxCurrent`` and ``maxGlobal`` with respect to index ``i``.
     A good exercise is to write a recursive version of this algorithm and to write the specification of it.
@@ -1053,7 +1053,7 @@ We do it on the inductive parameter ``i``.
    :class: note
 
 
-    Find an invariant for the outer loop of the bubble :ref:`bubble_loop` sort algorithm.
+    Find an invariant for the outer loop of the bubble sort algorithm below.
     Prove that the invariant is correctly maintained.
     Hint: Your invariant should express a property on the array with respect to index ``i``.
     A subpart of the array is already sorted? What values are they?
@@ -1595,7 +1595,7 @@ The code for each traversal is given next.
         }
 
 
-Here is the output order obtained on the binary represented :ref:`binary-tree` for each traversals:
+Here is the output order obtained on the binary tree represented above for each traversal:
 
 * Pre-Order: 5, 8, 2, 7, 6, 5, 7, 3, 3
 * In-Order: 2, 8, 5, 6, 7, 7, 3, 5, 3

@@ -251,8 +251,10 @@ As explained, Java requires that you specify the type of all variables (includin
 Java differs between *primitive types* and complex types, such as arrays and objects. The primitive types are used for numbers (integers and real numbers), for Boolean values (``true`` and ``false``) and for single characters (``a``, ``b``, etc.). However, there are several different number types. The table below shows all primitive types:
 
 
-.. raw:: latex 
-    \fontsize{5pt}{7pt}\selectfont
+.. raw:: latex
+
+   \fontsize{5pt}{7pt}\selectfont
+
 ============ ========================================================= ========================
 Type         Possible values                                           Example
 ============ ========================================================= ========================
@@ -267,7 +269,10 @@ Type         Possible values                                           Example
 ============ ========================================================= ========================
 
 .. raw:: latex
-    \normalsize
+
+   \normalsize
+
+
 As you can see, each primitive type has a limited range of values it can represent. For example, a variable of type :code:`int` can be only used for integer numbers between :math:`-2^{31}` and :math:`2^{31}-1`. If you don't respect the range of a type, very strange things will happen in your program! Try this code in IntelliJ (copy it into the :code:`main()` method of your program):
 
 ..  code-block:: java
@@ -341,8 +346,8 @@ When working with variables of primitive types, you can imagine that every time 
 +-----------------------+-------------------------------------------------+
 | Java code             | In memory during execution                      |
 +=======================+=================================================+
-| .. code-block::  java |        \                                        |
-|                       |        \                                        |
+| .. code-block:: java  |                                                 |
+|                       |                                                 |
 |    int a = 3;         |                                                 |
 |    int b = 4;         |  .. image:: _static/images/part1/assignment.svg |
 |                       |     :width: 10%                                 |
@@ -353,8 +358,8 @@ When you assign the content of a variable to another variable, the value is copi
 +-----------------------+-------------------------------------------------+
 | Java code             | In memory during execution                      |
 +=======================+=================================================+
-| .. code::             |           \                                     |
-|                       |           \                                     |
+| .. code-block:: java  |                                                 |
+|                       |                                                 |
 |    a = b;             |  .. image:: _static/images/part1/assignment2.svg|
 |                       |    :width: 10%                                  |
 +-----------------------+-------------------------------------------------+
@@ -505,10 +510,9 @@ There is an important difference between array variables and primitive-type vari
 +-----------------------+------------------------------------------------------------+
 | Java code             | In memory during execution                                 |
 +=======================+============================================================+
-| .. code::             |                           /                                |
-|                       |                           /                                |
-|  int[] a = new int[4];|      .. image:: _static/images/part1/arrayn.svg            |
-|                       |     :width: 50%                                            |
+| .. code::             |                                                            |
+|                       |      .. image:: _static/images/part1/arrayn.svg            |
+|  int[] a = new int[4];|         :width: 50%                                        |
 +-----------------------+------------------------------------------------------------+
 
 This difference becomes important when you assign an array variable to another array variable: 
@@ -946,8 +950,8 @@ Like array variables, string variables are references to the content of the stri
 +-----------------------+-------------------------------------------------+
 | Java code             | In memory during execution                      |
 +=======================+=================================================+
-| .. code::             |                                      /          |
-|                       |                                      /          |
+| .. code::             |                                                 |
+|                       |                                                 |
 |    String a = "Hello";| .. image:: _static/images/part1/stringn.svg     |
 |                       |           :width: 60%                           |
 +-----------------------+-------------------------------------------------+

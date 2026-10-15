@@ -1,30 +1,43 @@
 name: Docs
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   docs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      # 🔧 Pin Python version to avoid Sphinx EPUB3 imghdr crash
-      - uses: actions/setup-python@v4
+      # Pin Python 3.12 for Sphinx compatibility
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
-      - name: Install TeX Live
+      - name: Install TeX Live and fonts
         run: |
           sudo apt-get update && sudo apt-get install -y \
-            texlive texlive-publishers texlive-science \
+            texlive texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra \
+            texlive-publishers texlive-science \
             latexmk cm-super dvipng
 
-      - name: Sphinx build
+      - name: Build PDF and Website
         run: |
+          chmod +x ./build.sh
           ./build.sh
 
-      - name: Deploy
+      - name: Verify PDF is present for download
+        run: |
+          test -s _build/_static/lepl1402.pdf || { echo "ERROR: lepl1402.pdf missing from web build!"; exit 1; }
+          echo "Verification passed: lepl1402.pdf is ready ($(ls -lh _build/_static/lepl1402.pdf | awk '{print $5}'))"
+
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:

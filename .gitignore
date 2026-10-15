@@ -129,8 +129,11 @@ dmypy.json
 .pyre/
 
 # Emacs backups
-*~
-
 _build/
+_build_pdf/
+myvenv/
+.DS_Store
+*.drawio.bkp
+Makefile_old
 source/_static/lepl1402.pdf
 
